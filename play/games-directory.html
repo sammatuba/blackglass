@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0F172A">
+    <title>AI Literacy & Safety — Game Suite</title>
+    <meta name="description" content="Interactive educational card games teaching AI literacy and safety. Learn about bias, oversight, risk management, and hallucinations through play.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --surface-light: #334155;
+            --border: #475569;
+            --text: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .game-card:nth-child(1)::before { background: linear-gradient(90deg, #2563EB, #3B82F6); }
+        .game-card:nth-child(2)::before { background: linear-gradient(90deg, #0EA5E9, #38BDF8); }
+        .game-card:nth-child(3)::before { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+        .game-card:nth-child(4)::before { background: linear-gradient(90deg, #F97316, #FB923C); }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: #6366F1;
+            box-shadow: 0 12px 32px rgba(99, 102, 241, 0.2);
+        }
+
+        .game-card:active {
+            transform: scale(0.98);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 40px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface-light);
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .card-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 15px;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .card-badges {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-unesco { background: rgba(225, 29, 72, 0.15); color: #FB7185; }
+        .badge-oecd { background: rgba(5, 150, 105, 0.15); color: #34D399; }
+        .badge-nist { background: rgba(124, 58, 237, 0.15); color: #A78BFA; }
+        .badge-eu { background: rgba(3, 105, 161, 0.15); color: #38BDF8; }
+
+        .play-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .game-card:nth-child(1) .play-btn { background: #2563EB; color: #fff; }
+        .game-card:nth-child(2) .play-btn { background: #0EA5E9; color: #fff; }
+        .game-card:nth-child(3) .play-btn { background: #7C3AED; color: #fff; }
+        .game-card:nth-child(4) .play-btn { background: #F97316; color: #fff; }
+
+        .footer {
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: #818CF8;
+            text-decoration: none;
+        }
+
+        .coming-soon {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .coming-soon-card {
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            opacity: 0.6;
+        }
+
+        .coming-soon-card h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .coming-soon-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .coming-tag {
+            font-size: 10px;
+            background: var(--surface-light);
+            padding: 2px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .games-grid { grid-template-columns: 1fr; }
+            .coming-soon { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 28px; }
+            .hero p { font-size: 16px; }
+            .container { padding: 32px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <div class="hero-icon">🎴</div>
+            <h1>AI Literacy & <span>Safety</span></h1>
+            <p>Interactive card games that teach responsible AI concepts through play. Pick a game and start learning.</p>
+        </div>
+
+        <div class="games-grid">
+            <a href="bias-bounty-lite/" class="game-card">
+                <div class="card-header">
+                    <div class="card-icon">🔍</div>
+                    <div>
+                        <div class="card-title">Bias Bounty</div>
+                        <div class="card-time">20-30 min</div>
+                    </div>
+                </div>
+                <p class="card-desc">Investigate AI systems and match hidden problems to three bias patterns: Bad Start, Wrong Measuring, and Sneaky Shortcuts.</p>
+                <div class="card-badges">
+                    <span class="badge badge-unesco">UNESCO</span>
+                    <span class="badge badge-oecd">OECD</span>
+                    <span class="badge badge-nist">NIST</span>
+                    <span class="badge badge-eu">EU</span>
+                </div>
+                <div class="play-btn">Play Game →</div>
+            </a>
+
+            <a href="human-in-the-loop/" class="game-card">
+                <div class="card-header">
+                    <div class="card-icon">🔄</div>
+                    <div>
+                        <div class="card-title">Human-in-the-Loop</div>
+                        <div class="card-time">15-25 min</div>
+                    </div>
+                </div>
+                <p class="card-desc">Review AI recommendations in high-stakes scenarios. Spend investigation tokens, uncover clues, and decide: accept or override?</p>
+                <div class="card-badges">
+                    <span class="badge badge-unesco">UNESCO</span>
+                    <span class="badge badge-oecd">OECD</span>
+                    <span class="badge badge-eu">EU</span>
+                </div>
+                <div class="play-btn">Play Game →</div>
+            </a>
+
+            <a href="risk-assessment-protocol/" class="game-card">
+                <div class="card-header">
+                    <div class="card-icon">📋</div>
+                    <div>
+                        <div class="card-title">Risk Assessment Protocol</div>
+                        <div class="card-time">20-30 min</div>
+                    </div>
+                </div>
+                <p class="card-desc">Assess AI systems through the four NIST RMF phases — MAP, MEASURE, MANAGE, GOVERN — and classify EU AI Act risk tiers.</p>
+                <div class="card-badges">
+                    <span class="badge badge-nist">NIST RMF</span>
+                    <span class="badge badge-eu">EU AI Act</span>
+                </div>
+                <div class="play-btn">Play Game →</div>
+            </a>
+
+            <a href="hallucination-hunt/" class="game-card">
+                <div class="card-header">
+                    <div class="card-icon">👁️</div>
+                    <div>
+                        <div class="card-title">Hallucination Hunt</div>
+                        <div class="card-time">15-20 min</div>
+                    </div>
+                </div>
+                <p class="card-desc">Fact-check AI-generated claims using limited verification tool cards. Stamp verdicts and build your evidence board.</p>
+                <div class="card-badges">
+                    <span class="badge badge-unesco">UNESCO</span>
+                    <span class="badge badge-oecd">OECD</span>
+                    <span class="badge badge-nist">NIST</span>
+                </div>
+                <div class="play-btn">Play Game →</div>
+            </a>
+        </div>
+
+        <div class="coming-soon">
+            <div class="coming-soon-card">
+                <h3>🧊 The Black Box <span class="coming-tag">Coming Soon</span></h3>
+                <p>Neural network simulation. Build networks with node cards, place weight overlays, feed input cards through.</p>
+            </div>
+            <div class="coming-soon-card">
+                <h3>⚖️ The Oversight Committee <span class="coming-tag">Coming Soon</span></h3>
+                <p>Governance simulation with asymmetric role cards. Negotiate AI proposals as Developer, Regulator, Ethicist, or Affected Person.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Aligned with UNESCO, OECD, NIST AI RMF, EU AI Act, and Council of Europe frameworks.</p>
+            <p style="margin-top: 8px;">Vanilla HTML/CSS/JS — zero dependencies — works offline.</p>
+        </div>
+    </div>
+</body>
+</html>

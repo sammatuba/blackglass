@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Dependencies (should never exist, but just in case)
+node_modules/
+
+# Backups
+*.bak
+*.backup

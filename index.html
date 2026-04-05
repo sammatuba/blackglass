@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>AI Literacy Games - Interactive Ethics Education</title>
+    <meta name="description" content="4 interactive games teaching AI ethics, bias detection, hallucination spotting, and risk assessment.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0F172A;
+            color: #F8FAFC;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding: 24px;
+            padding: max(24px, env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left));
+        }
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-top: 20px;
+        }
+        .hero-icon { font-size: 56px; margin-bottom: 16px; display: block; }
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #818CF8, #0EA5E9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 16px;
+            color: #94A3B8;
+            line-height: 1.5;
+        }
+        .games-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .game-card {
+            display: block;
+            background: #1E293B;
+            border-radius: 16px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            border: 2px solid #334155;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .game-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .game-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .game-icon {
+            font-size: 40px;
+            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0F172A;
+            border-radius: 12px;
+        }
+        .game-info { flex: 1; min-width: 0; }
+        .game-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .game-desc {
+            font-size: 14px;
+            color: #94A3B8;
+            line-height: 1.4;
+        }
+        .game-arrow {
+            font-size: 20px;
+            color: #475569;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+        .game-card:hover .game-arrow { color: #F8FAFC; }
+
+        .card-hitl { border-color: #0EA5E9; }
+        .card-hitl:hover { border-color: #0EA5E9; box-shadow: 0 8px 24px rgba(14,165,233,0.15); }
+        .card-hitl .game-title { color: #0EA5E9; }
+
+        .card-bias { border-color: #2563EB; }
+        .card-bias:hover { border-color: #2563EB; box-shadow: 0 8px 24px rgba(37,99,235,0.15); }
+        .card-bias .game-title { color: #2563EB; }
+
+        .card-hallucination { border-color: #F97316; }
+        .card-hallucination:hover { border-color: #F97316; box-shadow: 0 8px 24px rgba(249,115,22,0.15); }
+        .card-hallucination .game-title { color: #F97316; }
+
+        .card-risk { border-color: #7C3AED; }
+        .card-risk:hover { border-color: #7C3AED; box-shadow: 0 8px 24px rgba(124,58,237,0.15); }
+        .card-risk .game-title { color: #7C3AED; }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-bottom: 16px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        @media (min-width: 600px) {
+            .games-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (hover: none) {
+            .game-card:active {
+                transform: scale(0.97);
+            }
+            .game-card:hover {
+                transform: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <span class="hero-icon">🎮</span>
+            <h1>AI Literacy Games</h1>
+            <p>Interactive games teaching AI ethics, safety, and critical thinking</p>
+        </div>
+
+        <div class="games-grid">
+            <a href="play/human-in-the-loop/" class="game-card card-hitl">
+                <div class="game-card-inner">
+                    <div class="game-icon">🔄</div>
+                    <div class="game-info">
+                        <div class="game-title">Human-in-the-Loop</div>
+                        <div class="game-desc">When should humans override AI decisions?</div>
+                    </div>
+                    <div class="game-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="play/bias-bounty-lite/" class="game-card card-bias">
+                <div class="game-card-inner">
+                    <div class="game-icon">🔍</div>
+                    <div class="game-info">
+                        <div class="game-title">Bias Bounty</div>
+                        <div class="game-desc">Find hidden unfairness in AI systems</div>
+                    </div>
+                    <div class="game-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="play/hallucination-hunt/" class="game-card card-hallucination">
+                <div class="game-card-inner">
+                    <div class="game-icon">👁️</div>
+                    <div class="game-info">
+                        <div class="game-title">Hallucination Hunt</div>
+                        <div class="game-desc">Detect fabricated facts in AI output</div>
+                    </div>
+                    <div class="game-arrow">→</div>
+                </div>
+            </a>
+
+            <a href="play/risk-assessment-protocol/" class="game-card card-risk">
+                <div class="game-card-inner">
+                    <div class="game-icon">📋</div>
+                    <div class="game-info">
+                        <div class="game-title">Risk Assessment Protocol</div>
+                        <div class="game-desc">Map, measure, manage AI risks with NIST framework</div>
+                    </div>
+                    <div class="game-arrow">→</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="footer">
+            AI Literacy & Safety Education Suite
+        </div>
+    </div>
+</body>
+</html>

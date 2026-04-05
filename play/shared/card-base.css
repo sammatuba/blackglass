@@ -1,0 +1,591 @@
+/* ========================================
+   Card Game Base — Shared Design System
+   ======================================== */
+
+/* ----------------------------------------
+   Design Tokens
+   ---------------------------------------- */
+:root {
+    /* Shared spacing */
+    --card-gap: 16px;
+    --card-radius: 16px;
+    --card-radius-sm: 10px;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --card-shadow-active: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+    /* Card dimensions (poker ratio 5:7) */
+    --card-width: 260px;
+    --card-height: calc(var(--card-width) * 1.4);
+    --card-width-sm: 180px;
+    --card-height-sm: calc(var(--card-width-sm) * 1.4);
+
+    /* Transitions */
+    --t-flip: 600ms;
+    --t-deal: 400ms;
+    --t-hover: 200ms;
+
+    /* Token */
+    --token-size: 40px;
+    --token-size-sm: 28px;
+
+    /* Framework badge colors */
+    --fw-unesco: #E11D48;
+    --fw-oecd: #059669;
+    --fw-nist: #7C3AED;
+    --fw-eu: #0369A1;
+    --fw-coe: #D97706;
+}
+
+/* ----------------------------------------
+   Card Container & Flip
+   ---------------------------------------- */
+.gc-card {
+    width: var(--card-width);
+    max-width: 100%;
+    aspect-ratio: 5 / 7;
+    perspective: 800px;
+    cursor: pointer;
+}
+
+.gc-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform var(--t-flip) cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+}
+
+.gc-card.flipped .gc-card-inner {
+    transform: rotateY(180deg);
+}
+
+.gc-card-front,
+.gc-card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.gc-card-front {
+    transform: rotateY(180deg);
+    background: var(--color-surface, #1E293B);
+    border: 1px solid var(--color-border, #475569);
+    padding: 20px;
+}
+
+.gc-card-back {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gc-card-back::after {
+    content: '';
+    width: 60%;
+    height: 60%;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 255, 255, 0.03) 10px,
+        rgba(255, 255, 255, 0.03) 20px
+    );
+}
+
+/* ----------------------------------------
+   Card Deal Animation
+   ---------------------------------------- */
+.gc-deal {
+    opacity: 0;
+    transform: translateY(-40px) scale(0.9);
+    animation: gc-deal-in var(--t-deal) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.gc-deal:nth-child(1) { animation-delay: 0ms; }
+.gc-deal:nth-child(2) { animation-delay: 80ms; }
+.gc-deal:nth-child(3) { animation-delay: 160ms; }
+.gc-deal:nth-child(4) { animation-delay: 240ms; }
+.gc-deal:nth-child(5) { animation-delay: 320ms; }
+.gc-deal:nth-child(6) { animation-delay: 400ms; }
+
+@keyframes gc-deal-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ----------------------------------------
+   Card Hover & Tap
+   ---------------------------------------- */
+@media (hover: hover) {
+    .gc-card:hover .gc-card-inner {
+        transform: translateY(-6px);
+        box-shadow: var(--card-shadow-hover);
+    }
+    .gc-card.flipped:hover .gc-card-inner {
+        transform: rotateY(180deg) translateY(-6px);
+    }
+}
+
+@media (hover: none) {
+    .gc-card:active .gc-card-inner {
+        transform: scale(0.97);
+    }
+    .gc-card.flipped:active .gc-card-inner {
+        transform: rotateY(180deg) scale(0.97);
+    }
+}
+
+/* ----------------------------------------
+   Card Grid Layouts
+   ---------------------------------------- */
+.gc-grid {
+    display: grid;
+    gap: var(--card-gap);
+    justify-items: center;
+    padding: var(--card-gap);
+}
+
+.gc-grid-2 { grid-template-columns: repeat(2, 1fr); }
+.gc-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.gc-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 768px) {
+    .gc-grid-3, .gc-grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+    .gc-grid-2, .gc-grid-3, .gc-grid-4 {
+        grid-template-columns: 1fr;
+    }
+    .gc-card {
+        width: 100%;
+        max-width: var(--card-width);
+        margin: 0 auto;
+    }
+}
+
+/* ----------------------------------------
+   Card Hand (fan at bottom)
+   ---------------------------------------- */
+.gc-hand {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    flex-wrap: wrap;
+}
+
+.gc-hand .gc-card {
+    --card-width: var(--card-width-sm);
+    transition: transform var(--t-hover) ease;
+}
+
+@media (hover: hover) {
+    .gc-hand .gc-card:hover {
+        transform: translateY(-12px);
+        z-index: 10;
+    }
+}
+
+/* ----------------------------------------
+   Token / Chip
+   ---------------------------------------- */
+.gc-token {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--token-size);
+    height: var(--token-size);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 14px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    flex-shrink: 0;
+}
+
+.gc-token-sm {
+    width: var(--token-size-sm);
+    height: var(--token-size-sm);
+    font-size: 11px;
+    border-width: 2px;
+}
+
+.gc-token-blue { background: linear-gradient(135deg, #3B82F6, #2563EB); color: #fff; }
+.gc-token-green { background: linear-gradient(135deg, #10B981, #059669); color: #fff; }
+.gc-token-yellow { background: linear-gradient(135deg, #F59E0B, #D97706); color: #fff; }
+.gc-token-red { background: linear-gradient(135deg, #EF4444, #DC2626); color: #fff; }
+.gc-token-purple { background: linear-gradient(135deg, #8B5CF6, #7C3AED); color: #fff; }
+.gc-token-gray { background: linear-gradient(135deg, #64748B, #475569); color: #fff; }
+
+.gc-token-pile {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Token spend animation */
+.gc-token-spend {
+    animation: gc-token-fly 0.5s ease-out forwards;
+}
+
+@keyframes gc-token-fly {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.3) translateY(-30px); }
+}
+
+/* ----------------------------------------
+   Stamp Mechanic
+   ---------------------------------------- */
+.gc-stamp {
+    display: inline-block;
+    padding: 8px 24px;
+    border: 4px solid;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transform: rotate(-5deg);
+    opacity: 0;
+    animation: gc-stamp-hit 0.4s cubic-bezier(0.17, 0.67, 0.24, 1.2) forwards;
+}
+
+.gc-stamp-accept {
+    color: #10B981;
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.gc-stamp-reject {
+    color: #EF4444;
+    border-color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.gc-stamp-caution {
+    color: #F59E0B;
+    border-color: #F59E0B;
+    background: rgba(245, 158, 11, 0.1);
+}
+
+@keyframes gc-stamp-hit {
+    0% { opacity: 0; transform: rotate(-5deg) scale(2); }
+    60% { opacity: 1; transform: rotate(-5deg) scale(0.9); }
+    100% { opacity: 0.85; transform: rotate(-5deg) scale(1); }
+}
+
+/* ----------------------------------------
+   Modal (shared)
+   ---------------------------------------- */
+.gc-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+    opacity: 0;
+    animation: gc-fade-in 0.2s ease forwards;
+}
+
+.gc-modal-backdrop.hidden { display: none; }
+
+.gc-modal {
+    background: var(--color-surface, #1E293B);
+    border-radius: var(--card-radius);
+    padding: 32px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border: 1px solid var(--color-border, #475569);
+    animation: gc-slide-up 0.3s ease;
+}
+
+.gc-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--color-text-secondary, #94A3B8);
+    line-height: 1;
+}
+
+@keyframes gc-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes gc-slide-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 480px) {
+    .gc-modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+    }
+    .gc-modal {
+        width: 100%;
+        max-height: 85vh;
+        border-radius: var(--card-radius) var(--card-radius) 0 0;
+        padding: 24px;
+    }
+}
+
+/* ----------------------------------------
+   Button System
+   ---------------------------------------- */
+.gc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: var(--card-radius-sm);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all var(--t-hover) ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.gc-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.gc-btn-primary {
+    background: var(--color-primary, #3B82F6);
+    color: #fff;
+}
+
+.gc-btn-primary:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.gc-btn-secondary {
+    background: var(--color-surface-light, #334155);
+    color: var(--color-text, #F8FAFC);
+    border: 1px solid var(--color-border, #475569);
+}
+
+.gc-btn-secondary:hover:not(:disabled) {
+    background: var(--color-border, #475569);
+}
+
+.gc-btn-icon {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    background: var(--color-surface-light, #334155);
+    color: var(--color-text, #F8FAFC);
+    border: 1px solid var(--color-border, #475569);
+    font-size: 18px;
+}
+
+/* ----------------------------------------
+   Fixed Bottom Bar
+   ---------------------------------------- */
+.gc-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    background: var(--color-surface, #1E293B);
+    border-top: 1px solid var(--color-border, #475569);
+    z-index: 50;
+    gap: 12px;
+}
+
+@supports (padding: env(safe-area-inset-bottom)) {
+    .gc-bottom-bar {
+        padding-bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ----------------------------------------
+   Framework Badges
+   ---------------------------------------- */
+.gc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.gc-badge-unesco { background: rgba(225, 29, 72, 0.15); color: var(--fw-unesco); }
+.gc-badge-oecd { background: rgba(5, 150, 105, 0.15); color: var(--fw-oecd); }
+.gc-badge-nist { background: rgba(124, 58, 237, 0.15); color: var(--fw-nist); }
+.gc-badge-eu { background: rgba(3, 105, 161, 0.15); color: var(--fw-eu); }
+.gc-badge-coe { background: rgba(217, 119, 6, 0.15); color: var(--fw-coe); }
+
+/* ----------------------------------------
+   Confetti Canvas
+   ---------------------------------------- */
+.gc-confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* ----------------------------------------
+   Slide-in Utility
+   ---------------------------------------- */
+.gc-slide-in {
+    animation: gc-slide-in-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes gc-slide-in-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------------------------
+   Phase Transition Card
+   ---------------------------------------- */
+.gc-phase-card {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100;
+    animation: gc-fade-in 0.3s ease;
+}
+
+.gc-phase-card-content {
+    background: var(--color-surface, #1E293B);
+    border: 2px solid var(--color-primary, #3B82F6);
+    border-radius: var(--card-radius);
+    padding: 48px 64px;
+    text-align: center;
+    animation: gc-phase-zoom 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes gc-phase-zoom {
+    from { transform: scale(0.7); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ----------------------------------------
+   Board Game Track
+   ---------------------------------------- */
+.gc-track {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 8px 0;
+}
+
+.gc-track-node {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    background: var(--color-surface-light, #334155);
+    border: 3px solid var(--color-border, #475569);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.gc-track-node.active {
+    border-color: var(--color-primary, #3B82F6);
+    background: var(--color-primary, #3B82F6);
+    color: #fff;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}
+
+.gc-track-node.complete {
+    border-color: #10B981;
+    background: #10B981;
+    color: #fff;
+}
+
+.gc-track-connector {
+    flex: 1;
+    height: 4px;
+    background: var(--color-border, #475569);
+    min-width: 20px;
+}
+
+.gc-track-connector.complete {
+    background: #10B981;
+}
+
+/* ----------------------------------------
+   Screen Reader Only
+   ---------------------------------------- */
+.gc-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ----------------------------------------
+   Difficulty Stars
+   ---------------------------------------- */
+.gc-stars {
+    display: inline-flex;
+    gap: 2px;
+    font-size: 14px;
+}
+
+.gc-stars .filled { color: #F59E0B; }
+.gc-stars .empty { color: var(--color-surface-light, #334155); }
