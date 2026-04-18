@@ -1,0 +1,101 @@
+{
+  "game": "Tails Noir Prologue",
+  "scenes": 5000,
+  "tokens": 86178,
+  "unique_tokens": 13469,
+  "ttr": 0.1563,
+  "tokens_per_scene_mean": 17.2,
+  "tokens_per_scene_median": 16.0,
+  "tokens_per_scene_max": 920,
+  "sentences": 10491,
+  "mean_sentence_len": 8.2,
+  "choice_count": null,
+  "choices_per_scene": null,
+  "top_named_entities": [
+    [
+      "Sie",
+      347
+    ],
+    [
+      "Ich",
+      254
+    ],
+    [
+      "Clarissa",
+      105
+    ],
+    [
+      "Bite",
+      100
+    ],
+    [
+      "Please",
+      94
+    ],
+    [
+      "Das",
+      77
+    ],
+    [
+      "Howard",
+      76
+    ],
+    [
+      "Aber",
+      74
+    ],
+    [
+      "Bloodworth",
+      64
+    ],
+    [
+      "Und",
+      60
+    ],
+    [
+      "Minister",
+      59
+    ],
+    [
+      "Ihnen",
+      57
+    ],
+    [
+      "Science",
+      52
+    ],
+    [
+      "Returns",
+      52
+    ],
+    [
+      "Note",
+      51
+    ],
+    [
+      "Parameter",
+      51
+    ],
+    [
+      "City",
+      49
+    ],
+    [
+      "Wir",
+      48
+    ],
+    [
+      "Die",
+      47
+    ],
+    [
+      "Failed",
+      45
+    ]
+  ],
+  "notes": [
+    "no scene segmentation possible — each entry is one string run, not one scene",
+    "filtered to 17,291 prose-shaped lines (>=40 chars, sentence-ending)",
+    "metric values here are not directly comparable to the other five"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "game": "Grotto",
+  "scenes": 261,
+  "tokens": 75855,
+  "unique_tokens": 3482,
+  "ttr": 0.0459,
+  "tokens_per_scene_mean": 290.6,
+  "tokens_per_scene_median": 3,
+  "tokens_per_scene_max": 3569,
+  "sentences": 7611,
+  "mean_sentence_len": 10.0,
+  "choice_count": 2658,
+  "choices_per_scene": 10.18,
+  "top_named_entities": [
+    [
+      "Chief",
+      286
+    ],
+    [
+      "Horse",
+      201
+    ],
+    [
+      "Ivy",
+      199
+    ],
+    [
+      "Scorpion",
+      189
+    ],
+    [
+      "Mask",
+      187
+    ],
+    [
+      "Red",
+      183
+    ],
+    [
+      "Mountain",
+      182
+    ],
+    [
+      "Tears",
+      181
+    ],
+    [
+      "Sword",
+      176
+    ],
+    [
+      "Mamooth",
+      165
+    ],
+    [
+      "Frog",
+      152
+    ],
+    [
+      "Wind",
+      151
+    ],
+    [
+      "Hare",
+      147
+    ],
+    [
+      "Moose",
+      147
+    ],
+    [
+      "Crab",
+      145
+    ],
+    [
+      "Teacher",
+      145
+    ],
+    [
+      "Hurricane",
+      144
+    ],
+    [
+      "Root",
+      142
+    ],
+    [
+      "Our",
+      142
+    ],
+    [
+      "Squid",
+      141
+    ]
+  ],
+  "notes": [
+    "scenes = union of Visit/Event/StarCombo/NarratorEvent/EndCharacter dumps",
+    "scene text is strings-harvested: scene IDs and tags mixed with prose — inflates token count 10-20%"
+  ]
+}

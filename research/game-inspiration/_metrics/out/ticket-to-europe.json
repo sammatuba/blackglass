@@ -1,0 +1,99 @@
+{
+  "game": "Ticket to Europe",
+  "scenes": 6216,
+  "tokens": 289790,
+  "unique_tokens": 19686,
+  "ttr": 0.0679,
+  "tokens_per_scene_mean": 46.6,
+  "tokens_per_scene_median": 44.0,
+  "tokens_per_scene_max": 335,
+  "sentences": 37444,
+  "mean_sentence_len": 7.7,
+  "choice_count": 9380,
+  "choices_per_scene": 1.51,
+  "top_named_entities": [
+    [
+      "Var",
+      1326
+    ],
+    [
+      "Tag",
+      465
+    ],
+    [
+      "Isaac",
+      377
+    ],
+    [
+      "Kassim",
+      251
+    ],
+    [
+      "Marko",
+      248
+    ],
+    [
+      "Wahid",
+      227
+    ],
+    [
+      "Europe",
+      222
+    ],
+    [
+      "Erik",
+      195
+    ],
+    [
+      "Italy",
+      186
+    ],
+    [
+      "Greece",
+      180
+    ],
+    [
+      "Africa",
+      153
+    ],
+    [
+      "Battuta",
+      147
+    ],
+    [
+      "Anna",
+      143
+    ],
+    [
+      "Egypt",
+      124
+    ],
+    [
+      "Mona",
+      118
+    ],
+    [
+      "Someone",
+      117
+    ],
+    [
+      "Don",
+      115
+    ],
+    [
+      "Almas",
+      113
+    ],
+    [
+      "Perhaps",
+      107
+    ],
+    [
+      "Syrian",
+      106
+    ]
+  ],
+  "notes": [
+    "scene = one Yarn node (title: block); cleanest corpus of the six"
+  ]
+}

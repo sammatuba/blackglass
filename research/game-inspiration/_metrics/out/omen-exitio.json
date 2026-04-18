@@ -1,0 +1,100 @@
+{
+  "game": "Omen Exitio: Plague",
+  "scenes": 9,
+  "tokens": 11276,
+  "unique_tokens": 2124,
+  "ttr": 0.1884,
+  "tokens_per_scene_mean": 1252.9,
+  "tokens_per_scene_median": 272,
+  "tokens_per_scene_max": 4837,
+  "sentences": 801,
+  "mean_sentence_len": 14.1,
+  "choice_count": 6,
+  "choices_per_scene": 0.67,
+  "top_named_entities": [
+    [
+      "James",
+      24
+    ],
+    [
+      "Lloyd",
+      24
+    ],
+    [
+      "Zanzibar",
+      23
+    ],
+    [
+      "London",
+      20
+    ],
+    [
+      "Elyan",
+      20
+    ],
+    [
+      "Fuego",
+      18
+    ],
+    [
+      "Smith",
+      17
+    ],
+    [
+      "British",
+      17
+    ],
+    [
+      "Germans",
+      17
+    ],
+    [
+      "Eric",
+      16
+    ],
+    [
+      "Meyer",
+      14
+    ],
+    [
+      "July",
+      14
+    ],
+    [
+      "Thomas",
+      13
+    ],
+    [
+      "Stone",
+      13
+    ],
+    [
+      "Town",
+      13
+    ],
+    [
+      "Beijerinck",
+      12
+    ],
+    [
+      "Aiata",
+      12
+    ],
+    [
+      "Scott",
+      11
+    ],
+    [
+      "Martine",
+      10
+    ],
+    [
+      "University",
+      9
+    ]
+  ],
+  "notes": [
+    "Titles contains 98 scene IDs; 6 are 'Bis' branch variants (proxy for choice count)",
+    "scene bodies (CYOA prose) are in MonoBehaviours we couldn't read — this is journal-text only"
+  ]
+}

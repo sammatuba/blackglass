@@ -1,0 +1,99 @@
+{
+  "game": "Sir Brante",
+  "scenes": 47,
+  "tokens": 13702,
+  "unique_tokens": 2518,
+  "ttr": 0.1838,
+  "tokens_per_scene_mean": 291.5,
+  "tokens_per_scene_median": 280,
+  "tokens_per_scene_max": 1039,
+  "sentences": 1021,
+  "mean_sentence_len": 13.4,
+  "choice_count": 684,
+  "choices_per_scene": 14.55,
+  "top_named_entities": [
+    [
+      "Block",
+      364
+    ],
+    [
+      "Title",
+      47
+    ],
+    [
+      "Father",
+      41
+    ],
+    [
+      "Emperor",
+      33
+    ],
+    [
+      "Empire",
+      32
+    ],
+    [
+      "Magra",
+      29
+    ],
+    [
+      "Stephan",
+      28
+    ],
+    [
+      "Mother",
+      27
+    ],
+    [
+      "Faith",
+      27
+    ],
+    [
+      "Twins",
+      26
+    ],
+    [
+      "Gloria",
+      26
+    ],
+    [
+      "New",
+      25
+    ],
+    [
+      "Patriarch",
+      25
+    ],
+    [
+      "Lot",
+      23
+    ],
+    [
+      "Anizotte",
+      23
+    ],
+    [
+      "Tempest",
+      23
+    ],
+    [
+      "Year",
+      21
+    ],
+    [
+      "Archduke",
+      20
+    ],
+    [
+      "College",
+      20
+    ],
+    [
+      "Imperial",
+      19
+    ]
+  ],
+  "notes": [
+    "scenes = 47 resolved interludes; actual game has ~500+ scenelets keyed in CSV"
+  ]
+}

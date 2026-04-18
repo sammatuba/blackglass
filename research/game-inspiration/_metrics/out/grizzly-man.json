@@ -1,0 +1,100 @@
+{
+  "game": "Grizzly Man",
+  "scenes": 71,
+  "tokens": 82517,
+  "unique_tokens": 9525,
+  "ttr": 0.1154,
+  "tokens_per_scene_mean": 1162.2,
+  "tokens_per_scene_median": 911,
+  "tokens_per_scene_max": 4922,
+  "sentences": 16876,
+  "mean_sentence_len": 4.9,
+  "choice_count": 690,
+  "choices_per_scene": 9.72,
+  "top_named_entities": [
+    [
+      "Naninovel",
+      8343
+    ],
+    [
+      "Commands",
+      8343
+    ],
+    [
+      "Lou",
+      172
+    ],
+    [
+      "Assembly",
+      172
+    ],
+    [
+      "Doug",
+      138
+    ],
+    [
+      "Victoria",
+      122
+    ],
+    [
+      "Lee",
+      118
+    ],
+    [
+      "Toni",
+      113
+    ],
+    [
+      "Christine",
+      108
+    ],
+    [
+      "Informante",
+      104
+    ],
+    [
+      "Kevin",
+      89
+    ],
+    [
+      "Holt",
+      84
+    ],
+    [
+      "Jimmy",
+      81
+    ],
+    [
+      "Boulder",
+      72
+    ],
+    [
+      "Pero",
+      59
+    ],
+    [
+      "Crossfade",
+      59
+    ],
+    [
+      "Bahnsen",
+      53
+    ],
+    [
+      "Vincent",
+      52
+    ],
+    [
+      "Ethan",
+      47
+    ],
+    [
+      "Knights",
+      42
+    ]
+  ],
+  "notes": [
+    "source is Spanish (Pixel Pulps); English lives in ManagedText files not joined here",
+    "strings-harvested: NaniScript class names still leak through despite NOISE filter"
+  ]
+}
