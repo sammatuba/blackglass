@@ -45,6 +45,7 @@ Not a review. Not a summary of the plot. The questions we're actually asking:
 
 Each game folder contains a per-game `analysis.md` (Phase 2, isolated reading by the seven-lens framework) alongside the extraction artifacts. Cross-cutting documents:
 
+- **[`_works.md`](_works.md)** — self-sufficient material + content + narrative summary of each of the six games. Start here if you want to know *what the games are* before engaging craft claims about them.
 - **[`_framework.md`](_framework.md)** — the seven-lens analytical stance (Phase 1).
 - **[`_matrix.md`](_matrix.md)** — at-a-glance comparative grid across all six works + cross-readings.
 - **[`_synthesis.md`](_synthesis.md)** — Phase 3 re-reading through the work's specific needs.
