@@ -7,8 +7,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>AI Literacy Games - Interactive Ethics Education</title>
-    <meta name="description" content="4 interactive games teaching AI ethics, bias detection, hallucination spotting, and risk assessment.">
+    <title>BLACKGLASS — Seeing Clearly in a World Shaped by AI</title>
+    <meta name="description" content="An interactive fiction about navigating AI-powered deception, plus literacy games on AI ethics, bias, hallucination, and risk.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -118,6 +118,47 @@
         .card-risk:hover { border-color: #7C3AED; box-shadow: 0 8px 24px rgba(124,58,237,0.15); }
         .card-risk .game-title { color: #7C3AED; }
 
+        .featured {
+            margin-bottom: 32px;
+        }
+        .featured .game-card {
+            background: linear-gradient(135deg, #0B1020 0%, #1E1B2E 100%);
+            border-color: #F8FAFC;
+            padding: 32px 28px;
+        }
+        .featured .game-card:hover {
+            box-shadow: 0 12px 32px rgba(248,250,252,0.12);
+        }
+        .featured .game-icon {
+            background: #000;
+            font-size: 32px;
+        }
+        .featured .game-title {
+            color: #F8FAFC;
+            font-size: 22px;
+            letter-spacing: 0.02em;
+        }
+        .featured .game-desc {
+            color: #CBD5E1;
+            font-size: 15px;
+            margin-top: 6px;
+        }
+        .featured .game-meta {
+            font-size: 12px;
+            color: #64748B;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .section-label {
+            font-size: 12px;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
+            padding-left: 4px;
+        }
+
         .footer {
             text-align: center;
             margin-top: 40px;
@@ -147,11 +188,25 @@
 <body>
     <div class="container">
         <div class="hero">
-            <span class="hero-icon">🎮</span>
-            <h1>AI Literacy Games</h1>
-            <p>Interactive games teaching AI ethics, safety, and critical thinking</p>
+            <h1>Seeing Clearly</h1>
+            <p>An interactive fiction and a set of literacy games — for navigating a world shaped by AI</p>
         </div>
 
+        <div class="featured">
+            <a href="play/blackglass/" class="game-card">
+                <div class="game-card-inner">
+                    <div class="game-icon">◾</div>
+                    <div class="game-info">
+                        <div class="game-title">BLACKGLASS</div>
+                        <div class="game-desc">Maya's story — a Saturday morning, a family group chat, and the deceptions hiding in the familiar.</div>
+                        <div class="game-meta">Interactive fiction · ~60–90 min · Set in the Philippines</div>
+                    </div>
+                    <div class="game-arrow">→</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="section-label">Literacy games</div>
         <div class="games-grid">
             <a href="play/human-in-the-loop/" class="game-card card-hitl">
                 <div class="game-card-inner">
