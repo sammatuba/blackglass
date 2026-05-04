@@ -2,9 +2,9 @@
 
 > **A living record.** Each guideline names a rule, the *why* behind it, *how* to apply, and the reference work(s) that taught it. Override when craft demands. If you override more than twice, the guideline needs editing, not dodging.
 >
-> **First seeded:** 2026-04-19, Phase 3 of the game-inspiration cross-reading — eleven rules distilled from six reference works. Evidence lives in [`../../research/game-inspiration/_synthesis.md`](../../research/game-inspiration/_synthesis.md).
+> **First seeded:** 2026-04-19, Phase 3 of the game-inspiration cross-reading — eleven rules distilled from six reference works. Evidence lives in [`../../../research/game-inspiration/_synthesis.md`](../../../research/game-inspiration/_synthesis.md).
 >
-> Sits alongside [`world/guardrails.md`](../../world/guardrails.md) (ethics of depicting deception) and other docs under `craft/design/` (specific mechanics).
+> Sits alongside [`../../../world/guardrails.md`](../../../world/guardrails.md) (ethics of depicting deception) and the sibling docs in `_meta/` (Ink design foundation, full design bible, blueprints, editorial commentary).
 
 ## Orientation
 
