@@ -2,7 +2,7 @@
 
 Phase 1 established the seven-lens framework. Phase 2 analysed each game on its own terms, refusing synthesis. This phase re-reads the six through **the work's specific needs**: a character-led interactive narrative centered on Maya, set in the Philippines, concerning AI-mediated deception, built in Ink, aiming for a one-hour single-sitting first milestone.
 
-**Method.** For each game: what it *offers* (specific techniques or stances worth adopting), what it *warns* against (craft traps or ethical risks given our project), and the one guideline extracted from the pairing. Cross-game agreements round out the set. All distilled rules live in [`../../craft/design/guidelines.md`](../../craft/design/guidelines.md).
+**Method.** For each game: what it *offers* (specific techniques or stances worth adopting), what it *warns* against (craft traps or ethical risks given our project), and the one guideline extracted from the pairing. Cross-game agreements round out the set. All distilled rules live in [`../../craft/maya/_meta/craft-guidelines.md`](../../craft/maya/_meta/craft-guidelines.md).
 
 **Direction.** Re-read *the games through the work's light*, not the other way around. The goal is to avoid the overfit of *"the games we liked happen to be the ones we should copy."*
 
@@ -96,6 +96,6 @@ These are not dismissals — these are the parts of each work that belong to *th
 
 ## Outputs
 
-- **[`../../craft/design/guidelines.md`](../../craft/design/guidelines.md)** — the eleven guidelines distilled from this synthesis. Living document; additions come from playtesting and future cross-readings.
+- **[`../../craft/maya/_meta/craft-guidelines.md`](../../craft/maya/_meta/craft-guidelines.md)** — the eleven guidelines distilled from this synthesis. Living document; additions come from playtesting and future cross-readings.
 - **Per-game `analysis.md`** — the isolated reading that precedes this synthesis. Keep those; they are the evidence layer.
 - **[`_matrix.md`](_matrix.md)** — the at-a-glance comparative grid that made the cross-game patterns legible.

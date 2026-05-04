@@ -39,19 +39,26 @@ Pipeline flows down: research → world → craft → play. Each layer expands w
 - `guardrails.md` — ethical and creative boundaries for depicting deception
 
 **craft/**
-- `scripts/` — polished Ink scripts (Maya Act 1 scenes)
-- `drafts/` — multi-writer workshop outputs with editorial rankings
-- `design/` — game design bibles, Ink architecture, mechanic specs (literacy games + interactive fiction)
+- `maya/` — the IF (primary work)
+  - `arc.md` — the polished full-narrative reading layer (12 scenes, ~15K words)
+  - `_arc-act2-polished.md`, `_arc-act3-polished.md` — alt source prose for Acts 2 & 3
+  - `_handoff-template.md` — template for craft → play handoffs
+  - `_meta/` — cross-cutting writing notes: character baseline, continuity, editorial commentary, scene blueprints, Ink design foundation, craft guidelines, design bible
+  - `scenes/<NN>-<slug>/` — per-scene dossier: `drafts.md` (workshop output), `script.ink` (polished Ink), `handoff.md` (build note). See `maya/README.md` for scene-status table.
+- `literacy-games/` — supplementary work design docs (Bias Bounty, etc.)
 - `evaluation/` — eval frameworks, production feasibility, improvement guides
 
 **play/**
 - `shared/` — design system (`card-base.css`, `game-utils.js`)
+- `blackglass/` — IF web wrapper (consumes `craft/maya/` per scene handoffs)
 - `human-in-the-loop/` — flagship literacy game (v1.3)
 - `bias-bounty-lite/` — bias detection game (v1.1)
 - `hallucination-hunt/` — AI claim verification game
 - `risk-assessment-protocol/` — NIST RMF risk assessment game (v1.1)
 
-**archive/** — superseded eval reports, implementation summaries, historical process docs
+**archive/**
+- `maya/` — superseded scene drafts and revision notes for the IF
+- (root) — older eval reports, implementation summaries, historical process docs
 
 ---
 
@@ -150,6 +157,25 @@ Makes craft touchable. Builds interfaces, wires game logic, handles deployment.
 - No fetch() for local resources — `file://` compatible
 
 **Boundary:** Does not invent mechanics, rewrite narrative, or add unspecified features.
+
+---
+
+## Craft → Play handoff
+
+Writing and building often happen in different sessions (different models, different focus). To avoid re-deriving "what changed" each time, the writing session leaves a short handoff note when a scene or arc is revised.
+
+**Per-scene dossier — `craft/maya/scenes/<NN>-<slug>/`:**
+- `drafts.md` — multi-writer workshop output and editorial ranking (writing session works here first)
+- `script.ink` — polished Ink, the canonical scene source (writing session promotes drafts here)
+- `handoff.md` — what the build session needs to know: changed stitches, new flags, branch logic, stubs, build notes
+
+**The reading layer is `craft/maya/arc.md`** — the polished full-narrative the user reads end to end. When a scene is revised, the writing session updates both `script.ink` AND `arc.md` (prose) so the reading layer stays current. The status table in `craft/maya/README.md` tracks drift.
+
+**The build session reads `handoff.md` first**, opens `script.ink` only for prose, applies to `play/blackglass/story.js`, then updates the handoff's `status:` field to `applied`. For tiny edits (typo fixes, single-line tweaks), skip the handoff and direct the build session in chat.
+
+Template at `craft/maya/_handoff-template.md`. Notes are a contract, not a design doc — keep them short.
+
+**Why a note instead of auto-generated JS:** the engine's passage shape is still evolving while the writing is the bet. Coupling the writing session to the data shape now would slow both halves. The note is the seam.
 
 ---
 

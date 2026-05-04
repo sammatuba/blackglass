@@ -12,4 +12,4 @@ Scholarly foundations for AI literacy and safety education. Frameworks, pedagogy
 
 ## How these were used
 
-The research pipeline flowed: **frameworks → brainstorming → game design → simplification → production specs**. The framework analysis grounded the game concepts; the brainstorming report selected Bias Bounty Lite from 14 candidates; the simplification and production work now lives in `craft/design/`.
+The research pipeline flowed: **frameworks → brainstorming → game design → simplification → production specs**. The framework analysis grounded the game concepts; the brainstorming report selected Bias Bounty Lite from 14 candidates; the simplification and production work now lives in `craft/literacy-games/`.

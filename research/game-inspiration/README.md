@@ -50,7 +50,7 @@ Each game folder contains a per-game `analysis.md` (Phase 2, isolated reading by
 - **[`_matrix.md`](_matrix.md)** — at-a-glance comparative grid across all six works + cross-readings.
 - **[`_synthesis.md`](_synthesis.md)** — Phase 3 re-reading through the work's specific needs.
 - **[`_metrics/out/facts.md`](_metrics/out/facts.md)** — corpus statistics (tokens, scenes, TTR, choice density, named entities).
-- **[`../../craft/design/guidelines.md`](../../craft/design/guidelines.md)** — the living craft guidelines distilled from the synthesis.
+- **[`../../craft/maya/_meta/craft-guidelines.md`](../../craft/maya/_meta/craft-guidelines.md)** — the living craft guidelines distilled from the synthesis.
 
 ## Games covered
 

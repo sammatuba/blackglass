@@ -123,5 +123,5 @@ A self-sufficient reader's guide to the six interactive-fiction works in this co
 ## How to use this document
 
 - **Before reading a per-game `analysis.md`** — read the relevant section here to have the material in mind when the analysis starts making craft claims about it.
-- **Before writing** — skim the sections for the three or four works whose moves feel closest to what the scene needs. The [`guidelines.md`](../../craft/design/guidelines.md) rules cite these works by name; this document is where you refresh the context behind the citation.
+- **Before writing** — skim the sections for the three or four works whose moves feel closest to what the scene needs. The [`craft-guidelines.md`](../../craft/maya/_meta/craft-guidelines.md) rules cite these works by name; this document is where you refresh the context behind the citation.
 - **When evaluating craft claims** — remember the corpus asymmetries. Sir Brante's main prose lives beyond our resolver. Omen Exitio's branching scene bodies are only partially visible to us. Grotto's strings harvester is ~10–20 % noisy. Tails Noir's topology is unmeasurable. Claims grounded in corpus are strongest; `[craft-memory]`-flagged claims are still load-bearing but less verifiable. The [`_framework.md`](_framework.md) three refusals govern.
