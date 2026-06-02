@@ -3,6 +3,7 @@ window.ARTIFACTS = {
   "kangkong-clickbait": {
     "title": "The link",
     "what": "The clickbait preview that started in the family GC — the gift everyone forwarded.",
+    "anchor": "kangkong",
     "file": "assets/kangkong-clickbait.png",
     "kind": "link",
     "aspect": "4:3",
@@ -34,6 +35,7 @@ window.ARTIFACTS = {
   "ampalaya-clickbait": {
     "title": "The sibling",
     "what": "Same template, different vegetable. Proof it's a factory, not a finding.",
+    "anchor": "kangkong",
     "file": "assets/ampalaya-clickbait.png",
     "kind": "link",
     "aspect": "4:3",
@@ -51,6 +53,7 @@ window.ARTIFACTS = {
   "malunggay-clickbait": {
     "title": "The batch",
     "what": "A third one. The template is the product; the vegetable is just the variable.",
+    "anchor": "kangkong",
     "file": "assets/malunggay-clickbait.png",
     "kind": "link",
     "aspect": "4:3",
@@ -68,6 +71,7 @@ window.ARTIFACTS = {
   "dr-anita-still": {
     "title": "The debunker",
     "what": "The AI 'fact-checker' that fooled the one person who was right about everything else.",
+    "anchor": "kangkong",
     "file": "assets/dr-anita-still.png",
     "kind": "video",
     "aspect": "9:16",
@@ -99,6 +103,7 @@ window.ARTIFACTS = {
   "dr-anita-outro": {
     "title": "The last ten seconds",
     "what": "Where the debunk quietly becomes a funnel — the part nobody watches.",
+    "anchor": "kangkong",
     "file": "assets/dr-anita-outro.png",
     "kind": "video",
     "aspect": "9:16",
@@ -112,6 +117,38 @@ window.ARTIFACTS = {
         "y": 0.55
       }
     ]
+  },
+  "clone-accident-photo": {
+    "title": "The proof photo",
+    "what": "The image the cloned voice sends to make the accident real — generated, like the voice itself.",
+    "anchor": "voiceclone",
+    "file": "assets/clone-accident-photo.png",
+    "kind": "photo",
+    "aspect": "4:3",
+    "fallback": "photo-frame",
+    "tells": [
+      {
+        "id": "garbled-plate",
+        "label": "A plate that won't resolve",
+        "detail": "The license plate smears into nonsense — the one detail that could be verified is the one the generator can't render. Real proof has a readable plate.",
+        "x": 0.46,
+        "y": 0.62
+      },
+      {
+        "id": "melted-signage",
+        "label": "Signage that says nothing",
+        "detail": "The sari-sari store text in the background is warped gibberish — the hallmark of an image a machine invented rather than a camera captured.",
+        "x": 0.8,
+        "y": 0.3
+      },
+      {
+        "id": "rubber-metal",
+        "label": "Metal that bends like rubber",
+        "detail": "The dent folds too smoothly — real crumpled steel creases and tears. The 'damage' was imagined, not photographed.",
+        "x": 0.4,
+        "y": 0.5
+      }
+    ]
   }
 };
-window.ARTIFACTS_ORDER = ["kangkong-clickbait","ampalaya-clickbait","malunggay-clickbait","dr-anita-still","dr-anita-outro"];
+window.ARTIFACTS_ORDER = ["kangkong-clickbait","ampalaya-clickbait","malunggay-clickbait","dr-anita-still","dr-anita-outro","clone-accident-photo"];

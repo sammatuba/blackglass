@@ -222,6 +222,7 @@ async function emitArtifactsJs(manifest) {
     map[a.id] = {
       title: a.title || a.id,
       what: a.what || '',
+      anchor: a.anchor || 'kangkong',
       file: 'assets/' + a.file,
       kind: a.kind,
       aspect: a.aspect || null,

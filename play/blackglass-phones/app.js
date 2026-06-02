@@ -378,6 +378,7 @@
       case 'notif': return renderNotif(b);
       case 'video': return renderVideo(b);
       case 'gallery': return renderGallery(b);
+      case 'photo': return renderPhoto(b);
       case 'call': return renderCall(b);
       case 'transfer': return renderTransfer(b);
       case 'app': return renderAppHead(b.appHead);
@@ -442,6 +443,19 @@
       wrap.appendChild(tile);
     });
     return wrap;
+  }
+
+  function renderPhoto(b) {
+    const row = el('div', `msg ${b.side === 'out' ? 'out' : 'in'} photo-msg`);
+    const meta = [b.sender, b.time].filter(Boolean).join(' · ');
+    const art = artifact(b.artifact);
+    const img = (art && art.file)
+      ? `<img class="photo-img" src="${art.file}" alt="" loading="lazy"
+            onerror="this.closest('.photo-msg').classList.add('noimg');this.remove();">`
+      : '';
+    row.innerHTML = `${meta ? `<div class="msg-meta">${meta}</div>` : ''}
+      <div class="bubble photo-bubble"><div class="photo-frame">${img}<div class="photo-ph"></div></div>${b.caption ? `<div class="photo-cap">${b.caption}</div>` : ''}</div>`;
+    return row;
   }
 
   function renderNotif(b) {
@@ -697,11 +711,15 @@
     'slowly this time. Tap a mark to see what nobody stopped to notice.';
 
   function hasArtifacts() {
-    return !!(window.ARTIFACTS && Object.keys(window.ARTIFACTS).length);
+    if (!window.ARTIFACTS) return false;
+    return Object.values(window.ARTIFACTS).some((a) => a.anchor === A.id && (a.tells || []).length);
   }
   function examineOrder() {
     const order = window.ARTIFACTS_ORDER || Object.keys(window.ARTIFACTS || {});
-    return order.filter((id) => window.ARTIFACTS && window.ARTIFACTS[id] && (window.ARTIFACTS[id].tells || []).length);
+    return order.filter((id) => {
+      const a = window.ARTIFACTS && window.ARTIFACTS[id];
+      return a && a.anchor === A.id && (a.tells || []).length;
+    });
   }
 
   function renderExamine() {

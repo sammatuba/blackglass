@@ -88,6 +88,24 @@
       "tells": [
         { "id": "the-funnel", "label": "The debunk is a funnel", "detail": "The last ten seconds — the part nobody watches — pivot to a newsletter and a link. The 'public service' has a revenue model. That's what it was for.", "x": 0.5, "y": 0.55 }
       ]
+    },
+    {
+      "id": "clone-accident-photo",
+      "title": "The proof photo",
+      "what": "The image the cloned voice sends to make the accident real — generated, like the voice itself.",
+      "anchor": "voiceclone",
+      "file": "clone-accident-photo.png",
+      "kind": "photo",
+      "aspect": "4:3",
+      "size": "1200x900",
+      "fallback": "photo-frame",
+      "prompt": "A blurry, hastily-taken night-time phone photo of a minor car fender-bender on a Manila street — a scuffed and dented rear bumper of a sedan under sodium streetlight, another car's headlights flaring, wet asphalt reflections, a sliver of a sari-sari store and tangled overhead wires in the background. Looks like a panicked snapshot sent as 'proof.' Photographic, low light, slight motion blur.",
+      "tellsNote": "Realistic-but-flawed AI tells: the license plate is warped/garbled and unreadable; background store signage is melted nonsense text; a reflection or shadow falls the wrong way; the dented metal bends like rubber, not crumpled steel. No real plate number, no real store name.",
+      "tells": [
+        { "id": "garbled-plate", "label": "A plate that won't resolve", "detail": "The license plate smears into nonsense — the one detail that could be verified is the one the generator can't render. Real proof has a readable plate.", "x": 0.46, "y": 0.62 },
+        { "id": "melted-signage", "label": "Signage that says nothing", "detail": "The sari-sari store text in the background is warped gibberish — the hallmark of an image a machine invented rather than a camera captured.", "x": 0.8, "y": 0.3 },
+        { "id": "rubber-metal", "label": "Metal that bends like rubber", "detail": "The dent folds too smoothly — real crumpled steel creases and tears. The 'damage' was imagined, not photographed.", "x": 0.4, "y": 0.5 }
+      ]
     }
   ]
 }

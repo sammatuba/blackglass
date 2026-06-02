@@ -734,8 +734,10 @@ window.PHONES = (function () {
             'It’s him.',
           ]},
           { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:03 PM', text: 'Tita sorry, here’s the number. GCash lang po — 0915-•••-••••. Yung ₱18,500. I’ll send it back this week, swear.' },
-          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', text: 'Please po. Nag-aalala na ako dito.' },
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', text: 'Please po. Nag-aalala na ako dito. Eto yung damage, ayaw makinig nung tao.' },
+          { t: 'photo', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', artifact: 'clone-accident-photo' },
           { t: 'narr', text: [
+            'A photo, too. A dented bumper under a streetlight, headlights flaring, wet road. Proof. You don’t look at it long — you don’t need to. You believe the voice; the photo is just the voice, holding something up.',
             'Fender-bender. The other driver. ₱18,500. Tonight. He didn’t call Mama because he doesn’t want her to worry — he called <em>you,</em> because you’re the one who doesn’t panic. The one who helps quietly.',
           ]},
         ],
@@ -1164,7 +1166,7 @@ window.PHONES = (function () {
         timeline: TIMELINE_VC,
         reflection: REFLECTION_VC,
         silentWitness: SILENT_VC,
-        examine: false,
+        examine: true,
       },
     },
   };
