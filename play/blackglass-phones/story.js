@@ -728,17 +728,18 @@ window.PHONES = (function () {
         beats: [
           { t: 'voice', side: 'in', sender: 'Kuya Renz', time: '8:02 PM', secs: 34 },
           { t: 'narr', text: ['You tap play before you decide to. You hold the phone close.'] },
-          { t: 'aside', text: '“Tita, hi — naku, sorry ha… I got into a fender-bender kanina, nothing serious, I’m fine, pero the other driver is making it a whole thing… he’s gonna press charges kung hindi kami mag-settle ngayon… ₱18,500… my phone is dying, I’m at 3%… Can you GCash me?… Wag muna sabihin kay Mama, please, ayoko silang mag-alala…”' },
+          { t: 'aside', text: '“Tita, hi, naku — sorry ha, I know it’s late, I just— okay so, I got into a fender-bender kanina, I’m fine, I’m fine, pero the other driver won’t let it go, sabi niya he’ll press charges kung hindi kami mag-settle tonight, and I don’t have it on me, my phone’s at three percent, I can’t even get to a charger — can you GCash me? Please? I’ll pay you back this week, promise. And Tita… wag muna kay Mama ha, ayoko siyang mag-alala, please lang po.”' },
           { t: 'narr', text: [
             'His voice. The way he says <em>naku</em> — the little laugh-sigh he does when something goes wrong. The breathing. The talking-fast he does when he’s stressed. You have known this boy since he was ten.',
+            'You feel the smile start before you feel the worry. That is the order it comes in — him first, then the trouble. By the time the trouble lands, you have already decided it is him.',
             'It’s him.',
           ]},
           { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:03 PM', text: 'Tita sorry, here’s the number. GCash lang po — 0915-•••-••••. Yung ₱18,500. I’ll send it back this week, swear.' },
           { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', text: 'Please po. Nag-aalala na ako dito. Eto yung damage, ayaw makinig nung tao.' },
           { t: 'photo', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', artifact: 'clone-accident-photo' },
           { t: 'narr', text: [
-            'A photo, too. A dented bumper under a streetlight, headlights flaring, wet road. Proof. You don’t look at it long — you don’t need to. You believe the voice; the photo is just the voice, holding something up.',
-            'Fender-bender. The other driver. ₱18,500. Tonight. He didn’t call Mama because he doesn’t want her to worry — he called <em>you,</em> because you’re the one who doesn’t panic. The one who helps quietly.',
+            'A photo, too. Proof. You don’t look at it long — you don’t need to. You believe the voice; the photo is just the voice, holding something up where you can see it.',
+            'He didn’t call Mama because he doesn’t want her to worry. He called <em>you</em> — because you’re the one who doesn’t panic, the one who helps quietly. That, too, you believe, because it is the truest thing anyone has ever said about you.',
           ]},
         ],
         continueLabel: 'And so —',

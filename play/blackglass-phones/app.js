@@ -484,7 +484,7 @@
       <div class="tr-head"><span class="tr-app">GCash</span><span class="tr-status">${done ? '✓ Sent' : 'Send Money'}</span></div>
       <div class="tr-amt">₱${b.amount}</div>
       <div class="tr-to">to ${b.to}</div>
-      <div class="tr-bal">Balance ${done ? 'now' : ''} ₱${b.balance}</div>
+      <div class="tr-bal">Balance${done ? ' now' : ''} ₱${b.balance}</div>
     `;
     return c;
   }
