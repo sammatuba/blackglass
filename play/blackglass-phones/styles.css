@@ -436,6 +436,15 @@ button { font-family: inherit; cursor: pointer; }
 .link-title { font-family: var(--sans); font-size: 13px; font-weight: 700; line-height: 1.35; color: var(--screen-ink); }
 .link-domain { font-family: var(--mono); font-size: 11px; color: #d23b3b; margin-top: 6px; letter-spacing: 0.02em; }
 
+/* week header — the five-week drift arc */
+.weekhead {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  margin: 2px 0 16px; padding-bottom: 11px; border-bottom: 1px solid var(--hairline);
+}
+.wh-week { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--screen-ink); }
+.wh-date { font-size: 11.5px; color: var(--screen-faint); letter-spacing: 0.02em; }
+.wh-stat { font-family: var(--mono); font-size: 10.5px; color: var(--accent); margin-left: auto; letter-spacing: 0.02em; }
+
 /* photo message — the AI "proof" image the clone sends */
 .photo-bubble { padding: 4px; }
 .photo-frame {

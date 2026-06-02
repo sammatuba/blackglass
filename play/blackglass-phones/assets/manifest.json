@@ -106,6 +106,24 @@
         { "id": "melted-signage", "label": "Signage that says nothing", "detail": "The sari-sari store text in the background is warped gibberish — the hallmark of an image a machine invented rather than a camera captured.", "x": 0.8, "y": 0.3 },
         { "id": "rubber-metal", "label": "Metal that bends like rubber", "detail": "The dent folds too smoothly — real crumpled steel creases and tears. The 'damage' was imagined, not photographed.", "x": 0.4, "y": 0.5 }
       ]
+    },
+    {
+      "id": "tito-mike-deepfake",
+      "title": "The endorsement",
+      "what": "The deepfake of a trusted face — the video a whole family believed on sight.",
+      "anchor": "deepfake",
+      "file": "tito-mike-deepfake.png",
+      "kind": "video",
+      "aspect": "9:16",
+      "size": "900x1600",
+      "fallback": "video-card",
+      "prompt": "A vertical screen-grab of a fictional Filipino evening-news anchor — a distinguished, grandfatherly man in his early 60s in a dark suit, seated at a glossy news desk with a softly blurred blue studio and a Philippine flag behind him, warm trustworthy broadcast lighting. He is mid-sentence, addressing the camera with calm authority. Leave clean lower-third space for a caption the app adds. A composite, fictional anchor resembling no real person.",
+      "tellsNote": "Realistic-but-flawed deepfake tells: mouth caught slightly mid-phoneme so it won't quite match a natural rest; a faint seam at the jawline/neck where a face-swap blends; eyes a touch too symmetric and glassy; a small official-looking corner 'government seal' that is subtly garbled/melted and unreadable. Do NOT reproduce any real broadcaster logo or real government seal.",
+      "tells": [
+        { "id": "mouth-phoneme", "label": "A mouth a half-beat behind", "detail": "Freeze the frame and his lips don't quite land on the word — the sync drifts by a fraction. The face looks real; the speech was puppeted onto it.", "x": 0.5, "y": 0.46 },
+        { "id": "melted-seal", "label": "A seal that says nothing", "detail": "The 'government seal' in the corner is a melted, unreadable graphic — official from across the room, gibberish up close. No real agency issued it.", "x": 0.8, "y": 0.2 },
+        { "id": "glassy-symmetry", "label": "A face too even to be a face", "detail": "The gaze is a touch too symmetric, the jawline too smooth — the tells of a face generated or swapped, not filmed.", "x": 0.5, "y": 0.3 }
+      ]
     }
   ]
 }

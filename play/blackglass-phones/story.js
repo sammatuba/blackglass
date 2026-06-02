@@ -205,6 +205,7 @@ window.PHONES = (function () {
           { t: 'narr', text: [
             'You lock the phone. The kettle is somewhere near boiling.',
             'You knew what the link was the whole time. Knowing did not stop the link. Knowing only let you watch yourself, in good resolution, not stopping it either.',
+            'You wanted, this morning, to be a little better than you were yesterday. You are so tired of wanting that — and tired, too, of how the wanting never quite becomes the doing.',
           ]},
           { t: 'end', kind: 'maya' },
         ],
@@ -1143,10 +1144,544 @@ window.PHONES = (function () {
       'We were taught to trust a voice because a voice could only come from someone we love. That is no longer true. The colder new rule: when an emergency punishes you for pausing, the pause is the point.',
   };
 
+  /* ==================================================================
+     ANCHOR 3 — "GUARANTEED" — the deepfake-endorsement scam
+     A Sunday. A deepfake of the most-trusted face on television endorses
+     a guaranteed-return investment. The lesson the first two don't reach:
+     synthetic media's real product is doubt — the liar's dividend.
+  ================================================================== */
+  const ANCHOR_DF = {
+    title: 'GUARANTEED',
+    subtitle: 'One Afternoon',
+    blurb:
+      'A Sunday. A video of the most trusted face on television, promising a ' +
+      'way out — for Papa, for the family. Three phones, and the afternoon a ' +
+      'fake taught a family to doubt the real.',
+    question: 'What is a face worth, now?',
+  };
+
+  /* — TITA MERLY · his face, so it’s true — */
+  const TITA_DF = {
+    id: 'tita', name: 'Tita Merly', role: 'QC · the video reaches her first',
+    verb: 'FORWARD',
+    essence: 'Thirty years of trusting that face at 6pm. The face is all the proof a blessing needs.',
+    lesson: 'A trusted face was the lock. Now anyone has the key.',
+    theme: 'tita',
+    lock: { time: '2:14', meridiem: 'PM', day: 'Sunday', wallpaper: 'lastsupper', wallpaperNote: TITA.lock.wallpaperNote, brightness: 100 },
+    home: TITA.home,
+    flow: [
+      {
+        beats: [
+          { t: 'world', text: [
+            'Sunday afternoon. The kitchen is clean, Papa is napping, the TV is still on Channel 2 out of thirty years of habit. The afternoon stretches the gentle way Sundays do — mass done, lunch settled, the fan turning.',
+            'The phone chimes. Not the short ping — the rounder Viber sound.',
+          ]},
+          { t: 'sys', text: '💜 Viber — Auntie Linda (Prayer Group) sent a video · 2:14 PM' },
+          { t: 'narr', text: ['Auntie Linda. Your seatmate at Saturday mass, the one who always has a candle ready when yours won’t light. You open it before you think about it.'] },
+        ],
+        continueLabel: 'Open Viber',
+      },
+      {
+        app: { icon: '💜', name: 'Viber', chat: 'Auntie Linda', sub: 'prayer group · since the parish fair' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Auntie Linda', time: '2:14 PM', text: 'Merly sis, WATCH THIS!!! Si Tito Mike Velasco oh 🙏 Bagong programa daw for seniors and OFWs, government-partnered. Share ko kasi alam kong may pinaplano kayo for Papa’s fund 💕' },
+          { t: 'video', artifact: 'tito-mike-deepfake', creator: 'AngatPinas Invest ✓', sub: 'government-partnered', caption: 'Tito Mike Velasco: “Guaranteed 30% return in 30 days — SEC-approved.”', views: '847K', tag: 'GUARANTEED' },
+          { t: 'narr', text: [
+            'You tap it without hesitating. It’s Tito Mike. You would know that face anywhere.',
+            'His voice. Steady. The same voice that read you the news every evening for thirty years — EDSA, Yolanda, every storm, every time the country held its breath. He told you when to evacuate. He has never lied to you.',
+          ]},
+          { t: 'aside', text: '“…sa partnership ng gobyerno at private sector — <em>guaranteed</em> 30% return in 30 days, SEC-approved, insured. Minimum ₱5,000 lang. Para sa kinabukasan ng pamilya. Para sa medical fund. Para sa mga pangarap na matagal nang naghihintay…”' },
+          { t: 'narr', text: [
+            '<em>Medical fund.</em> You think of Papa. The checkup next month. The maintenance medicines that keep getting more expensive. The worry that lives quietly in the back of your chest every time he coughs a little too long.',
+            'You play it again. Just to hear him say it.',
+          ]},
+          { t: 'msg', side: 'in', sender: 'Auntie Linda', time: '2:17 PM', text: 'Legit yan ha sis. Yung pamangkin ko sa US, mag-i-invest din next week. Share mo na rin sa pamilya niyo 🙏' },
+        ],
+        continueLabel: 'And so —',
+      },
+      {
+        choice: {
+          verb: 'FORWARD',
+          prompt: 'Tito Mike said it. The government seal is right there. What do you do?',
+          options: [
+            {
+              label: 'Forward to the family GC — “Para kay Papa”',
+              set: { df_tita: 'forward' },
+              say: [
+                { t: 'compose', side: 'out', sender: 'You', time: '2:30 PM', text: 'Mga pamangkin, tignan niyo ito. Para kay Papa. Si Tito Mike pa ang nag-endorso — government-partnered, SEC-approved. 30% in 30 days, ₱5,000 lang. Baka pwede natin i-pool for his medical fund? 🙏' },
+                { t: 'narr', text: ['You send it before you can second-guess. This is what family does — when you see something that can help, you share it. That is love. That is <em>malasakit.</em>'] },
+              ],
+            },
+            {
+              label: 'Ask your daughter in the US first',
+              set: { df_tita: 'asked' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '2:30 PM', text: 'Anak, can you check this? Government-backed daw, si Tito Mike ang nag-announce. Baka pwede for Papa’s medical fund?' },
+                { t: 'aside', text: 'It is 2:30 AM there. She is asleep. You will wait until tonight. But you have watched it twice — you already believe. If she says yes, you will be the one who brought this blessing to the family.' },
+              ],
+            },
+            {
+              label: 'Open the AngatPinas app — just to see',
+              set: { df_tita: 'opened' },
+              say: [
+                { t: 'sys', text: 'Opening angatpinas-invest.app …' },
+                { t: 'narr', text: ['The page that loads looks <em>official.</em> Blue and white and gold — the colors of trust. The seal again at the top. A button: REGISTER NOW. Below, smiling faces holding phones: <em>“Nabayaran ko na ang hospital bill ni Nanay. Salamat AngatPinas.”</em>'] },
+              ],
+            },
+          ],
+          footnote: 'There is no “is this real” here. His face <em>is</em> the real. That is what thirty years was for.',
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '🇬', name: 'AngatPinas Invest', chat: 'Register', sub: 'secure your future' },
+        beats: [
+          { t: 'aside', text: 'You have ₱12,000 in GCash right now — your daughter’s padala, for bills and groceries. Invest ₱5,000 and you still have ₱7,000 this month. And in 30 days, ₱6,500 back. That is not spending. That is <em>multiplying.</em> That is provision.' },
+          { t: 'narr', text: ['The button at the bottom says REGISTER NOW. ₱5,000 becomes ₱6,500. That is one month of Papa’s medicines.'] },
+        ],
+        choice: {
+          verb: 'FORWARD',
+          prompt: 'Register now? It’s Tito Mike. It’s the government. It’s a blessing.',
+          options: [
+            {
+              label: 'Reserve a slot — start the registration',
+              set: { df_tita_act: 'register' },
+              say: [
+                { t: 'sys', text: 'AngatPinas Invest · Registration — Name · GCash · Amount (min ₱5,000)' },
+                { t: 'narr', text: ['Your hands shake a little — not from fear, from <em>hope.</em> You have not felt this in a long time. You type your name. You open the dropdown and choose ₱5,000. Steady. Careful. This is not gambling. This is Tito Mike.'] },
+              ],
+            },
+            {
+              label: 'Wait — let the family decide together',
+              set: { df_tita_act: 'pool' },
+              say: [
+                { t: 'narr', text: ['You close the page — not because you doubt it, but because Papa’s fund belongs to all of you. Big decisions are family decisions.'] },
+                { t: 'compose', side: 'out', sender: 'You', time: '2:34 PM', text: 'Mga pamangkin, tignan niyo. Si Tito Mike ang nag-endorso, 30% in 30 days. Ano sa tingin niyo? Baka pwede i-pool for Papa 🙏' },
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        beats: [
+          { t: 'narr', text: [
+            'What you do not see — because you have no reason to look — is that Tito Mike never made this video. That his voice was built from thirty years of broadcasts someone fed to a machine. That the mouth you watched form the word <em>guaranteed</em> was not his mouth. That the government seal in the corner is three percent too bright, its sun-rays slightly melted — a tell, if you were looking for tells.',
+            'But you are not looking for tells. You are looking at the man who told you to evacuate before Yolanda. The man who has never lied to you. The man offering you a way to take care of Papa.',
+            'You are looking at love shaped like a video. And love, for you, has always been the proof.',
+          ]},
+          { t: 'end', kind: 'tita' },
+        ],
+      },
+    ],
+  };
+
+  /* — MAYA · you know, and you almost wish you didn’t — */
+  const MAYA_DF = {
+    id: 'maya', name: 'Maya', role: 'broke, and she clocks it on sight',
+    verb: 'DECIDE',
+    essence: 'Sees the deepfake in three seconds — and feels a small, ugly part of her wish it were real.',
+    lesson: 'A fake makes the truth expensive to say.',
+    theme: 'maya',
+    lock: { time: '3:20', meridiem: 'PM', day: 'Sunday', wallpaper: 'mtpulag', wallpaperNote: MAYA.lock.wallpaperNote, brightness: 15 },
+    home: MAYA.home,
+    flow: [
+      {
+        lock: true,
+        notifs: [
+          { app: 'Santos Family GC 🏠', text: 'Tita Merly: [video] “LOOK AT THIS!!!”', sub: '3:18 PM' },
+          { app: 'GCash', text: 'Balance ₱1,847.22', sub: 'client payment: still pending' },
+          { app: 'Bea 💛', text: '1 message' },
+        ],
+        beats: [
+          { t: 'narr', text: [
+            'The couch has that Sunday-afternoon gravity. You’ve been pretending to read a design article for forty minutes. Your phone is in your hand the way a rosary is in a lola’s.',
+            'It buzzes. The family GC, awake.',
+          ]},
+        ],
+        continueLabel: 'Open the GC',
+      },
+      {
+        app: { icon: '💬', name: 'Messenger', chat: 'Santos Family GC 🏠', sub: 'Mama · Tita Merly · Tita Peachy · Kuya Renz · You' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Tita Merly', time: '3:18 PM', text: 'LOOK AT THIS!!! Si Tito Mike pa mismo nag-announce! Para sa atin to mga kapatid 🙏💕' },
+          { t: 'video', artifact: 'tito-mike-deepfake', creator: 'AngatPinas Invest ✓', sub: 'shared by Auntie Linda', caption: 'GUARANTEED 30% in 30 days · government-backed', views: '847K', tag: 'GUARANTEED' },
+          { t: 'msg', side: 'in', sender: 'Mama', time: '3:23 PM', text: 'Si Tito Mike naman talaga yan diba? Parang totoo mukha' },
+          { t: 'narr', text: [
+            'You watch his mouth. The word <em>government</em> — his lips close a fraction too late. The sync is off by maybe two hundred milliseconds. Not enough to scream wrong. Just enough to itch.',
+            'You watch his blink. Metronomic. Every four seconds, exactly. Humans don’t blink like that — least of all Tito Mike, who you’ve seen interview presidents through a brownout. The testimonial faces in the b-roll are too smooth, one eye lower than the other.',
+            'You pause the video. You know what this is.',
+          ]},
+          { t: 'aside', text: 'Your GCash this morning was ₱1,847.22. The client who said “Friday” did not pay Friday. Papa’s cardiology follow-up is two weeks away — ₱12,000 before the prescriptions. And 30% of ₱5,000 is ₱1,500. Which is groceries. Or the electric. That thought sits in you like a stone.' },
+        ],
+        continueLabel: 'And so —',
+      },
+      {
+        choice: {
+          verb: 'DECIDE',
+          prompt: 'You know it’s fake. You also wish it weren’t. What do you do?',
+          options: [
+            {
+              label: 'Say it’s fake in the GC',
+              set: { df_maya: 'called' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '3:24 PM', text: 'guys this is a deepfake. Tito Mike didn’t make this. please don’t send money to that app 🙏' },
+                { t: 'msg', side: 'in', sender: 'Mama', time: '3:25 PM', text: 'Maya naman, parang totoo naman mukha. Bakit ka laging negative' },
+                { t: 'narr', text: ['And there it is. You are the one who killed the hope — in front of everyone, before they even got to hold it.'] },
+              ],
+            },
+            {
+              label: 'Ask Bea first — get cover before you wreck the hope',
+              set: { df_maya: 'bea' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '3:24 PM', text: 'is this one real??? tito mike velasco??? tita just posted it and my mom is already asking how to sign up' },
+                { t: 'narr', text: ['You send Bea the screenshot. You want someone else to say it first — because being right alone, here, costs more than being wrong together.'] },
+              ],
+            },
+            {
+              label: 'Click the link — maybe you’re wrong',
+              set: { df_maya: 'clicked' },
+              say: [
+                { t: 'narr', text: [
+                  'You know you’re not wrong. You tap it anyway — because “probably fake” is not “definitely fake,” and a part of you would rather be certain than right.',
+                  'The want taps for you. The page loads, official and gold, and you hate how much you wanted it to be real.',
+                ]},
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'Bea 💛', sub: 'since high school' },
+        beats: [
+          { t: 'aside', text: 'And still — what if the mouth thing is just compression. What if Auntie Linda really got paid. What if you’ve read too many scam threads and now you see ghosts in everything. Your certainty is not certainty anymore. It’s doubt wearing a skeptic’s voice.' },
+          { t: 'msg', side: 'in', sender: 'Bea 💛', time: '3:41 PM', text: 'FAKE. 100%. no SEC registration, the “government seal” is a melted logo, and “guaranteed 30%” is straight-up illegal in PH. it’s a deepfake — the mouth runs behind his words if you slow it down.' },
+          { t: 'narr', text: [
+            'You were right. You knew it on sight. And being right means you are the one who takes Papa’s hope away.',
+            'The fake didn’t have to fool you. It only had to make the truth expensive to say.',
+          ]},
+        ],
+        continueLabel: 'Lock the phone',
+      },
+      {
+        beats: [
+          { t: 'narr', text: [
+            'You lock the phone. You don’t put it down. You hold it, the screen dark, the glass warm.',
+            'You knew immediately. The knowing made you the villain in a room that only wanted to hope. The scam wasn’t built to fool you — it was built so that even when you weren’t fooled, it cost you everything to say so.',
+          ]},
+          { t: 'end', kind: 'maya' },
+        ],
+      },
+    ],
+  };
+
+  /* — BEA · right, outspread, disbelieved — */
+  const BEA_DF = {
+    id: 'bea', name: 'Bea', role: 'she has the receipts',
+    verb: 'CONSULT',
+    essence: 'Debunks it in minutes, with receipts. Loses anyway — to a commons the fake already poisoned.',
+    lesson: 'The liar’s dividend: once a face can be faked, the real face isn’t believed either.',
+    theme: 'bea',
+    lock: { time: '3:40', meridiem: 'PM', day: 'Sunday', wallpaper: 'tweet', wallpaperNote: BEA.lock.wallpaperNote, brightness: 90 },
+    home: BEA.home,
+    flow: [
+      {
+        home: true,
+        beats: [
+          { t: 'narr', text: ['The good kind of focus — Notion, Canva, the debunk doc. You opened that doc at 2:47 when Janine dropped the link in the council GC with “THIS ONE’S BIG.” You are very good at this.'] },
+          { t: 'aside', text: 'The council has been tracking AngatPinas for an hour — the deepfake of Tito Mike, the fake SEC claim, the “30% guaranteed.” You have the receipts loaded. You are 90% done with the debunk thread.' },
+          { t: 'notif', app: 'maya 4ever 💛', text: 'is this real??? tito mike velasco??? my mom’s already asking how to sign up', time: '3:40' },
+        ],
+        continueLabel: 'Open Maya',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'maya 4ever 💛', sub: 'since high school' },
+        beats: [
+          { t: 'msg', side: 'out', sender: 'You', time: '3:41 PM', text: 'FAKE. 100%. been tracking it for an hour, it’s all over the council feed.' },
+          { t: 'msg', side: 'out', sender: 'You', time: '3:41 PM', text: 'tell your tita: no SEC registration (i checked). the government seal is fake — a melted logo. “guaranteed 30%” is illegal in PH investment law. and it’s not tito mike. it’s a deepfake.' },
+          { t: 'sys', text: '📎 SEC.gov.ph — search: “AngatPinas Invest” → No results found.' },
+          { t: 'narr', text: ['You feel it — the small clean weight of being the person who knows. You paste the SEC screenshot. Receipt.'] },
+        ],
+        continueLabel: 'Post the thread',
+      },
+      {
+        app: { icon: '🧵', name: 'Threads', chat: '@beareyes.ph · 1,400 followers', sub: '' },
+        beats: [
+          { t: 'msg', side: 'out', sender: '@beareyes.ph', time: '3:58 PM', text: '🧵 THREAD: the “AngatPinas Invest” deepfake spreading on FB/TikTok right now. A fake Tito Mike Velasco endorsement targeting seniors + OFWs. Here’s how to spot it, and why it’s dangerous. [1/9]' },
+          { t: 'narr', text: ['You write the whole thing in six minutes. Nine posts, every claim sourced — SEC screenshot, fake-seal comparison, the mouth-lag gif. You post it.'] },
+          { t: 'sys', text: '23 likes · 41 likes · 4 reposts — climbing' },
+          { t: 'narr', text: ['The debunk is moving. Not as fast as the scam — the deepfake is at 480K views — but moving. You are making the correct information loud.'] },
+        ],
+        choice: {
+          verb: 'CONSULT',
+          prompt: 'The debunk is moving. The scam is moving faster. What do you do?',
+          options: [
+            {
+              label: 'Send Maya more receipts — the mouth-lag gif',
+              set: { df_bea: 'receipts' },
+              say: [ { t: 'narr', text: ['You send the gif, the SEC shot, the side-by-side. You are building a pile of evidence as if evidence were the same as belief.'] } ],
+            },
+            {
+              label: 'Check your reach',
+              set: { df_bea: 'reach' },
+              say: [ { t: 'narr', text: ['Reach: 8,432 accounts. The deepfake: 520K views. You do the math. <strong>1.6%.</strong> The correct information is moving. It is simply being outrun.'] } ],
+            },
+            {
+              label: 'Open the council — maybe someone has a better play',
+              set: { df_bea: 'council' },
+              say: [ { t: 'narr', text: ['Nico’s mom won’t believe him. Carla’s lolo already deposited ₱10K. You are reading a live feed of the debunk losing, in a dozen families at once.'] } ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'maya 4ever 💛', sub: '' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Maya 💛', time: '4:12 PM', text: 'tita peachy DM’d me: “Anak i know you mean well pero si Tito Mike mismo. And your friend — she’s not in finance diba? Baka di niya alam itong program kasi bago pa lang.”' },
+          { t: 'aside', text: 'The debunk didn’t land. It <em>bounced.</em> She saw the receipts and made the receipts the problem. You are being discounted in real time — not because you’re wrong, but because you’re young, because you’re “negative,” because Linda has twenty years and you have screenshots.' },
+          { t: 'msg', side: 'in', sender: 'Maya 💛', time: '4:20 PM', text: 'tita merly: “linda is my friend for 20 years, she wouldn’t lie to me”' },
+        ],
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '💬', name: 'Messenger', chat: 'maya 4ever 💛', sub: '' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Maya 💛', time: '4:38 PM', text: 'wait. look —' },
+          { t: 'sys', text: 'Papa Santos shared a link: SEC.gov.ph — “Advisory: Beware of Fake Investment Schemes.” / Papa Santos: FYI everyone, please read.' },
+          { t: 'msg', side: 'in', sender: 'Tita Merly (in the GC)', time: '4:38 PM', text: 'Anak san mo nakuha to? Paano natin alam kung totoo? Baka deepfake din yan 😅' },
+          { t: 'narr', text: [
+            'You stop breathing. A PDF, from the government’s own website. She is joking. She is also not joking.',
+          ]},
+          { t: 'aside', text: 'You understand it now. The scam’s product was never the deposits, or even the fake video. The product was the <em>doubt.</em> A deepfake doesn’t have to convince everyone it’s real — it only has to make everyone doubt what is. The fake was the seed; this is the fruit.' },
+          { t: 'narr', text: [
+            'You were right about everything. You lost anyway.',
+            'The game was never “prove it’s fake.” The game was “poison the commons so nothing can be proven” — and it won the moment his face appeared on the screen.',
+          ]},
+          { t: 'end', kind: 'bea' },
+        ],
+      },
+    ],
+  };
+
+  const TIMELINE_DF = {
+    title: 'The afternoon, all at once',
+    intro: 'One Sunday, three phones — and the moment a fake taught a family to disbelieve the real.',
+    events: [
+      { time: '2:14', who: 'tita', label: 'A prayer-group friend → Tita Merly',
+        text: 'The deepfake arrives wearing the most trusted face on television. Thirty years of Tito Mike at 6pm carry it past every defense she has.' },
+      { time: '2:30', who: 'tita', label: 'Tita Merly → the family GC',
+        text: '“Para kay Papa. Si Tito Mike pa ang nag-endorso.” The dream of provision does the rest. Seeing was her whole verification.' },
+      { time: '3:20', who: 'maya', label: 'Maya wakes to it',
+        dynamic: { key: 'df_maya',
+          fallback: 'She clocks the deepfake on sight — the mouth-lag, the blink — and clocks, too, the ₱1,500 it could be. For the first time her skepticism is fighting her own want.',
+          map: {
+            called: 'She says it in the GC — “this is a deepfake” — and is told she’s “laging negative.” She killed the hope before anyone got to hold it.',
+            bea: 'She forwards it to Bea instead of saying it herself — because being right alone, here, costs more than being wrong together.',
+            clicked: 'She taps the link she knows is a scam, because “probably fake” isn’t “definitely fake,” and a part of her would rather be certain than right.',
+          } },
+        text: 'She knows on sight — and almost wishes she didn’t.' },
+      { time: '3:58', who: 'bea', label: 'Bea’s debunk goes out',
+        text: 'Receipts, all real: no SEC record, the seal is melted, “guaranteed” is illegal. The thread climbs — and reaches a tenth of the scam’s audience.' },
+      { time: '4:12', who: 'bea', label: 'The receipts bounce',
+        text: '“She’s not in finance diba?” The debunk is discounted not for being wrong but for who’s holding it. “Linda has been my friend for 20 years.”' },
+      { time: '4:38', who: 'tita', label: 'The dividend lands',
+        text: 'Papa shares the <em>real</em> SEC advisory. Tita: “Baka deepfake din yan 😅.” The fake didn’t just sell a scam — it taught the family to disbelieve the truth.' },
+    ],
+    close: [
+      'The deepfake didn’t have to convince everyone it was real. It only had to make everyone doubt what is.',
+      'A face was the last thing we trusted on sight. Now the real face, the real warning, the real receipt — all deniable.',
+      'The scam was never the video. The scam was the doubt it left behind.',
+    ],
+  };
+
+  const REFLECTION_DF = {
+    title: 'What you carry forward',
+    cards: [
+      { who: 'tita', verb: 'FORWARD', line: 'A trusted face was the lock; now anyone has the key.',
+        body: 'Decades of justified trust in a public face became the exact surface the fake exploited. She didn’t fail by being naïve — she failed because seeing-is-believing was the whole foundation, and the technology made seeing meaningless.' },
+      { who: 'maya', verb: 'DECIDE', line: 'A fake makes the truth expensive to say.',
+        body: 'She clocked it instantly — and her own precarity, plus the social cost of being the killjoy, turned the truth-teller into the villain. The liar’s dividend doesn’t only poison the real; it taxes the people who defend it.' },
+      { who: 'bea', verb: 'CONSULT', line: 'The liar’s dividend.',
+        body: 'A technically perfect debunk lost to a poisoned commons. Once a face can be faked, the real face stops being believed too — and the fake’s gift to every liar after it is the right to call the truth a fake.' },
+    ],
+    coda:
+      'Seeing is no longer believing. The harder part: once that is true, not-seeing isn’t disbelieving either. A fake, loose in the world, hands every liar after it the same alibi — that the truth might be fake too.',
+  };
+
+  /* ==================================================================
+     ARC — "FIVE WEEKS" — Bea’s algorithmic capture (single phone)
+     No scam, no lie. One phone, five weeks, a feed that pays her a
+     little more each time she is a little less careful. Drift, not fork.
+  ================================================================== */
+  const ANCHOR_5W = {
+    title: 'FIVE WEEKS',
+    subtitle: 'One Feed',
+    blurb:
+      'No scam this time. No lie. One phone, five weeks, and a feed that pays ' +
+      'you a little more each time you’re a little less careful — until less ' +
+      'careful feels like clarity.',
+    question: 'Can you feel yourself changing?',
+  };
+
+  const BEA_5W = {
+    id: 'bea', name: 'Bea', role: 'the expert, five weeks later',
+    verb: 'SCROLL',
+    essence: 'She can name every mechanism of capture. Over five weeks, her own feed runs every one of them on her.',
+    lesson: 'Awareness is not immunity.',
+    theme: 'bea',
+    lock: { time: '9:14', meridiem: 'PM', day: 'Week 1', wallpaper: 'tweet', wallpaperNote: BEA.lock.wallpaperNote, brightness: 90 },
+    home: BEA.home,
+    flow: [
+      {
+        beats: [
+          { t: 'weekhead', week: 'Week 1', date: 'Feb 10–16', stat: '1,247 followers' },
+          { t: 'world', text: ['9:14 PM, a Tuesday. Laptop glow to your left, council GC to your right — but you’re here, on the feed, scrolling the way you always do after a long document review. Muscle memory for something easier than thinking.'] },
+          { t: 'narr', text: ['You posted something this afternoon. Between meetings, the kind of thing you’d normally just think and let dissolve. You typed it instead:'] },
+          { t: 'msg', side: 'out', sender: '@beareyes.ph', time: '2:41 PM', text: '“I did my own research” is not a synonym for media literacy. One is a process. The other is a vibes-based alibi.' },
+          { t: 'sys', text: '34 likes · 6 reposts · 2 quote-posts' },
+          { t: 'narr', text: ['You refresh. 38 now. The dopamine is small and clean, like the first sip of something cold. You’re already drafting the next one in your head.'] },
+          { t: 'aside', text: 'The careful version is true. The sharp version is shareable.' },
+        ],
+        choice: {
+          verb: 'SCROLL',
+          prompt: 'The next post. How do you write it?',
+          options: [
+            { label: 'Keep the caveats — nuance over performance', set: { w1: 'nuance' },
+              say: [ { t: 'narr', text: ['You write the careful version — three posts, two hedges, one “it’s complicated.” Honest. Yours. It gets 11 likes; the council hearts it. You close the app and finish your review.'] } ] },
+            { label: 'Cut the caveats — sharp is clarity', set: { w1: 'sharp' },
+              say: [ { t: 'narr', text: ['You trim it to one post. 72 likes by midnight. Someone quote-posts “PREACH.” You feel the difference between being heard and being right — and you tell yourself they’re the same thing.'] } ] },
+          ],
+        },
+        continueLabel: 'Week 2 →',
+      },
+      {
+        beats: [
+          { t: 'weekhead', week: 'Week 2', date: 'Feb 17–23', stat: '1,389 followers (+142)' },
+          { t: 'world', text: ['Wednesday night. You’re writing a thread about deepfakes — careful, cited, meant to inform. Halfway in you notice the gap: the version in your head, and the version that would actually <em>move.</em>'] },
+          { t: 'narr', text: ['You’ve been watching the numbers. Not obsessively. Just aware. Last week’s sharp post beat everything. This week’s careful infographic got 19 likes. The dunk on a bad take got 54.'] },
+          { t: 'aside', text: 'Clarity lands harder than complication. This is not a compromise. This is just economics.' },
+        ],
+        choice: {
+          verb: 'SCROLL',
+          prompt: 'The thread is too long. Too many “howevers.”',
+          options: [
+            { label: 'Keep the howevers — being right is the job', set: { w2: 'kept' },
+              say: [ { t: 'narr', text: ['Seven posts, three caveats, two citations. Good work. The work. The council says “so thorough!” 23 likes. You tell yourself reach isn’t the metric that matters.'] } ] },
+            { label: 'Cut the hedges — punchy is clarity', set: { w2: 'cut' },
+              say: [ { t: 'narr', text: ['You delete posts 5, 6, and 7. No “however.” Just the thing you believe, without the apology for believing it. 140 likes. Someone screenshots it: “why is this so hard to understand.” You don’t correct them. You repost.'] } ] },
+          ],
+        },
+        continueLabel: 'Week 3 →',
+      },
+      {
+        beats: [
+          { t: 'weekhead', week: 'Week 3', date: 'Feb 24 – Mar 2', stat: '1,688 followers (+299) · engagement +38%' },
+          { t: 'world', text: ['Sunday. The council GC links a thread by a researcher you used to follow — about voice-cloning safeguards. It’s fine. Competent. A little hedged. A little soft.'] },
+          { t: 'msg', side: 'in', sender: 'Janine · the council', time: '2:02 PM', text: 'interesting but idk, feels like he’s bothsidesing a threat-model issue?' },
+          { t: 'narr', text: ['He isn’t wrong. But he isn’t sharp — he’s doing the sound-balanced-instead-of-clear move. You know it. You used to make it.'] },
+          { t: 'aside', text: 'This is accountability, not cruelty. If you don’t name it, who will?' },
+        ],
+        choice: {
+          verb: 'SCROLL',
+          prompt: 'Quote-post a sharp correction, or sit it out?',
+          options: [
+            { label: 'Sit it out — he’s careful, not wrong', set: { w3: 'satout' },
+              say: [ { t: 'narr', text: ['You close the compose window. You heart Janine’s comment but add nothing. The thread scrolls past. Your follower count stays flat. You tell yourself this is fine.'] } ] },
+            { label: 'Quote-post the correction — clarity is the work', set: { w3: 'piled' },
+              say: [
+                { t: 'msg', side: 'out', sender: '@beareyes.ph', time: '2:14 PM', text: 'this is what epistemic cowardice looks like: pretending “balance” is the same as rigor. naming a threat is not extremism.' },
+                { t: 'sys', text: '280 likes · the council: 🔥 “SAY IT” · +89 followers' },
+                { t: 'narr', text: ['The researcher doesn’t reply. You tell yourself he’ll be fine. This is what accountability looks like.'] },
+              ] },
+          ],
+        },
+        continueLabel: 'Week 4 →',
+      },
+      {
+        beats: [
+          { t: 'weekhead', week: 'Week 4', date: 'Mar 3–9', stat: '2,104 followers (+416) · muted: 9' },
+          { t: 'world', text: ['Thursday. A stranger replies to an old thread with a good-faith complication — a “well, actually, in some cultural contexts” that is true, and beside the point.'] },
+          { t: 'narr', text: ['You read it twice. Not wrong. Not helpful. You hover over their username. You click <em>mute.</em>'] },
+          { t: 'aside', text: 'You’re not silencing them. They can still talk. You’re just making space for signal over noise.' },
+          { t: 'narr', text: ['You do it again the next day. And the day after. The ones who complicate without adding. Your feed is cleaner now. Sharper. Everyone visible seems to agree with you.'] },
+        ],
+        choice: {
+          verb: 'SCROLL',
+          prompt: 'Your muted list is growing. Open it?',
+          options: [
+            { label: 'Unmute a few — complication is part of the work', set: { w4: 'unmuted' },
+              say: [ { t: 'narr', text: ['You unmute three. One is annoying. One makes you rethink yesterday’s post. You tell yourself this is what intellectual honesty looks like: staying in the room with the complication.'] } ] },
+            { label: 'Leave them muted — clarity requires curation', set: { w4: 'muted' },
+              say: [ { t: 'narr', text: ['You close the list. They can still talk; you’re just not listening. This is not an echo chamber. This is curation. The signal is louder now.'] } ] },
+          ],
+        },
+        continueLabel: 'Week 5 →',
+      },
+      {
+        beats: [
+          { t: 'weekhead', week: 'Week 5', date: 'Mar 10–16', stat: '2,547 followers (+443) · engagement +52% vs Week 1' },
+          { t: 'world', text: ['Saturday, 2 PM. The Zoom green room. Seventy-three people registered. The deck on your screen reads: <strong>“Seeing Clearly: A Media Literacy Workshop.”</strong>'] },
+          { t: 'sys', text: 'Zoom · You’re live — 73 attendees' },
+          { t: 'narr', text: [
+            'You know the beats. Slide 4 is your favorite: <em>“Do not trust a source just because it confirms you.”</em> You believe this. You have always believed this.',
+            'You open: “Media literacy isn’t just spotting lies. It’s staying curious even when you think you already know.” Seventy-three people nod. The chat fills with <em>yes,</em> <em>thank you,</em> <em>this is so needed.</em>',
+          ]},
+          { t: 'aside', text: 'Your phone is face-down on the desk. Your last post has 140 likes. Your wallpaper still says <em>epistemic cowardice is choosing civility over clarity.</em> You spent five weeks cutting the hedges, muting the complications, mistaking the quiet for consensus, performing certainty because certainty performed — and you called all of it clarity. You called it the work.' },
+          { t: 'narr', text: [
+            'Slide 12: “If everyone you follow agrees with you, you’re not informed — you’re comfortable.” The chat says PREACH. Seventy-three people take notes.',
+            'You taught them to see clearly. You do not see yourself.',
+          ]},
+          { t: 'aside', text: 'The recognition is available. You do not have to take it.' },
+          { t: 'end', kind: 'bea' },
+        ],
+      },
+    ],
+  };
+
+  const TIMELINE_5W = {
+    title: 'What five weeks did',
+    intro: 'No single week was a lie. Here is the sum.',
+    events: [
+      { time: 'Wk 1', who: 'bea', label: 'The hit',
+        text: 'A sharp post outperformed everything careful you’d written. The first small reward — and the first lesson the feed taught you about yourself.' },
+      { time: 'Wk 2', who: 'bea', label: 'The trim',
+        text: 'The hedges started coming off — not because nuance stopped being true, but because it stopped performing.' },
+      { time: 'Wk 3', who: 'bea', label: 'The pile-on',
+        text: 'A dogpile had the numbers, so you joined it. It felt like accountability. It paid like applause.' },
+      { time: 'Wk 4', who: 'bea', label: 'The quiet',
+        dynamic: { key: 'w4',
+          fallback: 'You curated your feed until everyone left in it agreed with you, and called the quiet consensus.',
+          map: {
+            unmuted: 'You opened the muted list and let the complications back in — a small refusal. The feed noticed, and paid you a little less for it.',
+            muted: 'You muted the ones who complicated things until everyone left was nodding, and mistook the silence for being right.',
+          } },
+        text: 'You curated the feed until it agreed with you.' },
+      { time: 'Wk 5', who: 'bea', label: 'The webinar',
+        text: 'You taught a room to distrust the sources that confirm them — and could not see that you’d spent five weeks trusting yours.' },
+    ],
+    close: [
+      'No step was a lie. The sum is a stranger.',
+      'The feed never argued with you. It paid you — a little — each time you were a little less careful.',
+      'Until less careful felt like clarity, and clarity felt like you.',
+    ],
+  };
+
+  const REFLECTION_5W = {
+    title: 'What you carry forward',
+    cards: [
+      { who: 'bea', verb: 'SCROLL', line: 'Awareness is not immunity.',
+        body: 'She could name every mechanism of capture while being captured by it. The feed never lied — it rewarded her, a little, each time she chose the sharp version over the true one, until the sharp version felt like truth. Naming the trap is not the same as standing outside it.' },
+    ],
+    coda:
+      'Drift has no moment you can point to — that is what makes it drift. The other stories happen TO people, in an afternoon. This one happens AS you, over weeks. The only proof is that the person at the end would not recognise the person at the start.',
+  };
+
   return {
-    version: 2,
-    storeKey: 'cgAI_blackglass_phones_v2',
-    anchorOrder: ['kangkong', 'voiceclone'],
+    version: 3,
+    storeKey: 'cgAI_blackglass_phones_v3',
+    anchorOrder: ['kangkong', 'voiceclone', 'deepfake', 'fiveweeks'],
     anchors: {
       kangkong: {
         id: 'kangkong',
@@ -1168,6 +1703,26 @@ window.PHONES = (function () {
         reflection: REFLECTION_VC,
         silentWitness: SILENT_VC,
         examine: true,
+      },
+      deepfake: {
+        id: 'deepfake',
+        anchor: ANCHOR_DF,
+        entry: 'tita',
+        order: ['tita', 'maya', 'bea'],
+        phones: { tita: TITA_DF, maya: MAYA_DF, bea: BEA_DF },
+        timeline: TIMELINE_DF,
+        reflection: REFLECTION_DF,
+        examine: true,
+      },
+      fiveweeks: {
+        id: 'fiveweeks',
+        anchor: ANCHOR_5W,
+        entry: 'bea',
+        order: ['bea'],
+        phones: { bea: BEA_5W },
+        timeline: TIMELINE_5W,
+        reflection: REFLECTION_5W,
+        examine: false,
       },
     },
   };

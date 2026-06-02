@@ -149,6 +149,38 @@ window.ARTIFACTS = {
         "y": 0.5
       }
     ]
+  },
+  "tito-mike-deepfake": {
+    "title": "The endorsement",
+    "what": "The deepfake of a trusted face — the video a whole family believed on sight.",
+    "anchor": "deepfake",
+    "file": "assets/tito-mike-deepfake.png",
+    "kind": "video",
+    "aspect": "9:16",
+    "fallback": "video-card",
+    "tells": [
+      {
+        "id": "mouth-phoneme",
+        "label": "A mouth a half-beat behind",
+        "detail": "Freeze the frame and his lips don't quite land on the word — the sync drifts by a fraction. The face looks real; the speech was puppeted onto it.",
+        "x": 0.5,
+        "y": 0.46
+      },
+      {
+        "id": "melted-seal",
+        "label": "A seal that says nothing",
+        "detail": "The 'government seal' in the corner is a melted, unreadable graphic — official from across the room, gibberish up close. No real agency issued it.",
+        "x": 0.8,
+        "y": 0.2
+      },
+      {
+        "id": "glassy-symmetry",
+        "label": "A face too even to be a face",
+        "detail": "The gaze is a touch too symmetric, the jawline too smooth — the tells of a face generated or swapped, not filmed.",
+        "x": 0.5,
+        "y": 0.3
+      }
+    ]
   }
 };
-window.ARTIFACTS_ORDER = ["kangkong-clickbait","ampalaya-clickbait","malunggay-clickbait","dr-anita-still","dr-anita-outro","clone-accident-photo"];
+window.ARTIFACTS_ORDER = ["kangkong-clickbait","ampalaya-clickbait","malunggay-clickbait","dr-anita-still","dr-anita-outro","clone-accident-photo","tito-mike-deepfake"];

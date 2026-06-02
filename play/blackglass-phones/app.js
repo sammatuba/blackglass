@@ -71,8 +71,8 @@
     const head = el('div', 'rack-head');
     head.innerHTML = `
       <div class="rack-kicker">BLACKGLASS</div>
-      <h1 class="rack-title">Two ways to be fooled</h1>
-      <p class="rack-blurb">The same family, the same phones, two different stories. Each stands on its own — and each is a different way a machine can wear a face you trust.</p>
+      <h1 class="rack-title">Four ways to be fooled</h1>
+      <p class="rack-blurb">The same family, the same phones, four different stories. Each stands on its own — three are a machine wearing a face you trust; the last is the feed quietly reshaping the face that scrolls.</p>
     `;
     wrap.appendChild(head);
 
@@ -137,22 +137,27 @@
     wrap.appendChild(grid);
 
     const u = unit();
+    const single = A.order.length === 1;
     const entryName = PHONES_BY_ID[A.entry].name;
     const doneCount = A.order.filter(id => S().completed[id]).length;
     const hint = el('p', 'rack-hint');
     if (doneCount === 0) {
-      hint.innerHTML = `Start with ${entryName}. The others wake up once you’ve lived the ${u} from inside her phone.`;
+      hint.innerHTML = single
+        ? `One phone. Live it through, week by week.`
+        : `Start with ${entryName}. The others wake up once you’ve lived the ${u} from inside her phone.`;
     } else if (!allDone()) {
       hint.innerHTML = `${doneCount} of ${A.order.length} lived. Pick up another phone — order changes what you’ll feel.`;
     } else {
-      hint.innerHTML = `Three phones lived. Now see the one timeline none of them could.`;
+      hint.innerHTML = single
+        ? `Lived. Now see what it added up to.`
+        : `Three phones lived. Now see the one timeline none of them could.`;
     }
     wrap.appendChild(hint);
 
     /* epilogue entries once all done */
     if (allDone()) {
       const ep = el('div', 'rack-epilogue');
-      const tBtn = el('button', 'epi-btn primary', `<span class="epi-tag">↳</span> The ${u}, all at once`);
+      const tBtn = el('button', 'epi-btn primary', `<span class="epi-tag">↳</span> ${A.timeline.title}`);
       tBtn.addEventListener('click', renderTimeline);
       const rBtn = el('button', 'epi-btn', `<span class="epi-tag">✻</span> What you carry forward`);
       rBtn.addEventListener('click', renderReflection);
@@ -379,6 +384,7 @@
       case 'video': return renderVideo(b);
       case 'gallery': return renderGallery(b);
       case 'photo': return renderPhoto(b);
+      case 'weekhead': return renderWeekhead(b);
       case 'call': return renderCall(b);
       case 'transfer': return renderTransfer(b);
       case 'app': return renderAppHead(b.appHead);
@@ -443,6 +449,12 @@
       wrap.appendChild(tile);
     });
     return wrap;
+  }
+
+  function renderWeekhead(b) {
+    const c = el('div', 'weekhead');
+    c.innerHTML = `<span class="wh-week">${b.week}</span><span class="wh-date">${b.date || ''}</span>${b.stat ? `<span class="wh-stat">${b.stat}</span>` : ''}`;
+    return c;
   }
 
   function renderPhoto(b) {
@@ -557,15 +569,16 @@
     const wrap = el('div', 'end-foot');
     S().completed[p.id] = true; save();
     const justUnlocked = (p.id === A.entry);
-    const u = unit();
+    const single = A.order.length === 1;
+    const endLine = single ? 'five weeks on' : ('end of her ' + unit());
     wrap.innerHTML = `
       <div class="end-rule"></div>
       <div class="end-name">${p.name}</div>
-      <div class="end-line">end of her ${u}</div>
+      <div class="end-line">${endLine}</div>
       <div class="end-lesson">${p.lesson}</div>
     `;
     const btnRow = el('div', 'end-btns');
-    const back = el('button', 'continue-btn', allDone() ? `See the whole ${u}` : 'Back to the phones');
+    const back = el('button', 'continue-btn', allDone() ? A.timeline.title : 'Back to the phones');
     back.addEventListener('click', () => { if (allDone()) renderTimeline(); else renderRack(); });
     btnRow.appendChild(back);
     if (allDone()) {
