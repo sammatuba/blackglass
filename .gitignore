@@ -9,6 +9,14 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Secrets — API keys for the image-generation pipeline. NEVER commit.
+.env
+.env.*
+!.env.example
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
 # Dependencies (should never exist, but just in case)
 node_modules/
 

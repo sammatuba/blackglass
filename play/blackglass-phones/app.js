@@ -10,20 +10,37 @@
   'use strict';
 
   const DATA = window.PHONES;
-  const { phones: PHONES_BY_ID, order: ORDER, timeline: TIMELINE, reflection: REFLECTION, anchor: ANCHOR } = DATA;
   const STORE_KEY = DATA.storeKey;
+  const ANCHORS = DATA.anchors;
+  const ANCHOR_ORDER = DATA.anchorOrder || Object.keys(ANCHORS);
 
-  /* ---------------- state ---------------- */
-  function blankState() {
-    return { completed: {}, choices: {}, seenTimeline: false };
-  }
+  /* current anchor cursor (set by setAnchor) */
+  let A = null;            // the active anchor object
+  let PHONES_BY_ID = {};   // = A.phones
+
+  /* ---------------- state (namespaced per anchor) ---------------- */
+  function blankState() { return { anchors: {} }; }
   function load() {
-    try { const r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : blankState(); }
-    catch (e) { return blankState(); }
+    try {
+      const r = localStorage.getItem(STORE_KEY);
+      const s = r ? JSON.parse(r) : blankState();
+      if (!s.anchors) s.anchors = {};
+      return s;
+    } catch (e) { return blankState(); }
   }
   function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {} }
 
   let state = load();
+
+  /* per-anchor sub-state: { completed, choices, seenTimeline } */
+  function as(id) {
+    if (!state.anchors) state.anchors = {};
+    if (!state.anchors[id]) state.anchors[id] = { completed: {}, choices: {}, seenTimeline: false };
+    return state.anchors[id];
+  }
+  function S() { return as(A.id); }
+  function setAnchor(id) { A = ANCHORS[id]; PHONES_BY_ID = A.phones; }
+  function unit() { return (A.anchor.subtitle || 'Morning').replace(/^one\s+/i, '').toLowerCase(); }
 
   /* per-run cursor */
   let run = null; // { phone, frameIndex, endKind }
@@ -39,51 +56,113 @@
   }
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
 
-  function allDone() { return ORDER.every(id => state.completed[id]); }
-  function unlocked(id) { return id === 'maya' || !!state.completed.maya; }
-  function needsMet(needs) { return needs.every(id => state.completed[id]); }
+  function allDone() { return A.order.every(id => S().completed[id]); }
+  function unlocked(id) { return id === A.entry || !!S().completed[A.entry]; }
+  function needsMet(needs) { return needs.every(id => S().completed[id]); }
 
   /* =================================================================
-     RACK — the three phones on the desk
+     ANCHOR SELECT — choose which story (which morning/evening)
+  ================================================================= */
+  function renderAnchorSelect() {
+    run = null; A = null;
+    clear($app);
+    const wrap = el('div', 'rack anchors');
+
+    const head = el('div', 'rack-head');
+    head.innerHTML = `
+      <div class="rack-kicker">BLACKGLASS</div>
+      <h1 class="rack-title">Two ways to be fooled</h1>
+      <p class="rack-blurb">The same family, the same phones, two different stories. Each stands on its own — and each is a different way a machine can wear a face you trust.</p>
+    `;
+    wrap.appendChild(head);
+
+    const grid = el('div', 'anchor-grid');
+    ANCHOR_ORDER.forEach(id => grid.appendChild(anchorCard(id)));
+    wrap.appendChild(grid);
+
+    const foot = el('div', 'rack-foot');
+    const reset = el('button', 'linkish', 'Reset everything');
+    reset.addEventListener('click', () => {
+      if (confirm('Forget both stories and start over?')) { state = blankState(); save(); renderAnchorSelect(); }
+    });
+    foot.appendChild(reset);
+    wrap.appendChild(foot);
+
+    $app.appendChild(wrap);
+    $app.scrollTop = 0;
+  }
+
+  function anchorCard(id) {
+    const an = ANCHORS[id];
+    const st = as(id);
+    const done = an.order.filter(pid => st.completed[pid]).length;
+    const total = an.order.length;
+    const card = el('button', `anchor-card theme-${an.phones[an.entry].theme}`);
+    card.type = 'button';
+    card.innerHTML = `
+      <div class="an-kicker">${done === total ? '✓ lived' : done > 0 ? done + ' of ' + total + ' lived' : 'unplayed'}</div>
+      <div class="an-title">${an.anchor.title} <span>·</span> ${an.anchor.subtitle}</div>
+      <p class="an-blurb">${an.anchor.blurb}</p>
+      <div class="an-q">${an.anchor.question}</div>
+      <div class="an-go">${done === total ? 'Revisit →' : done > 0 ? 'Continue →' : 'Enter →'}</div>
+    `;
+    card.addEventListener('click', () => { setAnchor(id); renderRack(); });
+    return card;
+  }
+
+  /* =================================================================
+     RACK — the three phones for the current anchor
   ================================================================= */
   function renderRack() {
     run = null;
     clear($app);
     const wrap = el('div', 'rack');
 
+    const top = el('div', 'rack-top');
+    const toAnchors = el('button', 'linkish back-anchors', '‹ Both stories');
+    toAnchors.addEventListener('click', renderAnchorSelect);
+    top.appendChild(toAnchors);
+    wrap.appendChild(top);
+
     const head = el('div', 'rack-head');
     head.innerHTML = `
       <div class="rack-kicker">BLACKGLASS</div>
-      <h1 class="rack-title">${ANCHOR.title} <span>·</span> ${ANCHOR.subtitle}</h1>
-      <p class="rack-blurb">${ANCHOR.blurb}</p>
+      <h1 class="rack-title">${A.anchor.title} <span>·</span> ${A.anchor.subtitle}</h1>
+      <p class="rack-blurb">${A.anchor.blurb}</p>
     `;
     wrap.appendChild(head);
 
     const grid = el('div', 'rack-grid');
-    ORDER.forEach(id => grid.appendChild(rackCard(id)));
+    A.order.forEach(id => grid.appendChild(rackCard(id)));
     wrap.appendChild(grid);
 
-    /* progress / unlock hint */
-    const doneCount = ORDER.filter(id => state.completed[id]).length;
+    const u = unit();
+    const entryName = PHONES_BY_ID[A.entry].name;
+    const doneCount = A.order.filter(id => S().completed[id]).length;
     const hint = el('p', 'rack-hint');
     if (doneCount === 0) {
-      hint.innerHTML = 'Start with Maya. The others wake up once you’ve seen the morning from inside her phone.';
+      hint.innerHTML = `Start with ${entryName}. The others wake up once you’ve lived the ${u} from inside her phone.`;
     } else if (!allDone()) {
-      hint.innerHTML = `${doneCount} of 3 mornings lived. Pick up another phone — order changes what you’ll feel.`;
+      hint.innerHTML = `${doneCount} of ${A.order.length} lived. Pick up another phone — order changes what you’ll feel.`;
     } else {
-      hint.innerHTML = 'Three phones lived. Now see the one timeline none of them could.';
+      hint.innerHTML = `Three phones lived. Now see the one timeline none of them could.`;
     }
     wrap.appendChild(hint);
 
     /* epilogue entries once all done */
     if (allDone()) {
       const ep = el('div', 'rack-epilogue');
-      const tBtn = el('button', 'epi-btn primary', `<span class="epi-tag">↳</span> The morning, all at once`);
+      const tBtn = el('button', 'epi-btn primary', `<span class="epi-tag">↳</span> The ${u}, all at once`);
       tBtn.addEventListener('click', renderTimeline);
       const rBtn = el('button', 'epi-btn', `<span class="epi-tag">✻</span> What you carry forward`);
       rBtn.addEventListener('click', renderReflection);
       ep.appendChild(tBtn);
       ep.appendChild(rBtn);
+      if (A.examine && hasArtifacts()) {
+        const xBtn = el('button', 'epi-btn', `<span class="epi-tag">⌕</span> Look again — what fooled them`);
+        xBtn.addEventListener('click', renderExamine);
+        ep.appendChild(xBtn);
+      }
       wrap.appendChild(ep);
     }
 
@@ -91,20 +170,22 @@
     const foot = el('div', 'rack-foot');
     const reset = el('button', 'linkish', 'Reset everything');
     reset.addEventListener('click', () => {
-      if (confirm('Forget all three mornings and start over?')) {
-        state = blankState(); save(); renderRack();
+      if (confirm('Forget both stories and start over?')) {
+        state = blankState(); save(); renderAnchorSelect();
       }
     });
     foot.appendChild(reset);
     wrap.appendChild(foot);
 
     $app.appendChild(wrap);
+    $app.scrollTop = 0;
   }
 
   function rackCard(id) {
     const p = PHONES_BY_ID[id];
     const open = unlocked(id);
-    const done = !!state.completed[id];
+    const done = !!S().completed[id];
+    const entryName = PHONES_BY_ID[A.entry].name;
     const card = el('button', `rack-card theme-${p.theme}${open ? '' : ' locked'}${done ? ' done' : ''}`);
     card.type = 'button';
     card.disabled = !open;
@@ -119,9 +200,9 @@
       <div class="rack-card-body">
         <div class="rc-name">${p.name}</div>
         <div class="rc-verb">${p.verb}</div>
-        <div class="rc-essence">${open ? p.essence : 'Locked — play Maya first.'}</div>
+        <div class="rc-essence">${open ? p.essence : 'Locked — play ' + entryName + ' first.'}</div>
       </div>
-      <div class="rc-action">${open ? (done ? 'Replay her morning' : 'Pick up') : ''}</div>
+      <div class="rc-action">${open ? (done ? 'Replay' : 'Pick up') : ''}</div>
     `;
     if (open) card.addEventListener('click', () => startPhone(id));
     return card;
@@ -180,7 +261,7 @@
   }
 
   function renderFrame(f) {
-    if (f.set) { Object.assign(state.choices, f.set); save(); }
+    if (f.set) { Object.assign(S().choices, f.set); save(); }
     const screen = document.getElementById('screen');
     clear(screen);
 
@@ -296,6 +377,9 @@
       case 'voice': return renderVoice(b);
       case 'notif': return renderNotif(b);
       case 'video': return renderVideo(b);
+      case 'gallery': return renderGallery(b);
+      case 'call': return renderCall(b);
+      case 'transfer': return renderTransfer(b);
       case 'app': return renderAppHead(b.appHead);
       case 'recog-tag': return el('div', 'b-recog', `<div class="recog-mark">⟲ recognition</div>${b.text}`);
       default: return el('div', 'b-narr', `<p>${b.text || ''}</p>`);
@@ -314,13 +398,24 @@
     return row;
   }
 
+  function artifact(id) { return (id && window.ARTIFACTS && window.ARTIFACTS[id]) || null; }
+
   function renderLink(b) {
     const c = el('div', 'link-card');
+    const art = artifact(b.artifact);
+    if (art) { c.classList.add('has-art'); c.dataset.artifact = b.artifact; }
+    const banner = art
+      ? `<img class="link-banner" src="${art.file}" alt="" loading="lazy"
+            onerror="this.closest('.link-card').classList.add('noimg');this.remove();">`
+      : '';
     c.innerHTML = `
-      <div class="link-thumb"><span class="link-warn">!</span></div>
-      <div class="link-body">
-        <div class="link-title">${b.title}</div>
-        <div class="link-domain">${b.domain}</div>
+      ${banner}
+      <div class="link-row">
+        <div class="link-thumb"><span class="link-warn">!</span></div>
+        <div class="link-body">
+          <div class="link-title">${b.title}</div>
+          <div class="link-domain">${b.domain}</div>
+        </div>
       </div>
     `;
     return c;
@@ -335,16 +430,62 @@
     return row;
   }
 
+  function renderGallery(b) {
+    const wrap = el('div', 'art-gallery');
+    (b.artifacts || []).forEach(id => {
+      const art = artifact(id);
+      const tile = el('div', 'art-thumb');
+      if (art && art.file) {
+        tile.innerHTML = `<img src="${art.file}" alt="" loading="lazy"
+          onerror="this.closest('.art-thumb').classList.add('noimg');this.remove();">`;
+      }
+      wrap.appendChild(tile);
+    });
+    return wrap;
+  }
+
   function renderNotif(b) {
     const c = el('div', 'push-notif');
     c.innerHTML = `<div class="pn-app">${b.app}</div><div class="pn-text">${b.text}</div>${b.time ? `<div class="pn-time">${b.time}</div>` : ''}`;
     return c;
   }
 
+  function renderCall(b) {
+    const c = el('div', 'call-card' + (b.state === 'incoming' ? ' incoming' : ''));
+    const initial = (b.who || '?').trim().charAt(0);
+    c.innerHTML = `
+      <div class="call-top">${b.state === 'incoming' ? 'incoming call' : 'calling…'}</div>
+      <div class="call-avatar">${initial}</div>
+      <div class="call-who">${b.who || ''}</div>
+      <div class="call-sub">${b.sub || ''}</div>
+      <div class="call-actions"><span class="call-decline">✕</span><span class="call-accept">✆</span></div>
+    `;
+    return c;
+  }
+
+  function renderTransfer(b) {
+    const done = b.stage === 'done';
+    const c = el('div', 'transfer-card' + (done ? ' done' : ''));
+    c.innerHTML = `
+      <div class="tr-head"><span class="tr-app">GCash</span><span class="tr-status">${done ? '✓ Sent' : 'Send Money'}</span></div>
+      <div class="tr-amt">₱${b.amount}</div>
+      <div class="tr-to">to ${b.to}</div>
+      <div class="tr-bal">Balance ${done ? 'now' : ''} ₱${b.balance}</div>
+    `;
+    return c;
+  }
+
   function renderVideo(b) {
     const c = el('div', 'video-card');
+    const art = artifact(b.artifact);
+    if (art) { c.classList.add('has-art'); c.dataset.artifact = b.artifact; }
+    const still = art
+      ? `<img class="vc-still" src="${art.file}" alt="" loading="lazy"
+            onerror="this.closest('.video-card').classList.add('noimg');this.remove();"><div class="vc-scrim"></div>`
+      : '';
     c.innerHTML = `
       <div class="vc-frame">
+        ${still}
         <div class="vc-play">▶</div>
         ${b.tag ? `<div class="vc-tag">${b.tag}</div>` : ''}
         ${b.views ? `<div class="vc-views">▷ ${b.views}</div>` : ''}
@@ -378,7 +519,7 @@
   }
 
   function onChoose(opt, wrap, choice) {
-    if (opt.set) { Object.assign(state.choices, opt.set); save(); }
+    if (opt.set) { Object.assign(S().choices, opt.set); save(); }
     const screen = document.getElementById('screen');
     // replace the choice block with a chosen marker
     const chosen = el('div', 'chose', `<span class="chose-tag">${choice.verb}</span>${opt.label}`);
@@ -400,16 +541,17 @@
   function renderEndFooter(kind) {
     const p = PHONES_BY_ID[kind] || run.phone;
     const wrap = el('div', 'end-foot');
-    state.completed[p.id] = true; save();
-    const justUnlocked = (p.id === 'maya');
+    S().completed[p.id] = true; save();
+    const justUnlocked = (p.id === A.entry);
+    const u = unit();
     wrap.innerHTML = `
       <div class="end-rule"></div>
       <div class="end-name">${p.name}</div>
-      <div class="end-line">end of her morning</div>
+      <div class="end-line">end of her ${u}</div>
       <div class="end-lesson">${p.lesson}</div>
     `;
     const btnRow = el('div', 'end-btns');
-    const back = el('button', 'continue-btn', allDone() ? 'See the whole morning' : 'Back to the phones');
+    const back = el('button', 'continue-btn', allDone() ? `See the whole ${u}` : 'Back to the phones');
     back.addEventListener('click', () => { if (allDone()) renderTimeline(); else renderRack(); });
     btnRow.appendChild(back);
     if (allDone()) {
@@ -417,7 +559,8 @@
       r.addEventListener('click', renderRack);
       btnRow.appendChild(r);
     } else if (justUnlocked) {
-      wrap.appendChild(el('div', 'end-unlock', 'Tita Merly and Bea have woken up.'));
+      const others = A.order.filter(x => x !== A.entry).map(x => PHONES_BY_ID[x].name);
+      wrap.appendChild(el('div', 'end-unlock', others.join(' and ') + ' have woken up.'));
     }
     wrap.appendChild(btnRow);
     return wrap;
@@ -426,51 +569,66 @@
   function completePhone(kind) {
     // fallback: flow ended without an explicit end beat
     const p = PHONES_BY_ID[kind] || run.phone;
-    state.completed[p.id] = true; save();
+    S().completed[p.id] = true; save();
     renderRack();
   }
 
   /* =================================================================
      TIMELINE EPILOGUE
   ================================================================= */
-  function mayaDynamic(key) {
-    const c = state.choices.maya_choice;
-    const map = {
-      tapped: 'She taps the link anyway — “probably” misinformation is not “definitely,” and she would rather be certain than right.',
-      asked: 'She asks Tita where it came from, softened with an emoji so it reads as curiosity, not doubt — and gets a vouching chain back.',
-      hearted: 'She reacts ❤️ and scrolls past, adding her own name to the link — knowing, in the moment she taps it, exactly what the heart does downstream.',
-      filed: 'She screenshots it for Kuya Renz, turning the problem into a message she sent but didn’t have to send yet.',
-    };
-    return map[c] || 'She knows the template on sight — she has built it. Knowing is not the same as stopping.';
+  function resolveDynamic(ev) {
+    if (!ev.dynamic) return ev.text;
+    const d = ev.dynamic;
+    const v = S().choices[d.key];
+    return (d.map && d.map[v]) || d.fallback || ev.text;
+  }
+
+  function silentWitnessBlock(sw) {
+    const b = el('div', 'silent-witness rise');
+    b.innerHTML = `
+      <div class="sw-frame">
+        <div class="sw-back"></div>
+        <div class="sw-mute">missed calls</div>
+        <div class="sw-badge">14</div>
+      </div>
+      <div class="sw-body">
+        <div class="sw-meta">${sw.who} · ${sw.time}</div>
+        <div class="sw-title">${sw.label}</div>
+        ${sw.lines.map(l => `<p>${l}</p>`).join('')}
+      </div>
+    `;
+    return b;
   }
 
   function renderTimeline() {
-    state.seenTimeline = true; save();
+    S().seenTimeline = true; save();
     run = null;
     clear($app);
+    const TL = A.timeline;
     const wrap = el('div', 'epilogue');
-    wrap.appendChild(headerBlock(TIMELINE.title, TIMELINE.intro));
+    wrap.appendChild(headerBlock(TL.title, TL.intro));
 
     const line = el('div', 'timeline');
-    TIMELINE.events.forEach((ev, i) => {
+    TL.events.forEach((ev, i) => {
       const row = el('div', `tl-row theme-${ev.who}`);
-      const text = ev.dynamic ? mayaDynamic(ev.dynamic) : ev.text;
       row.innerHTML = `
         <div class="tl-rail"><span class="tl-time">${ev.time}</span><span class="tl-dot"></span></div>
         <div class="tl-card">
           <div class="tl-who">${PHONES_BY_ID[ev.who].name}</div>
           <div class="tl-label">${ev.label}</div>
-          <div class="tl-text">${text}</div>
+          <div class="tl-text">${resolveDynamic(ev)}</div>
         </div>
       `;
-      row.style.animationDelay = (i * 90) + 'ms';
+      row.style.animationDelay = (i * 80) + 'ms';
       row.classList.add('rise');
       line.appendChild(row);
     });
     wrap.appendChild(line);
 
+    if (A.silentWitness) wrap.appendChild(silentWitnessBlock(A.silentWitness));
+
     const close = el('div', 'epi-close');
-    close.innerHTML = TIMELINE.close.map((t, i) => `<p${i === TIMELINE.close.length - 1 ? ' class="punch"' : ''}>${t}</p>`).join('');
+    close.innerHTML = TL.close.map((t, i) => `<p${i === TL.close.length - 1 ? ' class="punch"' : ''}>${t}</p>`).join('');
     wrap.appendChild(close);
 
     const btns = el('div', 'epi-btns');
@@ -492,10 +650,10 @@
     run = null;
     clear($app);
     const wrap = el('div', 'epilogue reflection');
-    wrap.appendChild(headerBlock(REFLECTION.title, ''));
+    wrap.appendChild(headerBlock(A.reflection.title, ''));
 
     const cards = el('div', 'reflect-cards');
-    REFLECTION.cards.forEach((c, i) => {
+    A.reflection.cards.forEach((c, i) => {
       const card = el('div', `reflect-card theme-${c.who}`);
       card.innerHTML = `
         <div class="rf-top"><span class="rf-name">${PHONES_BY_ID[c.who].name}</span><span class="rf-verb">${c.verb}</span></div>
@@ -508,17 +666,121 @@
     });
     wrap.appendChild(cards);
 
-    const coda = el('div', 'reflect-coda', `<p>${REFLECTION.coda}</p>`);
+    const coda = el('div', 'reflect-coda', `<p>${A.reflection.coda}</p>`);
     wrap.appendChild(coda);
 
+    const showExamine = A.examine && hasArtifacts();
     const btns = el('div', 'epi-btns');
-    const back = el('button', 'continue-btn', 'Back to the phones');
+    if (showExamine) {
+      const x = el('button', 'continue-btn', 'Look again — what fooled them');
+      x.addEventListener('click', renderExamine);
+      btns.appendChild(x);
+    }
+    const back = el('button', showExamine ? 'linkish' : 'continue-btn', 'Back to the phones');
     back.addEventListener('click', renderRack);
     btns.appendChild(back);
     wrap.appendChild(btns);
 
     $app.appendChild(wrap);
     $app.scrollTop = 0;
+  }
+
+  /* =================================================================
+     EXAMINE — the tells-reveal. The AI artifacts, looked at slowly.
+     Each was built to be believed; here the planted tells become
+     visible. This is the pedagogical payload: the synthetic image,
+     turned into the teaching surface.
+  ================================================================= */
+  const EXAMINE_INTRO =
+    'These are the artifacts — the things on the glass that did the convincing. ' +
+    'Each was made by a machine to be believed, and believed it was. Look again, ' +
+    'slowly this time. Tap a mark to see what nobody stopped to notice.';
+
+  function hasArtifacts() {
+    return !!(window.ARTIFACTS && Object.keys(window.ARTIFACTS).length);
+  }
+  function examineOrder() {
+    const order = window.ARTIFACTS_ORDER || Object.keys(window.ARTIFACTS || {});
+    return order.filter((id) => window.ARTIFACTS && window.ARTIFACTS[id] && (window.ARTIFACTS[id].tells || []).length);
+  }
+
+  function renderExamine() {
+    run = null;
+    clear($app);
+    const wrap = el('div', 'epilogue examine');
+    wrap.appendChild(headerBlock('Look again', EXAMINE_INTRO));
+
+    const list = el('div', 'examine-list');
+    examineOrder().forEach((id, i) => list.appendChild(examineCard(id, window.ARTIFACTS[id], i)));
+    wrap.appendChild(list);
+
+    const btns = el('div', 'epi-btns');
+    const back = el('button', 'continue-btn', 'What you carry forward');
+    back.addEventListener('click', renderReflection);
+    const rack = el('button', 'linkish', 'Back to the phones');
+    rack.addEventListener('click', renderRack);
+    btns.appendChild(back); btns.appendChild(rack);
+    wrap.appendChild(btns);
+
+    $app.appendChild(wrap);
+    $app.scrollTop = 0;
+  }
+
+  function examineCard(id, art, i) {
+    const tells = art.tells || [];
+    const card = el('div', 'examine-card rise');
+    card.style.animationDelay = (i * 80) + 'ms';
+
+    const isVideo = art.kind === 'video';
+    const img = art.file
+      ? `<img class="ex-img" src="${art.file}" alt="" loading="lazy" onerror="this.closest('.ex-frame').classList.add('noimg');this.remove();">`
+      : '';
+    const markers = tells.map((t, n) =>
+      `<button class="ex-marker" type="button" data-n="${n}" style="left:${(t.x * 100).toFixed(1)}%;top:${(t.y * 100).toFixed(1)}%" aria-label="Reveal tell ${n + 1}">${n + 1}</button>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="ex-head">
+        <div class="ex-title">${art.title || id}</div>
+        <div class="ex-what">${art.what || ''}</div>
+      </div>
+      <div class="ex-frame ${isVideo ? 'ex-video' : 'ex-link'}">
+        ${img}
+        <div class="ex-vignette"></div>
+        ${markers}
+      </div>
+      <button class="ex-reveal" type="button">Reveal the tells · ${tells.length}</button>
+      <ol class="ex-tells"></ol>
+    `;
+
+    const tellsEl = card.querySelector('.ex-tells');
+    tells.forEach((t, n) => {
+      const li = el('li', 'ex-tell');
+      li.dataset.n = n;
+      li.innerHTML = `<span class="ex-tn">${n + 1}</span><div class="ex-td"><div class="ex-tl">${t.label}</div><div class="ex-tx">${t.detail}</div></div>`;
+      tellsEl.appendChild(li);
+    });
+
+    const markerEls = Array.from(card.querySelectorAll('.ex-marker'));
+    const tellEls = Array.from(card.querySelectorAll('.ex-tell'));
+    const reveal = card.querySelector('.ex-reveal');
+
+    function focus(n) {
+      card.classList.add('revealed');
+      reveal.textContent = 'Hide the tells';
+      markerEls.forEach((m, k) => m.classList.toggle('on', k === n));
+      tellEls.forEach((l, k) => l.classList.toggle('on', k === n));
+      const t = tellEls[n]; if (t) t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    markerEls.forEach((m, n) => m.addEventListener('click', () => focus(n)));
+    tellEls.forEach((l, n) => l.addEventListener('click', () => focus(n)));
+    reveal.addEventListener('click', () => {
+      const on = card.classList.toggle('revealed');
+      reveal.textContent = on ? 'Hide the tells' : ('Reveal the tells · ' + tells.length);
+      if (!on) { markerEls.forEach((m) => m.classList.remove('on')); tellEls.forEach((l) => l.classList.remove('on')); }
+    });
+
+    return card;
   }
 
   function headerBlock(title, intro) {
@@ -537,10 +799,10 @@
       begin.addEventListener('click', () => {
         splash.classList.add('gone');
         setTimeout(() => splash.remove(), 600);
-        renderRack();
+        renderAnchorSelect();
       });
     } else {
-      renderRack();
+      renderAnchorSelect();
     }
     // if returning visitor with progress, let them skip splash quickly — still show it but it's fine.
   }

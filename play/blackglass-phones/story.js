@@ -108,7 +108,7 @@ window.PHONES = (function () {
             text: 'Pasabuy nga pala sa SM — yung Tide liquid na malaki, sale daw today 🧺' },
           { t: 'msg', side: 'in', sender: 'Tita Merly', time: '6:19 AM',
             text: 'Mga pamangkin ha, look at this. Very important for your health. My officemate sent this — doctor daw ang source 👨‍⚕️' },
-          { t: 'link', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'healthtruthph.click' },
+          { t: 'link', artifact: 'kangkong-clickbait', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'healthtruthph.click' },
         ],
         continueLabel: 'Continue',
       },
@@ -284,7 +284,7 @@ window.PHONES = (function () {
         beats: [
           { t: 'msg', side: 'in', sender: 'Joy A.', time: '5:41 AM',
             text: 'Tita, basahin mo po to. May pinsan ako sa Cebu, nag-share. Mga doctor daw nag-tatago.' },
-          { t: 'link', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'kangkong, circled in red' },
+          { t: 'link', artifact: 'kangkong-clickbait', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'kangkong, circled in red' },
           { t: 'narr', text: [
             'You read the headline twice.',
             '<em>Mga doctor nag-tatago.</em> Doctors hiding something.',
@@ -360,7 +360,7 @@ window.PHONES = (function () {
             'You type around the link. You want it to have a frame — a link alone looks cold, looks like you just threw something at them. You want them to know you are thinking of them. You are always thinking of them.',
           ]},
           { t: 'compose', side: 'out', sender: 'You', time: '6:01 AM', text: 'Mga pamangkin, look at this ha. Very important for your health.' },
-          { t: 'link', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'healthtruthph.click' },
+          { t: 'link', artifact: 'kangkong-clickbait', title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent', domain: 'healthtruthph.click' },
           { t: 'compose', side: 'out', sender: 'You', time: '6:02 AM', text: 'My officemate sent this, nurse yung pinsan niya before. Concern lang niya sa ating kalusugan.' },
           { t: 'narr', text: [
             'You want to say something about Papa — about how this matters because of Papa — but you don’t want to alarm them on a Saturday, and you don’t want Papa to see it and think you are worried, because you are always worried, quietly, and he knows it. Saturday should not feel heavy.',
@@ -501,7 +501,8 @@ window.PHONES = (function () {
             'You open the work GC next. Camille has forwarded a link with: <em>“guys is this true?? yung ampalaya??”</em>',
             'Different vegetable. Same template. Same .click domain family.',
           ]},
-          { t: 'msg', side: 'out', sender: 'You', time: '7:15 AM', text: '[side-by-side screenshots] same template. different vegetable. they’re running these in batches rn, probably A/B testing which produce Filipinos are most worried about. seen a malunggay one too' },
+          { t: 'msg', side: 'out', sender: 'You', time: '7:15 AM', text: 'same template. different vegetable. they’re running these in batches rn, probably A/B testing which produce Filipinos are most worried about. seen a malunggay one too' },
+          { t: 'gallery', artifacts: ['kangkong-clickbait', 'ampalaya-clickbait', 'malunggay-clickbait'] },
           { t: 'narr', text: [
             'You’ve sent four messages in under two minutes. This is what you’re for. You feel the small clean satisfaction of competence.',
           ]},
@@ -556,7 +557,7 @@ window.PHONES = (function () {
             'The feed updates before you’re even conscious of opening the app. The third video is not the usual rotation. #factcheck #medialiteracy #kangkong. A woman in a blazer at a desk, DEBUNKED in red across the bottom.',
             'You stop scrolling.',
           ]},
-          { t: 'video', creator: 'Dr. Anita V.', sub: 'Health Communication Specialist', caption: 'How that “EXPOSED vegetable” link actually works 🧵', views: '340.2K', tag: 'DEBUNKED' },
+          { t: 'video', artifact: 'dr-anita-still', creator: 'Dr. Anita V.', sub: 'Health Communication Specialist', caption: 'How that “EXPOSED vegetable” link actually works 🧵', views: '340.2K', tag: 'DEBUNKED' },
           { t: 'narr', text: [
             'She’s saying everything you just said to Maya. The .click domains. The fill-in-the-blank template. The supplement funnel. And then some things you hadn’t included — how health misinformation travels faster through family groups because it arrives <em>pre-vouched</em>, how “Filipino doctors staying silent” is built to weaponize national distrust of institutions.',
             'It’s clean. It’s accurate. It’s exactly right.',
@@ -635,7 +636,14 @@ window.PHONES = (function () {
       { time: '6:21', who: 'maya', label: 'Mama → the GC',
         text: '“Salamat po Ate 🙏 Share ko rin sa bible study group. Lalo na para kay Papa, may altapresyon.” The link now points at Papa’s breakfast.' },
       { time: '6:47', who: 'maya', label: 'Maya wakes',
-        dynamic: 'maya_choice',
+        dynamic: { key: 'maya_choice',
+          fallback: 'She knows the template on sight — she has built it. Knowing is not the same as stopping.',
+          map: {
+            tapped: 'She taps the link anyway — “probably” misinformation is not “definitely,” and she would rather be certain than right.',
+            asked: 'She asks Tita where it came from, softened with an emoji so it reads as curiosity, not doubt — and gets a vouching chain back.',
+            hearted: 'She reacts ❤️ and scrolls past, adding her own name to the link — knowing, in the moment she taps it, exactly what the heart does downstream.',
+            filed: 'She screenshots it for Kuya Renz, turning the problem into a message she sent but didn’t have to send yet.',
+          } },
         text: 'She knows the template on sight — she has built it. Knowing is not the same as stopping.' },
       { time: '7:09', who: 'bea', label: 'Camille → work GC',
         text: 'The ampalaya version. Same template, different vegetable. The batch is A/B testing which produce Filipinos fear most.' },
@@ -675,13 +683,489 @@ window.PHONES = (function () {
       'but because each of them could only see their own screen.',
   };
 
+  /* ==================================================================
+     ANCHOR 2 — "IT'S ME" — the voice-clone evening
+     A Tuesday night. Kuya Renz's voice — the family's own skeptic —
+     is cloned and turned into a distress call. The same 22 minutes
+     refract through Tita Merly (the voice is the proof), Maya
+     (verification loses the race), and Bea (right, and absent).
+     Reuses each character's home/wallpaper from the kangkong anchor.
+  ================================================================== */
+  const ANCHOR_VC = {
+    title: 'IT’S ME',
+    subtitle: 'One Evening',
+    blurb:
+      'A Tuesday night. A voice you’ve known for thirty years says it’s in ' +
+      'trouble and needs money now. Three phones. The same twenty-two minutes.',
+    question: 'How do you verify a voice?',
+  };
+
+  /* — TITA MERLY · the voice is the proof — */
+  const TITA_VC = {
+    id: 'tita', name: 'Tita Merly', role: 'QC · the call comes to her first',
+    verb: 'FORWARD',
+    essence: 'Her nephew’s voice, in trouble. She has never once had to doubt that voice.',
+    lesson: 'A voice is no longer proof of identity.',
+    theme: 'tita',
+    lock: { time: '8:02', meridiem: 'PM', day: 'Tuesday', wallpaper: 'lastsupper', wallpaperNote: TITA.lock.wallpaperNote, brightness: 100 },
+    home: TITA.home,
+    flow: [
+      {
+        beats: [
+          { t: 'world', text: [
+            'The dishes are done. Papa is in the living room with the late news, the volume two notches too high. You haven’t sat down yet — your hands have been wiping the same counter twice because your mind is two suburbs away, with Renz, who texted this morning that his boss is being <em>masama</em> again. You have carried that quietly all day, the way you carry all of them.',
+            'The phone chimes on the counter. Not the message sound — the rounder one. A voice message.',
+          ]},
+          { t: 'sys', text: '💜 Viber — Kuya Renz sent a voice message (0:34) · 8:02 PM' },
+          { t: 'narr', text: [
+            'Renz. He doesn’t send voice notes often — he’s a full-sentences boy, a periods boy. When he sends voice, it means he’s walking, or driving, or something he needs to say fast.',
+          ]},
+        ],
+        continueLabel: 'Open Viber',
+      },
+      {
+        app: { icon: '💜', name: 'Viber', chat: 'Kuya Renz', sub: 'your nephew · since he was ten' },
+        beats: [
+          { t: 'voice', side: 'in', sender: 'Kuya Renz', time: '8:02 PM', secs: 34 },
+          { t: 'narr', text: ['You tap play before you decide to. You hold the phone close.'] },
+          { t: 'aside', text: '“Tita, hi — naku, sorry ha… I got into a fender-bender kanina, nothing serious, I’m fine, pero the other driver is making it a whole thing… he’s gonna press charges kung hindi kami mag-settle ngayon… ₱18,500… my phone is dying, I’m at 3%… Can you GCash me?… Wag muna sabihin kay Mama, please, ayoko silang mag-alala…”' },
+          { t: 'narr', text: [
+            'His voice. The way he says <em>naku</em> — the little laugh-sigh he does when something goes wrong. The breathing. The talking-fast he does when he’s stressed. You have known this boy since he was ten.',
+            'It’s him.',
+          ]},
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:03 PM', text: 'Tita sorry, here’s the number. GCash lang po — 0915-•••-••••. Yung ₱18,500. I’ll send it back this week, swear.' },
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:04 PM', text: 'Please po. Nag-aalala na ako dito.' },
+          { t: 'narr', text: [
+            'Fender-bender. The other driver. ₱18,500. Tonight. He didn’t call Mama because he doesn’t want her to worry — he called <em>you,</em> because you’re the one who doesn’t panic. The one who helps quietly.',
+          ]},
+        ],
+        continueLabel: 'And so —',
+      },
+      {
+        choice: {
+          verb: 'FORWARD',
+          prompt: 'His phone is dying. How much do you check before you help?',
+          options: [
+            {
+              label: 'Ask him where he is — “sino kasama mo?”',
+              set: { tita_vc: 'asked' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '8:04 PM', text: 'Renz anak where are you? Sino kasama mo? Are you safe?' },
+                { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:05 PM', text: 'I can’t explain right now Tita, the guy is literally standing here, I just need the money please, I’ll tell you everything bukas, my phone is about to die, please lang po' },
+                { t: 'call', who: 'Kuya Renz', sub: 'incoming call', state: 'incoming' },
+                { t: 'narr', text: [
+                  'He’s calling. You answer before the second ring. His voice, live: <em>“Tita, thank you for answering—”</em> You try to ask again, <em>sino kasama mo,</em> and he talks over you — the battery, the guy, please trust me — and the line drops.',
+                  'The last thing you heard was <em>please trust me.</em>',
+                ]},
+              ],
+            },
+            {
+              label: 'Call Mama — she should know',
+              set: { tita_vc: 'mama' },
+              say: [
+                { t: 'narr', text: ['You press the phone icon next to Mama’s name. It rings twice. Then —'] },
+                { t: 'call', who: 'Kuya Renz', sub: 'incoming call', state: 'incoming' },
+                { t: 'narr', text: [
+                  'He’s calling <em>you.</em> You answer. <em>“Tita — thank God — did you get my message?”</em> You ask where he is; you ask to talk to the other driver; and he’s already past it — 1% battery, the number, ₱18,500 — and the line drops.',
+                ]},
+              ],
+            },
+            {
+              label: 'Open GCash now — before his phone dies',
+              set: { tita_vc: 'nowait' },
+              say: [
+                { t: 'narr', text: ['You don’t wait. His phone is dying. The other driver is pressing charges. Your hands already know the way.'] },
+              ],
+            },
+          ],
+          footnote: 'There is no “delete” here either. The question was never <em>whether</em> to help your nephew — only how fast.',
+        },
+        continueLabel: 'Open GCash',
+      },
+      {
+        app: { icon: '🇬', name: 'GCash', chat: 'Send Money', sub: '' },
+        beats: [
+          { t: 'transfer', stage: 'confirm', to: '0915-•••-••••', amount: '18,500', balance: '24,180.50' },
+          { t: 'aside', text: '₱24,180.50. Last week’s padala from your daughter in the US — for Papa’s check-up, the water, the electric. Renz said he’ll pay it back this week. He has never lied to you. Not once.' },
+          { t: 'narr', text: ['You think about his voice. The stress. <em>Please trust me.</em> You think about Mama — <em>wag muna sabihin</em> — and how helping quietly is a way of protecting her too.'] },
+        ],
+        choice: {
+          verb: 'FORWARD',
+          prompt: 'Send ₱18,500 to 0915-•••-••••?',
+          options: [
+            {
+              label: 'Send it — he needs you right now',
+              set: { tita_sent: 'sent' },
+              say: [
+                { t: 'transfer', stage: 'done', to: '0915-•••-••••', amount: '18,500', balance: '5,680.50' },
+                { t: 'msg', side: 'out', sender: 'You', time: '8:21 PM', text: 'Sent na po, anak. Ingat ka. Call me when your phone is charged.' },
+                { t: 'world', text: ['Papa, from the living room: “Merly, sino kausap mo?” “Walang sino,” you call back. “Prayer group lang.”'] },
+              ],
+            },
+            {
+              label: 'Call Renz one more time first',
+              set: { tita_sent: 'sent', tita_triedfirst: true },
+              say: [
+                { t: 'sys', text: 'Calling Kuya Renz… ring… ring… ring…' },
+                { t: 'aside', text: '“Hi, this is Renz, I can’t pick up right now, leave a message—” His phone is dead. Just like he said.' },
+                { t: 'transfer', stage: 'done', to: '0915-•••-••••', amount: '18,500', balance: '5,680.50' },
+                { t: 'msg', side: 'out', sender: 'You', time: '8:21 PM', text: 'Sent na po, anak. Call me when you can. Nag-aalala ako.' },
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Put the phone down',
+      },
+      {
+        app: { icon: '💬', name: 'Messenger', chat: 'Santos Family GC 🏠', sub: '' },
+        beats: [
+          { t: 'narr', text: ['Your message to Renz sits there. Sent. Read. No typing indicator comes. You check GCash again — <em>Successfully sent.</em> You check it a third time, the way you’d touch a stove to be sure it’s off.'] },
+          { t: 'notif', app: 'Santos Family GC 🏠', text: 'Maya: has anyone talked to Kuya Renz today? he’s not answering my texts', time: '8:23' },
+          { t: 'narr', text: ['Your chest tightens. You almost type: <em>has anyone heard from Renz tonight.</em> You don’t. He said <em>wag sabihin kay Mama.</em> You are keeping his secret because he asked you to. You are protecting him.'] },
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:24 PM', text: '?? naglalaro lang ako ng badminton, anong nangyayari' },
+          { t: 'narr', text: [
+            'The world stops.',
+            'You read it again. <em>Naglalaro lang ako ng badminton.</em>',
+          ]},
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:24 PM', text: 'I’ve been here since 7, phone was in my bag. May kailangan ba kayo?' },
+          { t: 'narr', text: [
+            'You scroll up. You play the voice note again. <em>“Tita, hi — naku, sorry ha—”</em> That was his voice.',
+            'You open GCash. <strong>Successfully sent ₱18,500.00 to 0915-•••-••••. 8:21 PM.</strong> Your hands are shaking so hard you almost drop the phone.',
+          ]},
+          { t: 'end', kind: 'tita' },
+        ],
+      },
+    ],
+  };
+
+  /* — MAYA · verification loses the race — */
+  const MAYA_VC = {
+    id: 'maya', name: 'Maya', role: 'she wakes into the panic',
+    verb: 'DECIDE',
+    essence: 'Knows it’s a clone in three seconds. It changes nothing.',
+    lesson: 'Urgency is the weapon. Awareness is not speed.',
+    theme: 'maya',
+    lock: { time: '8:11', meridiem: 'PM', day: 'Tuesday', wallpaper: 'mtpulag', wallpaperNote: MAYA.lock.wallpaperNote, brightness: 15 },
+    home: MAYA.home,
+    flow: [
+      {
+        lock: true,
+        notifs: [
+          { app: 'Santos Family GC 🏠', text: '18 new messages', sub: '8:02–8:11 PM' },
+          { app: 'Kuya Renz', text: 'you: message not delivered', sub: '8:07 PM' },
+          { app: 'Bea 💛', text: '1 message', sub: '8:10 PM' },
+        ],
+        beats: [
+          { t: 'narr', text: [
+            'Your phone is face-down on the table where you left it after work — a small act of wanting to be done with screens. It did not work. The table is making a sound like bees trapped in glass.',
+            'You flip it. Eighteen messages in nine minutes is not normal. Eighteen messages in nine minutes is someone dying, or someone about to ask for money, or Tita Merly believing it’s both.',
+          ]},
+        ],
+        continueLabel: 'Open the family GC',
+      },
+      {
+        app: { icon: '💬', name: 'Messenger', chat: 'Santos Family GC 🏠', sub: 'Mama · Tita Merly · Tita Peachy · Kuya Renz · You' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Tita Merly', time: '8:05 PM', text: 'Si Renz daw. Aksidente. Kailangan daw niya ng pera ngayon ASAP' },
+          { t: 'msg', side: 'in', sender: 'Mama', time: '8:08 PM', text: 'BAKIT HINDI KO ALAM TO' },
+          { t: 'msg', side: 'in', sender: 'Tita Merly', time: '8:09 PM', text: 'Sabi niya wag muna daw sabihin sayo, ayaw ka daw niyang paalalahanin. Pero Ate, alam mo naman ako, di ako pwedeng magtago sayo' },
+          { t: 'msg', side: 'in', sender: 'Tita Merly', time: '8:10 PM', text: '18,500 daw. May number siya for GCash. Ate, mag-send na ba ako? Natatakot ako baka makulong siya' },
+          { t: 'msg', side: 'in', sender: 'Mama', time: '8:11 PM', text: 'MAYA GISING KA BA' },
+          { t: 'narr', text: ['You read this the way you read a deck when the client has already decided and the deck is pretending to ask.'] },
+          { t: 'aside', text: 'Kuya Renz does not get into accidents. Kuya Renz is the one who types CHECK. THE. BALANCE. in all caps when Tita forwards something. Kuya Renz would never call Tita first. He’d call Mama. Or you.' },
+          { t: 'narr', text: [
+            'And yet — the voice note is right there, 0:34, already played, the waveform cached like evidence. Tita Merly heard his voice. You know her verification standard: a voice she loves.',
+            'You thumb to your DMs. The text you sent Renz at 8:07 — <em>kuya okay ka lang???</em> — sits with no delivery receipt. Sent. Not delivered. The gap between what you know and what you can prove is nine minutes wide and getting wider.',
+          ]},
+        ],
+        continueLabel: 'And so —',
+      },
+      {
+        choice: {
+          verb: 'DECIDE',
+          prompt: 'The clock is moving faster than you can prove anything. What do you do?',
+          options: [
+            {
+              label: 'Text Renz again — “KUYA PLEASE REPLY”',
+              set: { maya_vc: 'textagain' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '8:12 PM', text: 'KUYA PLEASE REPLY 😭' },
+                { t: 'narr', text: ['It sits under the last one like a second witness to his silence. Sent. Not delivered. The GC keeps climbing.'] },
+              ],
+            },
+            {
+              label: 'Type in the GC: “WAIT. This might not be real.”',
+              set: { maya_vc: 'wait' },
+              say: [
+                { t: 'narr', text: [
+                  'You type it. Your thumb hovers. What you’re about to do is tell a panicking mother her son might not be in danger. What she’ll hear is: <em>you don’t care enough to be sure.</em> You are offering doubt. She needs certainty. You have none.',
+                  'The sentence sits in the compose field, unfinished.',
+                ]},
+              ],
+            },
+            {
+              label: 'Consult Bea — “is this a voice clone??”',
+              set: { maya_vc: 'bea' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '8:16 PM', text: 'is this a voice clone?? it’s renz’s actual voice. tita played the note and swears it’s him' },
+                { t: 'narr', text: ['You’re doing what you always do — asking someone to tell you what you already know. Because being right alone is worse than being wrong together.'] },
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'Bea 💛', sub: 'since high school' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Bea 💛', time: '8:17 PM', text: 'ok listen. this is almost definitely a voice clone. if renz has ANY video online where he talks, they can clone it. i’m like 90%.' },
+          { t: 'msg', side: 'in', sender: 'Bea 💛', time: '8:18 PM', text: 'do NOT send money. tell tita DO NOT SEND.' },
+          { t: 'narr', text: ['Bea is right. You know she’s right. She’s given a webinar on this. She’s the person you ask when you need to know if something is real.'] },
+          { t: 'aside', text: 'And still — what if the 10% is real. What if Renz is in a station right now and you told them to stop, and ₱18,500 was the difference, and you were the one who said wait. Knowledge is not speed. You know it’s fake and the knowing has bought you nothing.' },
+        ],
+        choice: {
+          verb: 'DECIDE',
+          prompt: 'You know. It hasn’t helped. Mama is already asking for the number.',
+          options: [
+            {
+              label: 'Tell the GC: “This is a voice cloning scam.”',
+              set: { maya_vc2: 'told' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '8:19 PM', text: 'Guys this is a voice cloning scam. They clone voices from videos. This is not Kuya Renz. Please don’t send anything until he replies.' },
+                { t: 'msg', side: 'in', sender: 'Mama', time: '8:19 PM', text: 'Maya how do you KNOW. And if he can’t reply?? If his phone is really dying??' },
+                { t: 'narr', text: ['You are right and it is not enough. You are right and they are not stopping.'] },
+              ],
+            },
+            {
+              label: 'Ask for ten minutes to verify',
+              set: { maya_vc2: 'wait10' },
+              say: [
+                { t: 'msg', side: 'out', sender: 'You', time: '8:19 PM', text: 'give me 10 minutes to verify please. don’t send anything yet' },
+                { t: 'msg', side: 'in', sender: 'Tita Merly', time: '8:19 PM', text: 'Anak what if we don’t have 10 minutes' },
+                { t: 'narr', text: ['Ten minutes is forever when someone you love is in danger and nothing when you’re trying to prove a negative. You are asking them to wait in a burning room because you think the fire might be fake.'] },
+              ],
+            },
+            {
+              label: 'Say nothing — you can’t prove it either way',
+              set: { maya_vc2: 'nothing' },
+              say: [
+                { t: 'narr', text: ['You lock the phone. Face-down. You won’t be the one who stopped them and you won’t be the one who helped. You’ll be the one who wasn’t sure.', 'The table starts buzzing again immediately.'] },
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        app: { icon: '💬', name: 'Messenger', chat: 'Santos Family GC 🏠', sub: '' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:24 PM', text: '?? naglalaro lang ako ng badminton anong nangyayari' },
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:24 PM', text: '14 MISSED CALLS??? MAYA??? MA???' },
+          { t: 'narr', text: ['The relief is physical. Then the dread.'] },
+          { t: 'aside', text: 'Tita Merly sent ₱18,500 to 0915-•••-•••• at 8:21 PM. Three minutes ago. “Renz anak, here na, please confirm okay ka na.” Mama thanked her. No one answered.' },
+          { t: 'msg', side: 'in', sender: 'Kuya Renz', time: '8:25 PM', text: 'Tita. Anong number yan. I DIDN’T CALL YOU. I’VE BEEN AT BADMINTON SINCE 7.' },
+          { t: 'narr', text: ['The GC goes quiet. Mama starts typing, stops. Tita Peachy starts, stops. No one wants to be the first to say it.'] },
+        ],
+        continueLabel: 'Lock the phone',
+      },
+      {
+        beats: [
+          { t: 'narr', text: [
+            'You lock your phone. You don’t put it down. You just hold it, the screen dark, the glass warm.',
+            'You knew it was fake. You knew immediately. You’re media-aware, you’ve read the news, you’ve seen the warnings — and your knowledge was permission to watch, in good resolution, as the knowing failed to matter.',
+            'The scam was not built to fool you. It was built to move faster than you could verify. And it did.',
+          ]},
+          { t: 'end', kind: 'maya' },
+        ],
+      },
+    ],
+  };
+
+  /* — BEA · right, and absent — */
+  const BEA_VC = {
+    id: 'bea', name: 'Bea', role: 'Maya consults her',
+    verb: 'CONSULT',
+    essence: 'Right in five seconds. Present in none.',
+    lesson: 'Being right is not the same as being there.',
+    theme: 'bea',
+    lock: { time: '8:16', meridiem: 'PM', day: 'Tuesday', wallpaper: 'tweet', wallpaperNote: BEA.lock.wallpaperNote, brightness: 90 },
+    home: BEA.home,
+    flow: [
+      {
+        home: true,
+        beats: [
+          { t: 'narr', text: [
+            'You’re on the couch. Laptop open, three tabs, a playlist you’re not really hearing. The council is mid-thread — Janine dropped a link, you’ve screenshotted it, you’re waiting for someone to confirm what you already suspect. This is Tuesday evening: low-urgency everything, pleasant and a little numb.',
+          ]},
+          { t: 'aside', text: 'A Canva tab has been open since the weekend: “Voice Cloning 101,” the webinar you gave four months ago. Slide 12 is still unfinished — “What to do if you receive a cloned call.”' },
+          { t: 'notif', app: 'maya 4ever 💛', text: 'voice note (0:34) + “is this a voice clone??”', time: '8:16' },
+        ],
+        continueLabel: 'Open Maya',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'maya 4ever 💛', sub: 'since high school' },
+        beats: [
+          { t: 'voice', side: 'in', sender: '↳ forwarded · Kuya Renz', time: '8:16 PM', secs: 34 },
+          { t: 'msg', side: 'in', sender: 'Maya 💛', time: '8:16 PM', text: 'is this a voice clone?? it’s renz’s actual voice' },
+          { t: 'narr', text: ['You sit up. Not because you don’t know the answer — you know it in under five seconds — but because Maya doesn’t ask you things like this unless it’s already moving. Maya doesn’t panic. If she’s asking, the family is already in it.'] },
+          { t: 'narr', text: ['You press play. The second time through you stop listening to <em>what</em> he says and listen to <em>how</em> — the cadence, the breathing, the <em>naku,</em> the micro-pause before <em>Tita.</em>'] },
+          { t: 'aside', text: 'It’s him. It’s not him. It’s both. You have a slide about this. Slide 7: voice triggers trust faster than text. Even people who know the person will hesitate. <em>Do not trust voice alone.</em>' },
+        ],
+        continueLabel: 'Reply',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'maya 4ever 💛', sub: 'since high school' },
+        beats: [
+          { t: 'msg', side: 'out', sender: 'You', time: '8:17 PM', text: 'ok first: yes almost certainly a clone. do NOT send money, do NOT call that number.' },
+          { t: 'msg', side: 'out', sender: 'You', time: '8:18 PM', text: 'the clone was made from his videos. the live CALL is the evolution — they know people got wise to voice notes, so now it’s synchronous. it FEELS more real. it’s so smart and evil' },
+          { t: 'msg', side: 'out', sender: 'You', time: '8:18 PM', text: 'tell your tita: ask him something only the real renz would know. where did the family eat last christmas. the clone can’t improvise.' },
+          { t: 'narr', text: ['You feel it — the small clean warmth of being useful. Of being the person who can name the thing while it’s happening.'] },
+          { t: 'sys', text: '→ the council · You: “live one. voice clone targeting a family i know. might need this for the next webinar 👀”' },
+          { t: 'msg', side: 'in', sender: 'Janine · the council', time: '8:18 PM', text: 'oh that’s clean. you recording the call if she picks up?' },
+          { t: 'narr', text: ['You open the Canva tab. Slide 12. You add a bullet: <em>“Urgency is the weapon. Real emergencies survive a 60-second verification call.”</em> It’s good. It’s correct. You consider moving it higher in the deck.'] },
+        ],
+        continueLabel: 'Then your phone buzzes',
+      },
+      {
+        app: { icon: '💛', name: 'Messages', chat: 'maya 4ever 💛', sub: '' },
+        beats: [
+          { t: 'msg', side: 'in', sender: 'Maya 💛', time: '8:20 PM', text: 'she’s sending it. i don’t think we can stop her. she’s crying. i don’t know what to do' },
+          { t: 'narr', text: [
+            'You stare at the message. You stare at your slide — the one that is correct, the bullet point that is true, the webinar seventy people called <em>so informative.</em>',
+            'You don’t know what to do either.',
+          ]},
+        ],
+        choice: {
+          verb: 'CONSULT',
+          prompt: 'You were in the right place. You said the right things. Now what?',
+          options: [
+            {
+              label: 'Stay on the couch — you’ve given her the tools',
+              set: { bea_vc: 'expert' },
+              say: [
+                { t: 'narr', text: ['You tell yourself you’ve done what you can. The rest is up to them. You refresh the council. Someone has already made a threaded breakdown of voice-cloning vectors. You read it.', 'You are still on the couch. You are still correct. The distance to two suburbs over is the same distance it always was.'] },
+              ],
+            },
+            {
+              label: 'Finish Slide 12 while you wait',
+              set: { bea_vc: 'content' },
+              say: [
+                { t: 'narr', text: ['This is what you’re good at — you take the thing that’s happening and turn it into a resource. You add a case study: “Real-world example: voice clone, multi-contact escalation.”', 'The deck is better now. Clearer. More specific. You do not notice that you have also turned a family’s terror into a bullet point.'] },
+              ],
+            },
+            {
+              label: 'Call Maya — not to explain, just to be there',
+              set: { bea_vc: 'present' },
+              say: [
+                { t: 'narr', text: ['You don’t have a better slide. You don’t have a forensic insight that changes the outcome. You just call her. <em>“I’m here. What do you need.”</em> You stop narrating the mechanism. You stop screenshotting for the council.', 'You are not an expert right now. You are a voice on the line, breathing with your best friend while her family falls apart. It is the first thing you’ve done tonight that feels like enough.'] },
+              ],
+            },
+          ],
+        },
+        continueLabel: 'Continue',
+      },
+      {
+        beats: [
+          { t: 'narr', text: [
+            'The council is lighting up — someone’s asking if you have a link to the webinar recording. Your laptop is still open. Slide 12 is almost done.',
+            'You were in the right place. You said the right things. You explained the mechanism perfectly. You don’t know if it helped. You don’t know if being right is the same as being there.',
+          ]},
+          { t: 'end', kind: 'bea' },
+        ],
+      },
+    ],
+  };
+
+  const TIMELINE_VC = {
+    title: 'The evening, all at once',
+    intro: 'Twenty-two minutes, across three phones — and a fourth that no one could reach.',
+    events: [
+      { time: '8:02', who: 'tita', label: 'Viber · “Renz” → Tita Merly',
+        text: 'A voice note, 0:34, in his voice. There was no doubt to overcome — a voice she’s known for thirty years could only ever come from him.' },
+      { time: '8:05', who: 'tita', label: 'Tita Merly → the family GC',
+        text: 'She raises the alarm — but keeps his secret, “wag muna kay Mama,” which quietly isolates the one verification that would have worked: asking him, to his face.' },
+      { time: '8:09', who: 'maya', label: 'Mama panics',
+        text: '“BAKIT HINDI KO ALAM TO.” The GC accelerates. Fear compounds fear; every minute makes the next decision faster and worse.' },
+      { time: '8:11', who: 'maya', label: 'Maya wakes to 18 messages',
+        text: 'She knows on sight — Renz would never call Tita first; Renz is the one who says CHECK THE BALANCE. She texts the real Renz. Not delivered.' },
+      { time: '8:14', who: 'tita', label: 'A live call, “his” voice',
+        text: 'The clone calls. Synchronous contact feels more real than a voice note — and it talks over every question that isn’t in the script.' },
+      { time: '8:16', who: 'bea', label: 'Maya consults Bea',
+        text: 'Bea is right in five seconds. She has a slide about this. “Almost certainly a clone. Do not send.”' },
+      { time: '8:18', who: 'bea', label: 'Bea → the council',
+        text: 'She screenshots it for the group, opens the webinar deck, narrates the mechanism with clean expert satisfaction. Right, and not in the room.' },
+      { time: '8:20', who: 'bea', label: 'Bea, when it turns real',
+        dynamic: { key: 'bea_vc',
+          fallback: '“She’s sending it” — and being right about the mechanism turns out not to be the same as being able to help.',
+          map: {
+            expert: 'She stays on the couch. She has given Maya the tools. The distance to two suburbs over is the same distance it always was.',
+            content: 'She finishes the slide. The deck is better, clearer, more specific — and a family’s terror is now a bullet point in it.',
+            present: 'She stops explaining and calls Maya — “I’m here, what do you need.” The first useful thing she does all night is not expertise.',
+          } },
+        text: '“She’s sending it.”' },
+      { time: '8:21', who: 'tita', label: '₱18,500 sent',
+        text: 'To 0915-•••-••••. Papa’s check-up money. “Renz anak, here na, please confirm okay ka na.” No one confirms.' },
+      { time: '8:24', who: 'maya', label: 'The real Renz surfaces',
+        text: '“naglalaro lang ako ng badminton… 14 MISSED CALLS???” The truth arrives three minutes after the money leaves.' },
+    ],
+    close: [
+      'A scam built from his own voice — the family’s skeptic, the one who said <em>check the balance,</em> turned into the thing that couldn’t be checked.',
+      'Tita heard him. Maya knew. Bea was right. None of it was fast enough.',
+      'The advice that kept us safe — <em>call them to be sure</em> — assumed a voice could only come from a person.',
+    ],
+  };
+
+  const SILENT_VC = {
+    time: '8:00–8:25 PM',
+    who: 'Kuya Renz',
+    label: 'The phone no one could reach',
+    lines: [
+      'Face-down in a badminton bag since 7 PM. Twelve metres from a man mid-rally who has no idea.',
+      '14 missed calls. 22 messages. A voice that has been telling his family, in his own voice, that he is in trouble.',
+      'The truth was on a screen the whole time. It was just on the wrong screen.',
+    ],
+  };
+
+  const REFLECTION_VC = {
+    title: 'What you carry forward',
+    cards: [
+      { who: 'tita', verb: 'FORWARD', line: 'A voice is not a person anymore.',
+        body: 'The last proof most of us still trust — “I know his voice” — is now manufacturable from a few seconds of uploaded audio. Her love and her credulity were the same reflex; this time the scam wore his throat.' },
+      { who: 'maya', verb: 'DECIDE', line: 'Urgency is the weapon.',
+        body: 'She was right immediately and it bought her nothing. The scam isn’t built to fool the alert — it’s built to move faster than anyone can verify. Awareness is not speed.' },
+      { who: 'bea', verb: 'CONSULT', line: 'Being right is not being there.',
+        body: 'She had the slide, the mechanism, the certainty. Performed as expertise instead of lived as care, media literacy became a way to leave the room while staying in the chat.' },
+    ],
+    coda:
+      'We were taught to trust a voice because a voice could only come from someone we love. That is no longer true. The colder new rule: when an emergency punishes you for pausing, the pause is the point.',
+  };
+
   return {
-    version: 1,
-    storeKey: 'cgAI_blackglass_phones_v1',
-    anchor: ANCHOR,
-    order: ['maya', 'tita', 'bea'],
-    phones: { maya: MAYA, tita: TITA, bea: BEA },
-    timeline: TIMELINE,
-    reflection: REFLECTION,
+    version: 2,
+    storeKey: 'cgAI_blackglass_phones_v2',
+    anchorOrder: ['kangkong', 'voiceclone'],
+    anchors: {
+      kangkong: {
+        id: 'kangkong',
+        anchor: ANCHOR,
+        entry: 'maya',
+        order: ['maya', 'tita', 'bea'],
+        phones: { maya: MAYA, tita: TITA, bea: BEA },
+        timeline: TIMELINE,
+        reflection: REFLECTION,
+        examine: true,
+      },
+      voiceclone: {
+        id: 'voiceclone',
+        anchor: ANCHOR_VC,
+        entry: 'tita',
+        order: ['tita', 'maya', 'bea'],
+        phones: { tita: TITA_VC, maya: MAYA_VC, bea: BEA_VC },
+        timeline: TIMELINE_VC,
+        reflection: REFLECTION_VC,
+        silentWitness: SILENT_VC,
+        examine: false,
+      },
+    },
   };
 })();

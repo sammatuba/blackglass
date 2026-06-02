@@ -409,9 +409,17 @@ button { font-family: inherit; cursor: pointer; }
 
 /* link preview */
 .link-card {
-  display: flex; gap: 0; border: 1px solid var(--hairline); border-radius: 14px; overflow: hidden;
-  background: var(--card); margin: 0 0 16px; max-width: 92%;
+  display: flex; flex-direction: column; border: 1px solid var(--hairline); border-radius: 14px;
+  overflow: hidden; background: var(--card); margin: 0 0 16px; max-width: 92%;
 }
+.link-row { display: flex; gap: 0; }
+/* generated clickbait banner; sits above the title/domain row */
+.link-banner {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  background: #1a1413; border-bottom: 1px solid var(--hairline);
+}
+.link-card.has-art .link-thumb { display: none; }          /* banner stands in for the thumb */
+.link-card.has-art.noimg .link-thumb { display: flex; }    /* image missing: thumb returns */
 .link-thumb {
   flex: 0 0 84px; background:
     repeating-linear-gradient(45deg, #2c1a1a, #2c1a1a 8px, #3a2020 8px, #3a2020 16px);
@@ -427,6 +435,18 @@ button { font-family: inherit; cursor: pointer; }
 .link-body { padding: 11px 13px; flex: 1; min-width: 0; }
 .link-title { font-family: var(--sans); font-size: 13px; font-weight: 700; line-height: 1.35; color: var(--screen-ink); }
 .link-domain { font-family: var(--mono); font-size: 11px; color: #d23b3b; margin-top: 6px; letter-spacing: 0.02em; }
+
+/* the batch — side-by-side clickbait siblings (Bea) */
+.art-gallery { display: flex; gap: 8px; margin: 2px 0 14px; max-width: 94%; }
+.art-thumb {
+  flex: 1 1 0; aspect-ratio: 4 / 3; border-radius: 10px; overflow: hidden; position: relative;
+  border: 1px solid var(--hairline);
+  background: repeating-linear-gradient(45deg, #2c1a1a, #2c1a1a 7px, #3a2020 7px, #3a2020 14px);
+}
+.theme-tita .art-thumb, .theme-bea .art-thumb {
+  background: repeating-linear-gradient(45deg, #f1d6d0, #f1d6d0 7px, #e7c3bc 7px, #e7c3bc 14px);
+}
+.art-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 /* push notification (Bea) */
 .push-notif {
@@ -444,6 +464,20 @@ button { font-family: inherit; cursor: pointer; }
   background: linear-gradient(160deg, #2a3340 0%, #1a2129 60%, #0f1419 100%);
   border: 1px solid var(--hairline);
 }
+/* generated deepfake still sits behind the CSS chrome (DEBUNKED tag, credential) */
+.vc-still {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center 32%;
+}
+.vc-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.22) 0%, transparent 26%, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+.video-card.noimg .vc-scrim { display: none; }
+/* deliberately, subtly inconsistent credential when a real still is present —
+   the "added in post" tell the prose names */
+.video-card.has-art .vc-creator { font-weight: 700; letter-spacing: 0.01em; }
+.video-card.has-art .vc-sub { font-weight: 600; opacity: 0.92; letter-spacing: -0.01em; }
 .vc-play {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.16);
@@ -583,5 +617,172 @@ button { font-family: inherit; cursor: pointer; }
 .reflect-coda { text-align: center; max-width: 32rem; margin: 36px auto 0; }
 .reflect-coda p { font-family: var(--serif); font-size: 18px; line-height: 1.6; color: #f2ede0; font-style: italic; }
 
+/* =====================================================================
+   EXAMINE — the tells-reveal. The AI artifacts, looked at slowly.
+   ===================================================================== */
+.examine-list { display: flex; flex-direction: column; gap: 30px; margin: 6px 0 8px; }
+.examine-card { text-align: left; max-width: 30rem; margin: 0 auto; width: 100%; }
+.ex-head { margin-bottom: 12px; }
+.ex-title { font-family: var(--serif); font-size: 21px; color: #f2ede0; font-weight: 600; }
+.ex-what { font-size: 13.5px; line-height: 1.5; color: var(--rack-dim); margin-top: 4px; }
+
+.ex-frame {
+  position: relative; margin: 0 auto; border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--hair-2); box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+}
+.ex-link {
+  width: 100%; max-width: 360px; aspect-ratio: 4 / 3;
+  background: repeating-linear-gradient(45deg, #2c1a1a, #2c1a1a 10px, #3a2020 10px, #3a2020 20px);
+}
+.ex-video {
+  width: 100%; max-width: 248px; aspect-ratio: 9 / 16;
+  background: linear-gradient(160deg, #2a3340 0%, #1a2129 60%, #0f1419 100%);
+}
+.ex-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ex-vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 70px rgba(0,0,0,0.35);
+}
+/* placeholder hint before any image is generated */
+.ex-frame:not(.noimg) .ex-vignette { box-shadow: inset 0 0 70px rgba(0,0,0,0.3); }
+
+.ex-marker {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 27px; height: 27px; border-radius: 50%;
+  background: rgba(224, 56, 56, 0.92); color: #fff; border: 2px solid #fff;
+  font-family: var(--sans); font-weight: 800; font-size: 13px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5); z-index: 3;
+  animation: tellpulse 2.4s ease-in-out infinite;
+}
+@keyframes tellpulse {
+  0%, 100% { box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0 0 rgba(224,56,56,0.5); }
+  50%      { box-shadow: 0 2px 10px rgba(0,0,0,0.5), 0 0 0 7px rgba(224,56,56,0); }
+}
+.ex-marker.on {
+  background: #fff; color: #c01b1b; transform: translate(-50%, -50%) scale(1.18);
+  animation: none;
+}
+
+.ex-reveal {
+  display: block; margin: 14px auto 0; background: var(--desk-2, #14141b);
+  border: 1px solid var(--hair-2); color: var(--rack-ink);
+  font-family: var(--sans); font-size: 13px; letter-spacing: 0.02em;
+  padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: border-color 0.2s;
+}
+.ex-reveal:hover { border-color: var(--rack-dim); }
+
+.ex-tells {
+  list-style: none; margin: 8px 0 0; padding: 0;
+  max-height: 0; overflow: hidden; transition: max-height 0.45s ease;
+}
+.examine-card.revealed .ex-tells { max-height: 1200px; }
+.ex-tell {
+  display: flex; gap: 12px; padding: 13px 4px; cursor: pointer;
+  border-top: 1px solid var(--hair); opacity: 0.62; transition: opacity 0.2s;
+}
+.examine-card.revealed .ex-tell { opacity: 0.9; }
+.ex-tell.on { opacity: 1; }
+.ex-tn {
+  flex: 0 0 22px; height: 22px; border-radius: 50%; margin-top: 1px;
+  background: rgba(224,56,56,0.9); color: #fff; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.ex-tell.on .ex-tn { background: #f2ede0; color: #1a1407; }
+.ex-tl { font-family: var(--sans); font-size: 14.5px; font-weight: 700; color: #f2ede0; }
+.ex-tx { font-size: 13px; line-height: 1.55; color: var(--rack-dim); margin-top: 3px; }
+
+/* =====================================================================
+   ANCHOR SELECT — choose which story
+   ===================================================================== */
+.rack-top { max-width: 30rem; margin: 0 auto 4px; }
+.back-anchors { font-size: 13px; }
+.anchor-grid { display: flex; flex-direction: column; gap: 16px; max-width: 30rem; margin: 10px auto 0; }
+.anchor-card {
+  text-align: left; background: var(--desk-2, #14141b); border: 1px solid var(--hair);
+  border-radius: 20px; padding: 22px 20px; color: var(--rack-ink); cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+.anchor-card:hover { transform: translateY(-3px); border-color: var(--hair-2); box-shadow: 0 18px 40px rgba(0,0,0,0.42); }
+.an-kicker { font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--rack-faint); }
+.an-title { font-family: var(--serif); font-size: 23px; margin-top: 8px; color: #f2ede0; line-height: 1.15; }
+.an-title span { color: var(--rack-faint); font-weight: 400; }
+.an-blurb { font-size: 14px; line-height: 1.55; color: var(--rack-dim); margin: 11px 0 12px; }
+.an-q { font-family: var(--serif); font-style: italic; font-size: 15px; color: var(--accent, #f0c46f); }
+.an-go { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; color: var(--accent, #f0c46f); margin-top: 10px; }
+
+/* =====================================================================
+   CALL SCREEN — the live (cloned) call
+   ===================================================================== */
+.call-card {
+  background: linear-gradient(180deg, #11151c 0%, #0a0d12 100%);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 18px;
+  padding: 18px 16px 20px; text-align: center; margin: 4px 0 14px; max-width: 88%; color: #eef2f6;
+}
+.call-top { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.call-avatar {
+  width: 58px; height: 58px; border-radius: 50%; margin: 13px auto 10px;
+  background: linear-gradient(135deg, #3a4658, #222a36); display: flex; align-items: center; justify-content: center;
+  font-size: 25px; font-weight: 700; color: #fff;
+}
+.call-who { font-size: 19px; font-weight: 700; color: #fff; }
+.call-sub { font-size: 12.5px; color: rgba(255,255,255,0.55); margin-top: 3px; }
+.call-actions { display: flex; justify-content: center; gap: 46px; margin-top: 16px; }
+.call-decline, .call-accept {
+  width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 19px; color: #fff;
+}
+.call-decline { background: #e0524e; }
+.call-accept { background: #34c759; animation: callpulse 1.5s ease-in-out infinite; }
+@keyframes callpulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52,199,89,0.55); }
+  50%      { box-shadow: 0 0 0 9px rgba(52,199,89,0); }
+}
+
+/* =====================================================================
+   GCASH TRANSFER — the money leaving
+   ===================================================================== */
+.transfer-card {
+  background: #0a3d91; color: #fff; border-radius: 16px; padding: 14px 16px;
+  margin: 4px 0 14px; max-width: 88%; box-shadow: 0 10px 26px rgba(10,61,145,0.28);
+}
+.transfer-card.done { background: #0a7d3c; box-shadow: 0 10px 26px rgba(10,125,60,0.28); }
+.tr-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; opacity: 0.9; }
+.tr-app { font-weight: 800; letter-spacing: 0.02em; }
+.tr-status { letter-spacing: 0.04em; }
+.tr-amt { font-size: 30px; font-weight: 800; margin: 8px 0 2px; letter-spacing: -0.01em; }
+.tr-to { font-family: var(--mono); font-size: 12.5px; opacity: 0.85; }
+.tr-bal { font-size: 12px; opacity: 0.82; margin-top: 9px; border-top: 1px solid rgba(255,255,255,0.18); padding-top: 8px; }
+
+/* =====================================================================
+   SILENT WITNESS — the fourth phone, face-down, unreachable
+   ===================================================================== */
+.silent-witness {
+  display: flex; gap: 16px; align-items: center; max-width: 34rem; margin: 22px auto 8px; padding: 18px;
+  border: 1px solid var(--hair-2); border-radius: 18px;
+  background: linear-gradient(180deg, rgba(22,16,26,0.6), rgba(8,8,12,0.6));
+}
+.sw-frame {
+  position: relative; flex: 0 0 74px; height: 128px; border-radius: 14px; overflow: hidden;
+  background: #05070b; border: 1px solid var(--hair-2);
+}
+.sw-back { position: absolute; inset: 0; background: radial-gradient(120% 80% at 50% 18%, #1a2230 0%, #05070b 72%); opacity: 0.7; }
+.sw-mute { position: absolute; bottom: 9px; left: 0; right: 0; text-align: center; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rack-faint); }
+.sw-badge {
+  position: absolute; top: 9px; right: 9px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 999px;
+  background: #ff3b30; color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+}
+.sw-body { flex: 1; }
+.sw-meta { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rack-faint); }
+.sw-title { font-family: var(--serif); font-size: 18px; color: #f2ede0; margin: 3px 0 8px; }
+.sw-body p { font-size: 13.5px; line-height: 1.55; color: var(--rack-dim); margin: 0 0 6px; }
+
 /* focus visibility */
 button:focus-visible { outline: 2px solid var(--accent, #f0c46f); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .call-accept { animation: none; }
+  .ex-marker { animation: none; }
+  .rise { animation: none; }
+  * { scroll-behavior: auto; }
+}
