@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Human-in-the-Loop - Trust, But Verify</title>
+    <meta name="description" content="An interactive game about AI ethics, automation bias, and human oversight. Learn when to trust AI and when to override it.">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="HITL Game">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔄</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/card-base.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="game-header">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">🔄</span>
+                    <h1>Human-in-the-<span class="highlight">Loop</span></h1>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="trust-meter">
+                    <span class="meter-label">Trust Level</span>
+                    <div class="meter-bar">
+                        <div id="trust-fill" class="meter-fill" style="width: 50%"></div>
+                    </div>
+                    <span id="trust-value" class="meter-value">Neutral</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="score-display">
+                    <span class="score-label">Score</span>
+                    <span id="score" class="score-value">0</span>
+                </div>
+                <div class="scenario-counter">
+                    <span id="scenario-num">1</span>/<span id="scenario-total">10</span>
+                </div>
+                <div class="difficulty-badge" id="difficulty-display">
+                    <span class="difficulty-label">Standard</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main id="game-board">
+            <!-- Content dynamically rendered -->
+        </main>
+
+        <!-- Controls -->
+        <nav id="controls" class="game-controls">
+            <button id="help-btn" class="btn btn-help">?</button>
+            <div class="override-section">
+                <button id="override-btn" class="btn btn-override" disabled>
+                    <span class="override-icon">🛑</span>
+                    <span>OVERRIDE AI</span>
+                    <span id="override-count" class="override-badge">3</span>
+                </button>
+            </div>
+            <button id="next-btn" class="btn btn-primary" disabled>
+                <span>Next Scenario</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </nav>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close">&times;</button>
+                <h2>How to Play Human-in-the-Loop</h2>
+                <div class="help-sections">
+                    <div class="help-section">
+                        <h3>🎯 Goal</h3>
+                        <p>Make decisions with AI assistance. Learn when to trust AI and when to exercise human judgment.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🔍 Investigation</h3>
+                        <p>Spend tokens to uncover additional context before deciding. Clues may reveal AI errors, biases, or important context.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>⚠️ Automation Bias</h3>
+                        <p>The tendency to over-rely on automated systems. This game teaches you to recognize and resist it.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>📚 Concepts</h3>
+                        <p>Each scenario teaches a core AI literacy concept. Unlock them all to build your knowledge.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>📊 Risk Indicators</h3>
+                        <p>Check the stakes, AI confidence, and domain before deciding. High confidence doesn't always mean accuracy!</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>⌨️ Controls</h3>
+                        <p><kbd>Space</kbd> Accept AI recommendation<br>
+                        <kbd>O</kbd> Override AI<br>
+                        <kbd>?</kbd> Help<br>
+                        <kbd>→</kbd> Next scenario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../shared/game-utils.js"></script>
+    <script src="quiz_data.js"></script>
+    <script src="narrative_data.js"></script>
+    <script src="collaborative_mode.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
