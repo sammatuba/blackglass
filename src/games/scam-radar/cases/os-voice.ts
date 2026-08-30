@@ -97,7 +97,6 @@ export const VOICE_OS: CaseOS = {
     'ev-billing': 'Opened the hospital “billing” page — payee is a personal e-wallet',
     'ev-billing-pay': 'Test-tapped Pay on the fake page (sandbox — nothing was charged)',
     'ev-call-log': 'Called the saved number and heard the real Renz',
-    'ev-gc': 'Read the family GC — Maya pointed at the saved number',
   },
 
   replies: [

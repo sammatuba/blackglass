@@ -30,6 +30,7 @@ export function MessagesApp({
   onOpenPage: (id: string) => void
   onInspect: (id: string, evidence?: string) => void
 }) {
+  const caseOver = !!os.flags[caseDef.endFlag]
   if (!activeThreadId) {
     return <ThreadList caseDef={caseDef} os={os} onOpenThread={onOpenThread} />
   }
@@ -41,6 +42,7 @@ export function MessagesApp({
       os={os}
       thread={thread}
       typing={typingIn === thread.id}
+      caseOver={caseOver}
       onSendReply={onSendReply}
       onOpenPage={onOpenPage}
       onInspect={onInspect}
@@ -116,6 +118,7 @@ function Conversation({
   os,
   thread,
   typing,
+  caseOver,
   onSendReply,
   onOpenPage,
   onInspect,
@@ -124,14 +127,17 @@ function Conversation({
   os: OSState
   thread: CaseOS['threads'][number]
   typing: boolean
+  caseOver: boolean
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
   onInspect: (id: string, evidence?: string) => void
 }) {
   const msgs = visibleMessages(os, thread.id)
-  const offered = caseDef.replies.filter(
-    (r) => r.threadId === thread.id && !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires]),
-  )
+  const offered = caseOver
+    ? []
+    : caseDef.replies.filter(
+        (r) => r.threadId === thread.id && !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires]),
+      )
   const endRef = useRef<HTMLDivElement>(null)
   const playedVoice = useRef<Set<string>>(new Set())
 
@@ -167,7 +173,7 @@ function Conversation({
           <p className="pt-8 text-center text-xs text-white/40">No messages yet.</p>
         )}
         {msgs.map((m) => {
-          if (m.from === 'sys') {
+          if (m.from === 'sys' && !m.kind) {
             return (
               <p key={m.id} className="mx-8 rounded-full bg-white/8 px-3 py-1 text-center text-[10.5px] text-white/55">
                 {m.text}
@@ -259,7 +265,11 @@ function Conversation({
 
       {/* replies */}
       <div className="border-t border-white/10 px-3 pb-5 pt-2.5">
-        {offered.length > 0 ? (
+        {caseOver ? (
+          <div className="rounded-xl border border-train/30 bg-train/10 px-4 py-2.5 text-center text-[12px] font-semibold text-train">
+            ⌖ Case complete — the debrief is loading…
+          </div>
+        ) : offered.length > 0 ? (
           <div className="space-y-2" role="group" aria-label="Suggested replies">
             {offered.map((r) => (
               <button
