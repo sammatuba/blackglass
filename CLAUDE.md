@@ -12,7 +12,7 @@ Both stand on their own. Together they compound: the fiction handles what knowle
 
 Project names are provisional. Describe by essence, not title.
 
-**Current milestone:** Platform foundation — a Vite/React hub unifying the suite (three pillars: PLAY story / TRAIN skills / LEARN concepts), the generalized phone/beat engine in `src/engine/`, and **Scam Radar**, the scam-readiness trainer. See `docs/VISION.md` and `docs/GAMES.md`.
+**Current milestone:** Platform foundation shipped (hub, engine, Scam Radar with Feed Triage + 3 Case Files). **Phase 4 in progress: glassOS** — upgrading case files to a found-phone experience (lock/home/apps, typing indicators, calls, evidence apps, sound) per `docs/ROADMAP.md`, then porting the anthology onto it. See `docs/VISION.md` and `docs/GAMES.md`.
 
 ---
 

@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import { FAMILIES } from './families'
 import { useRadar } from './state'
 import { FeedGame } from './feed/FeedGame'
-import { CASES } from './cases/cases'
-import { CaseGame } from './cases/CaseGame'
+import { CASE_PLAYABLE, CaseLinearGame, CaseOSGame } from './cases/CaseGame'
 import { FadeIn } from '../../ui/FadeIn'
 
-type Mode = 'menu' | 'feed' | { caseId: string }
+type Mode = 'menu' | 'feed' | { caseIndex: number }
 
 export default function ScamRadar() {
   const [mode, setMode] = useState<Mode>('menu')
@@ -29,11 +28,15 @@ export default function ScamRadar() {
   }
 
   if (typeof mode === 'object') {
-    const caseDef = CASES.find((c) => c.id === mode.caseId)
-    if (caseDef) {
+    const entry = CASE_PLAYABLE[mode.caseIndex]
+    if (entry) {
       return (
         <div className="min-h-dvh bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
-          <CaseGame caseDef={caseDef} onExit={() => setMode('menu')} />
+          {entry.kind === 'os' ? (
+            <CaseOSGame caseDef={entry.def} onExit={() => setMode('menu')} />
+          ) : (
+            <CaseLinearGame caseDef={entry.def} onExit={() => setMode('menu')} />
+          )}
         </div>
       )
     }
@@ -69,7 +72,7 @@ export default function ScamRadar() {
               </div>
               <div className="flex-1 rounded-xl border border-ink-700 bg-ink-800/70 p-3">
                 <div className="font-display text-2xl font-semibold text-ink-100 tabular-nums">
-                  {Object.values(casesDone).filter(Boolean).length}/{CASES.length}
+                  {Object.values(casesDone).filter(Boolean).length}/{CASE_PLAYABLE.length}
                 </div>
                 <div className="mt-0.5 text-[10px] tracking-wide text-ink-400 uppercase">Cases worked</div>
               </div>
@@ -101,17 +104,21 @@ export default function ScamRadar() {
           <FadeIn delay={0.14}>
             <h2 className="mt-8 text-xs font-semibold tracking-[0.3em] text-ink-400 uppercase">Case files</h2>
             <div className="mt-3 space-y-3">
-              {CASES.map((c) => {
+              {CASE_PLAYABLE.map((entry, i) => {
+                const c = entry.def
                 const done = casesDone[c.id]
                 return (
                   <button
                     key={c.id}
                     type="button"
-                    onClick={() => setMode({ caseId: c.id })}
+                    onClick={() => setMode({ caseIndex: i })}
                     className="group flex w-full flex-col rounded-2xl border border-ink-700 bg-ink-800/60 p-5 text-left transition-all hover:-translate-y-0.5 hover:border-train/60"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="text-[11px] font-bold tracking-[0.2em] text-train uppercase">{c.level}</span>
+                      <span className="text-[11px] font-bold tracking-[0.2em] text-train uppercase">
+                        {c.level}
+                        {entry.kind === 'os' && <span className="ml-2 text-ink-400 normal-case">· glassOS</span>}
+                      </span>
                       <span
                         className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
                           done ? 'bg-emerald-500/15 text-emerald-300' : 'bg-train/15 text-train'

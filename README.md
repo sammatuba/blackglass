@@ -49,6 +49,7 @@ The built site is a PWA (offline after first visit) and deploys to GitHub Pages 
 
 - [`docs/VISION.md`](docs/VISION.md) — the three-pillar vision and principles
 - [`docs/GAMES.md`](docs/GAMES.md) — the full game inventory and idea backlog
+- [`docs/ROADMAP.md`](docs/ROADMAP.md) — phases; Phase 4 = glassOS, the found-phone premium pass
 - [`docs/ASSETS.md`](docs/ASSETS.md) — asset sources and rules (Kitbitz CC0 catalog, Gemini diegetic pipeline)
 - [`CLAUDE.md`](CLAUDE.md) — working conventions for agents and collaborators
 - [`world/guardrails.md`](world/guardrails.md) — ethical boundaries: depict deception, never enable it
