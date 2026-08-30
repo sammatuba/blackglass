@@ -165,6 +165,7 @@ export interface Notif {
   app: string
   text: string
   sub?: string
+  time?: string
   dim?: boolean
 }
 

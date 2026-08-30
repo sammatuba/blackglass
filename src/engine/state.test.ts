@@ -21,6 +21,11 @@ describe('needsMet', () => {
     expect(needsMet(['maya'], state)).toBe(true)
     expect(needsMet(['maya', 'tita'], state)).toBe(false)
   })
+  it('gates on recorded choices with key=value', () => {
+    const state = { ...blankState(), choices: { decision2: 'verify' } }
+    expect(needsMet(['decision2=verify'], state)).toBe(true)
+    expect(needsMet(['decision2=pay'], state)).toBe(false)
+  })
 })
 
 describe('nextFrame', () => {

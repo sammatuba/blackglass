@@ -84,7 +84,7 @@ export const GAMES: GameEntry[] = [
       'Judge a live feed of texts, DMs, and calls — Scam, Legit, or Verify first — then work narrative case files: inspect the artifacts, weigh the clues, choose your response.',
     pillar: 'train',
     topics: ['red flags', 'verify first', 'case files'],
-    status: 'building',
+    status: 'shipped',
     meta: 'Trainer · feed + cases',
     icon: 'radar',
     route: '/scam-radar',

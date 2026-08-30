@@ -13,7 +13,14 @@ export function blankState(): StoryState {
 
 export function needsMet(needs: string[] | undefined, state: StoryState): boolean {
   if (!needs || needs.length === 0) return true
-  return needs.every((id) => state.completed[id])
+  return needs.every((entry) => {
+    const eq = entry.indexOf('=')
+    if (eq > 0) {
+      // "key=value" gates on a recorded choice
+      return String(state.choices[entry.slice(0, eq)]) === entry.slice(eq + 1)
+    }
+    return !!state.completed[entry]
+  })
 }
 
 /**
