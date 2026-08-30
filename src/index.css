@@ -49,3 +49,19 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* pure-CSS phone wallpapers for the engine */
+.wall-dusk {
+  background: linear-gradient(160deg, #2b1d4f 0%, #14203e 55%, #0a1226 100%);
+}
+.wall-dawn {
+  background: linear-gradient(165deg, #3b2f6b 0%, #7a4f8c 45%, #d98a6a 100%);
+}
+.wall-leaf {
+  background: linear-gradient(160deg, #14432e 0%, #0d2b33 60%, #091420 100%);
+}
+.wall-grid {
+  background: linear-gradient(180deg, #0d1526 0%, #0a0f1c 100%),
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(148, 163, 184, 0.07) 22px 23px),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(148, 163, 184, 0.07) 22px 23px);
+}
