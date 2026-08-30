@@ -1,9 +1,10 @@
 /* =====================================================================
-   BLACKGLASS — Three Phones engine
-   Renders a phone rack, then drives one phone's `flow` (frames of beats),
-   tracks completion + choices in localStorage, gates recognition frames
-   on what you've already played, and unlocks the timeline + reflection
-   once all three mornings are lived. Vanilla, offline, file:// safe.
+   BLACKGLASS — phone-anthology engine
+   Renders the anchor select, then a phone rack, then drives one phone's
+   `flow` (frames of beats), tracks completion + choices in localStorage,
+   gates recognition frames on what you've already played, and unlocks
+   the timeline + reflection once every phone in an anchor is lived.
+   Vanilla, offline, file:// safe.
    ===================================================================== */
 
 (function () {
@@ -83,7 +84,7 @@
     const foot = el('div', 'rack-foot');
     const reset = el('button', 'linkish', 'Reset everything');
     reset.addEventListener('click', () => {
-      if (confirm('Forget both stories and start over?')) { state = blankState(); save(); renderAnchorSelect(); }
+      if (confirm('Forget all stories and start over?')) { state = blankState(); save(); renderAnchorSelect(); }
     });
     foot.appendChild(reset);
     wrap.appendChild(foot);
@@ -119,7 +120,7 @@
     const wrap = el('div', 'rack');
 
     const top = el('div', 'rack-top');
-    const toAnchors = el('button', 'linkish back-anchors', '‹ Both stories');
+    const toAnchors = el('button', 'linkish back-anchors', '‹ All stories');
     toAnchors.addEventListener('click', renderAnchorSelect);
     top.appendChild(toAnchors);
     wrap.appendChild(top);
@@ -175,7 +176,7 @@
     const foot = el('div', 'rack-foot');
     const reset = el('button', 'linkish', 'Reset everything');
     reset.addEventListener('click', () => {
-      if (confirm('Forget both stories and start over?')) {
+      if (confirm('Forget all stories and start over?')) {
         state = blankState(); save(); renderAnchorSelect();
       }
     });
