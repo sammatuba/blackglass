@@ -12,7 +12,7 @@ Both stand on their own. Together they compound: the fiction handles what knowle
 
 Project names are provisional. Describe by essence, not title.
 
-**Current milestone:** First playable — an Ink-based narrative, Maya's perspective, basic web wrapper. The writing is the bet.
+**Current milestone:** Platform foundation — a Vite/React hub unifying the suite (three pillars: PLAY story / TRAIN skills / LEARN concepts), the generalized phone/beat engine in `src/engine/`, and **Scam Radar**, the scam-readiness trainer. See `docs/VISION.md` and `docs/GAMES.md`.
 
 ---
 
@@ -22,13 +22,20 @@ Project names are provisional. Describe by essence, not title.
 research/    ← what we know
 world/       ← what we imagine
 craft/       ← what we write and design
-play/        ← what people touch
+play/        ← legacy apps people touch (verbatim, iframe-embedded by the platform)
+src/         ← the platform: hub, engine, new games
+docs/        ← vision, game inventory, asset sources
 archive/     ← what came before
 ```
 
 Pipeline flows down: research → world → craft → play. Each layer expands when the work demands it.
 
 ### Where things are
+
+**docs/**
+- `VISION.md` — the three-pillar platform vision (PLAY / TRAIN / LEARN)
+- `GAMES.md` — the canonical game inventory + idea backlog
+- `ASSETS.md` — asset sources (Kitbitz CC0 catalog, Gemini diegetic pipeline) and rules
 
 **research/**
 - `ai-literacy-safety-standards.md` — UNESCO, OECD, NIST, EU AI Act framework analysis
@@ -41,20 +48,22 @@ Pipeline flows down: research → world → craft → play. Each layer expands w
 **craft/**
 - `maya/` — the IF (primary work)
   - `arc.md` — the polished full-narrative reading layer (12 scenes, ~15K words)
-  - `_arc-act2-polished.md`, `_arc-act3-polished.md` — alt source prose for Acts 2 & 3
-  - `_handoff-template.md` — template for craft → play handoffs
-  - `_meta/` — cross-cutting writing notes: character baseline, continuity, editorial commentary, scene blueprints, Ink design foundation, craft guidelines, design bible
-  - `scenes/<NN>-<slug>/` — per-scene dossier: `drafts.md` (workshop output), `script.ink` (polished Ink), `handoff.md` (build note). See `maya/README.md` for scene-status table.
+  - `_meta/` — cross-cutting writing notes: character baseline, continuity, editorial commentary, phone-anthology architecture, graphics-and-completion approach, design bible
+  - `scenes/<slug>/` — per-scene dossier: `design-brief.md`, `drafts.md` (workshop output), `handoff.md` (build note). See `maya/README.md`.
 - `literacy-games/` — supplementary work design docs (Bias Bounty, etc.)
 - `evaluation/` — eval frameworks, production feasibility, improvement guides
 
-**play/**
-- `shared/` — design system (`card-base.css`, `game-utils.js`)
-- `blackglass/` — IF web wrapper (consumes `craft/maya/` per scene handoffs)
-- `human-in-the-loop/` — flagship literacy game (v1.3)
-- `bias-bounty-lite/` — bias detection game (v1.1)
-- `hallucination-hunt/` — AI claim verification game
-- `risk-assessment-protocol/` — NIST RMF risk assessment game (v1.1)
+**play/** — legacy vanilla apps. Ship verbatim (copied to `dist/legacy/` at build time, iframe-embedded). Copy fixes allowed; feature work means porting to the platform instead.
+- `blackglass-phones/` — the flagship phone-anthology (4 anchors) + diegetic-image pipeline
+- `blackglass/` — Maya's Story IF wrapper (superseded, kept as long-form read)
+- `shared/` — literacy-games design system (`card-base.css`, `game-utils.js`)
+- `human-in-the-loop/`, `bias-bounty-lite/`, `hallucination-hunt/`, `risk-assessment-protocol/` — the four literacy games
+
+**src/** — the platform (Vite + React + TypeScript)
+- `app/` — hub shell, router, game registry
+- `engine/` — generalized phone/beat engine (typed schema, React components, tests)
+- `games/scam-radar/` — the scam-readiness trainer
+- `ui/` — design system: tokens, components
 
 **archive/**
 - `maya/` — superseded scene drafts and revision notes for the IF
@@ -147,14 +156,14 @@ Makes craft touchable. Builds interfaces, wires game logic, handles deployment.
 - Fidelity to craft — implementation serves the design
 - Simplicity — no abstractions until the third use
 - Accessibility — screen readers, keyboard nav, mobile-first
-- Resilience — offline, slow phones, minimal JS
+- Resilience — offline after first visit (PWA), slow phones, lean chunks
 
 **Conventions:**
-- Vanilla HTML/CSS/JS only
-- Shared design system in `play/shared/`
-- localStorage with `cgAI_` prefix
-- Per-game structure: `index.html`, `app.js`, `styles.css`
-- No fetch() for local resources — `file://` compatible
+- Platform (`src/`): Vite + React + TypeScript strict, Tailwind v4 tokens, Motion for animation, Zustand for game state
+- Every game is a lazy-loaded route chunk; the hub is the only eagerly loaded surface
+- localStorage keeps the `cgAI_` prefix (`cgAI_<game>_v<N>`)
+- Legacy apps in `play/` stay vanilla and untouched (except copy fixes); they ship verbatim to `dist/legacy/` and load in iframes
+- New games run on `src/engine/` unless they have a documented reason not to
 
 **Boundary:** Does not invent mechanics, rewrite narrative, or add unspecified features.
 
@@ -181,12 +190,16 @@ Template at `craft/maya/_handoff-template.md`. Notes are a contract, not a desig
 
 ## Constraints
 
-- **Zero dependencies** — vanilla HTML/CSS/JS. No npm, no frameworks. This is a feature.
-- **Offline-first** — works via `file://`. No fetch for local files, no CORS.
-- **No functional harm** — fiction depicts deception but never produces working scam templates, real phone numbers, or real identities.
+*(Revised 2026-08-31: the zero-dependency constraint was consciously superseded when the project adopted a bundled platform stack. The intent behind the old constraints — accessibility, resilience, trust — carries over; the mechanisms changed.)*
+
+- **Bundled but lean** — Vite + React + TS. Initial JS budget ≤ 150KB gz; every game is a lazy route chunk; Three.js only ever loads lazily behind a capability check. Legacy `play/` apps remain vanilla and `file://`-compatible.
+- **Offline after first visit** — the platform is a PWA (service worker caches the shell and chunks). No accounts, no servers with player data; progress lives in localStorage (`cgAI_` prefix).
+- **No functional harm** — fiction depicts deception but never produces working scam templates, real phone numbers, or real identities. See `world/guardrails.md`.
+- **Diegetic-graphics discipline** — synthetic-media artifacts come from the Gemini pipeline with planted tells; scene/decor art comes from CC0 sources (`docs/ASSETS.md`). Never blur the two.
 - **Form-agnostic** — the thinking is the project. Interfaces are downstream renderings.
 - **Start simple** — no empty scaffolding. Directories expand when the work demands it.
 
 ## How to run
 
-Open any `index.html` in a browser.
+- Legacy apps: open any `play/*\/index.html` in a browser (still `file://` compatible).
+- Platform: `npm install`, `npm run dev` (dev server), `npm run build` (outputs `dist/`, deploys to GitHub Pages via Actions).

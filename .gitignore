@@ -17,8 +17,16 @@ Thumbs.db
 # Claude Code local settings (machine-specific)
 .claude/settings.local.json
 
-# Dependencies (should never exist, but just in case)
+# Dependencies
 node_modules/
+
+# Build output
+dist/
+dev-dist/
+coverage/
+
+# ZCode local state
+.zcode/
 
 # Backups
 *.bak

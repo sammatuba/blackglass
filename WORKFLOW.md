@@ -22,6 +22,8 @@ Two AI sessions usually run in parallel:
 
 They communicate through files in `craft/maya/scenes/<NN>-<slug>/` — specifically `script.ink` and `handoff.md`.
 
+> **2026-08 update — two build targets.** The above describes the original IF loop, which still applies to `play/blackglass`. Since the phone-anthology pivot, new story work has targeted `play/blackglass-phones/story.js` (dossiers in `craft/maya/scenes/<slug>/` — see `craft/maya/_meta/phone-anthology-architecture.md` and `graphics-and-completion-approach.md`). Going forward, content written for the platform lands as typed data against `src/engine/` (schema documented there); the handoff contract is unchanged — writing sessions leave `handoff.md`, build sessions apply it. New-game writing briefs live next to their game (`src/games/<game>/content/`).
+
 ---
 
 ## Common moves
