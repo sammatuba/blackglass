@@ -474,29 +474,62 @@ function HomeScreen({
   const newReplies = caseDef.replies.filter((r) => !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires])).length
 
   const tiles: { id: AppId; badge?: number }[] = [
-    { id: 'messages', badge: newReplies > 0 ? newReplies : undefined },
     { id: 'gallery' },
     { id: 'phone' },
-    { id: 'browser' },
     { id: 'contacts' },
     { id: 'notes', badge: os.evidence.length || undefined },
+  ]
+  const dockApps: { id: AppId; badge?: number }[] = [
+    { id: 'messages', badge: newReplies > 0 ? newReplies : undefined },
+    { id: 'browser' },
     { id: 'settings' },
   ]
 
+  const renderIcon = ({ id, badge }: { id: AppId; badge?: number }) => {
+    const meta = APP_META[id]
+    return (
+      <button
+        key={id}
+        type="button"
+        onClick={() => onOpenApp(id)}
+        aria-label={`Open ${meta.name}`}
+        className="group flex flex-col items-center gap-1.5"
+      >
+        <span
+          className={`relative grid h-14 w-14 place-items-center rounded-2xl text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95 ${meta.tile}`}
+        >
+          {meta.icon}
+          {badge != null && badge > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+              {badge}
+            </span>
+          )}
+        </span>
+        <span className="text-[10px] font-medium opacity-85">{meta.name}</span>
+      </button>
+    )
+  }
+
   return (
-    <div className="absolute inset-0 z-10 flex flex-col px-5 pb-10 pt-12 text-white">
+    <div className="absolute inset-0 z-10 flex flex-col px-5 pb-4 pt-12 text-white">
       <div className="grid grid-cols-4 gap-x-3 gap-y-5">
-        {tiles.map(({ id, badge }) => {
-          const meta = APP_META[id]
-          return (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onOpenApp(id)}
-              className="group flex flex-col items-center gap-1.5"
-            >
-              <span
-                className={`relative grid h-14 w-14 place-items-center rounded-2xl text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95 ${meta.tile}`}
+        {tiles.map(renderIcon)}
+      </div>
+
+      <div className="mt-auto">
+        <div className="mx-auto mb-4 w-max rounded-full bg-white/10 px-4 py-1 text-[10px] opacity-70">
+          {os.evidence.length > 0 ? `🧩 ${os.evidence.length} clue${os.evidence.length > 1 ? 's' : ''} in Notes` : 'glassOS 4.0'}
+        </div>
+        <div className="flex items-center justify-around rounded-3xl bg-white/12 px-4 py-3 backdrop-blur-md">
+          {dockApps.map(({ id, badge }) => {
+            const meta = APP_META[id]
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => onOpenApp(id)}
+                aria-label={`Open ${meta.name}`}
+                className="relative grid h-13 w-13 place-items-center rounded-2xl text-2xl shadow-lg transition-transform active:scale-95"
               >
                 {meta.icon}
                 {badge != null && badge > 0 && (
@@ -504,18 +537,10 @@ function HomeScreen({
                     {badge}
                   </span>
                 )}
-              </span>
-              <span className="text-[10px] font-medium opacity-85">{meta.name}</span>
-            </button>
-          )
-        })}
-      </div>
-
-      <div className="mt-auto">
-        <div className="mx-auto mb-4 w-max rounded-full bg-white/10 px-4 py-1 text-[10px] opacity-70">
-          {os.evidence.length > 0 ? `🧩 ${os.evidence.length} clue${os.evidence.length > 1 ? 's' : ''} in Notes` : 'glassOS 4.0'}
+              </button>
+            )
+          })}
         </div>
-        <div className="mx-auto h-1 w-24 rounded-full bg-white/40" aria-hidden="true" />
       </div>
     </div>
   )

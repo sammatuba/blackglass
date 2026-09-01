@@ -380,8 +380,8 @@ export function GalleryApp({
             }}
             className="group text-left"
           >
-            <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-white/8 bg-[#16203a] text-3xl opacity-80 transition-opacity group-hover:opacity-100" aria-hidden="true">
-              {p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️'}
+            <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-white/8 bg-gradient-to-br from-[#2a3a5c] to-[#131c30] text-3xl opacity-90 transition-opacity group-hover:opacity-100" aria-hidden="true">
+              {p.emoji ?? (p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️')}
             </span>
             <span className="mt-1 block truncate text-[11px] text-white/60">{p.title}</span>
             {!os.inspected.includes(p.id) && <span className="mt-0.5 block text-[10px] font-semibold text-emerald-300">new</span>}
@@ -395,8 +395,8 @@ export function GalleryApp({
             ‹ Back
           </button>
           <div className="flex min-h-0 flex-1 flex-col justify-center">
-            <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border border-white/10 bg-[#16203a] text-5xl opacity-70" aria-hidden="true">
-              {open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️'}
+            <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-[#2a3a5c] to-[#131c30] text-5xl opacity-80" aria-hidden="true">
+              {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
             </div>
             <h3 className="mt-3 text-sm font-bold text-white/95">{open.title}</h3>
             {open.tells && open.tells.length > 0 && (

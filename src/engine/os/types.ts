@@ -33,6 +33,8 @@ export interface OSPhoto {
   title: string
   /** artifact reference or CSS-fallback presentation */
   kind: 'photo' | 'meme' | 'screenshot'
+  /** subject emoji used for the faux-photo placeholder */
+  emoji?: string
   /** normalized tells for the examine layer */
   tells?: OSTell[]
   evidence?: string

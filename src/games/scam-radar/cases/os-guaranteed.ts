@@ -45,6 +45,7 @@ export const GUARANTEED_OS: CaseOS = {
       id: 'deepfake-still',
       title: 'IMG from VIP Desk · “Tito Mike” announcement',
       kind: 'screenshot',
+      emoji: '📺',
       requires: 'still-sent',
       evidence: 'ev-still',
       tells: [

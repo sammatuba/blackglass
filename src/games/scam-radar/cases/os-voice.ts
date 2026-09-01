@@ -42,12 +42,13 @@ export const VOICE_OS: CaseOS = {
   ],
 
   photos: [
-    { id: 'grad', title: 'Renz — graduation, 2023', kind: 'photo' },
-    { id: 'kangkong', title: 'kangkong HAHAHA.jpg', kind: 'meme' },
+    { id: 'grad', title: 'Renz — graduation, 2023', kind: 'photo', emoji: '🎓' },
+    { id: 'kangkong', title: 'kangkong HAHAHA.jpg', kind: 'meme', emoji: '🥬' },
     {
       id: 'accident',
       title: 'IMG_2041.jpg · from “Renz?”',
       kind: 'photo',
+      emoji: '🏥',
       requires: 'photo-arrived',
       evidence: 'ev-photo',
       tells: [
