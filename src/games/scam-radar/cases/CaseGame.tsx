@@ -80,18 +80,27 @@ function OsDebrief({
 }) {
   const total = useRadar((s) => s.totalScore)
   const points = outcome.points + evidence.bonus
+  const stamp =
+    points >= 40
+      ? { text: 'Scam detected', cls: 'border-emerald-400/70 text-emerald-300' }
+      : points >= 20
+        ? { text: 'Close call', cls: 'border-amber-400/70 text-amber-300' }
+        : { text: 'Taken in', cls: 'border-red-400/70 text-red-300' }
   return (
-    <div className="mx-auto w-full max-w-md px-4 pt-6 pb-12">
+    <div className="mx-auto w-full max-w-md px-4 pt-8 pb-12">
       <FadeIn>
-        <p className="text-xs font-semibold tracking-[0.3em] text-train uppercase">
-          Debrief · {caseDef.level}
-        </p>
-        <h2 className="font-display mt-2 text-3xl font-semibold text-ink-100">{caseDef.title}</h2>
+        <div className="inline-block rounded-t-xl border border-b-0 border-ink-600/80 bg-ink-800/90 px-4 py-1.5">
+          <p className="text-[10px] font-bold tracking-[0.25em] text-train uppercase">Case file · {caseDef.level}</p>
+        </div>
+        <div className="rounded-b-2xl rounded-tr-2xl border border-ink-600/80 bg-ink-900/70 p-5">
+          <h2 className="font-display text-3xl font-semibold text-ink-100">{caseDef.title}</h2>
+          <p className="mt-1 text-xs font-medium text-train">{caseDef.tagline}</p>
+        </div>
       </FadeIn>
 
       <FadeIn delay={0.05}>
         <div
-          className={`mt-5 rounded-2xl border p-4 ${
+          className={`relative mt-5 rounded-2xl border p-4 ${
             points >= 40
               ? 'border-emerald-500/35 bg-emerald-500/8'
               : points >= 20
@@ -99,6 +108,12 @@ function OsDebrief({
                 : 'border-red-500/35 bg-red-500/8'
           }`}
         >
+          <span
+            className={`absolute -top-2.5 right-4 -rotate-6 rounded border-2 bg-ink-950/90 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] ${stamp.cls}`}
+            aria-hidden="true"
+          >
+            {stamp.text}
+          </span>
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="text-sm font-bold text-ink-100">{outcome.title}</h3>
             <span className="shrink-0 text-sm font-bold text-train tabular-nums">
