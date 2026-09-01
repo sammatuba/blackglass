@@ -4,7 +4,29 @@ import { FAMILIES } from './families'
 import { useRadar } from './state'
 import { FeedGame } from './feed/FeedGame'
 import { CASE_PLAYABLE, CaseOSGame } from './cases/CaseGame'
+import { wallpaperHue } from '../../engine/os/Stage'
 import { FadeIn } from '../../ui/FadeIn'
+
+/* a locked phone per case — you pick up a device to work the case */
+function MiniDevice({ wallpaper, done }: { wallpaper: string; done?: boolean }) {
+  const hue = wallpaperHue(wallpaper)
+  return (
+    <span
+      className="relative mt-1 block h-28 w-16 shrink-0 rounded-[0.9rem] border border-white/15 bg-[#05070d] p-[3px]"
+      style={{
+        boxShadow: `0 0 26px -2px hsl(${hue} 80% 60% / ${done ? 0.22 : 0.4}), 0 10px 22px -10px rgba(0,0,0,0.9)`,
+      }}
+      aria-hidden="true"
+    >
+      <span className={`relative block h-full w-full overflow-hidden rounded-[0.7rem] brightness-175 ${'wall-' + wallpaper}`}>
+        <span className="absolute left-1/2 top-1 h-1.5 w-5 -translate-x-1/2 rounded-full bg-black/60" />
+        <span className={`absolute inset-0 grid place-items-center ${done ? 'text-lg text-emerald-300' : 'text-sm opacity-90'}`}>
+          {done ? '✓' : '🔒'}
+        </span>
+      </span>
+    </span>
+  )
+}
 
 type Mode = 'menu' | 'feed' | { caseId: string }
 
@@ -21,7 +43,7 @@ export default function ScamRadar() {
 
   if (mode === 'feed') {
     return (
-      <div className="min-h-dvh bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
+      <div className="desk-scene min-h-dvh">
         <FeedGame onExit={() => setMode('menu')} />
       </div>
     )
@@ -31,7 +53,7 @@ export default function ScamRadar() {
     const caseDef = CASE_PLAYABLE.find((c) => c.id === mode.caseId)
     if (caseDef) {
       return (
-        <div className="min-h-dvh bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
+        <div className="desk-scene min-h-dvh">
           <CaseOSGame caseDef={caseDef} onExit={() => setMode('menu')} />
         </div>
       )
@@ -39,7 +61,7 @@ export default function ScamRadar() {
   }
 
   return (
-    <div className="min-h-dvh bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
+    <div className="desk-scene min-h-dvh">
       {mode === 'menu' ? (
         <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
           <Link to="/" className="text-sm text-ink-400 transition-colors hover:text-ink-100">
@@ -107,24 +129,27 @@ export default function ScamRadar() {
                     key={c.id}
                     type="button"
                     onClick={() => setMode({ caseId: c.id })}
-                    className="group flex w-full flex-col rounded-2xl border border-ink-700 bg-ink-800/60 p-5 text-left transition-all hover:-translate-y-0.5 hover:border-train/60"
+                    className="group flex w-full gap-4 rounded-2xl border border-ink-700 bg-ink-800/60 p-4 text-left transition-all hover:-translate-y-0.5 hover:border-train/60"
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-[11px] font-bold tracking-[0.2em] text-train uppercase">
-                        {c.level} <span className="ml-1 font-medium text-ink-400 normal-case">· glassOS</span>
+                    <MiniDevice wallpaper={c.phone.wallpaper} done={done} />
+                    <span className="min-w-0 flex-1">
+                      <span className="flex items-center justify-between gap-3">
+                        <span className="text-[11px] font-bold tracking-[0.2em] text-train uppercase">
+                          {c.level} <span className="ml-1 font-medium text-ink-400 normal-case">· glassOS</span>
+                        </span>
+                        <span
+                          className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
+                            done ? 'bg-emerald-500/15 text-emerald-300' : 'bg-train/15 text-train'
+                          }`}
+                        >
+                          {done ? '✓ worked' : 'Pick up'}
+                        </span>
                       </span>
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
-                          done ? 'bg-emerald-500/15 text-emerald-300' : 'bg-train/15 text-train'
-                        }`}
-                      >
-                        {done ? '✓ worked' : 'Open case'}
-                      </span>
-                    </div>
-                    <h3 className="font-display mt-1.5 text-xl font-semibold text-ink-100">{c.title}</h3>
-                    <p className="text-xs font-medium text-train">{c.tagline}</p>
-                    <p className="mt-2 text-sm leading-relaxed text-ink-400">{c.blurb}</p>
-                    <span className="mt-2 text-xs text-ink-400">{c.minutes}</span>
+                      <h3 className="font-display mt-1.5 text-xl font-semibold text-ink-100">{c.title}</h3>
+                      <p className="text-xs font-medium text-train">{c.tagline}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-ink-400">{c.blurb}</p>
+                      <span className="mt-2 block text-xs text-ink-400">{c.minutes}</span>
+                    </span>
                   </button>
                 )
               })}

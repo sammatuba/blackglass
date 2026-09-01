@@ -22,7 +22,7 @@ const caseDef: CaseOS = {
   level: '',
   minutes: '',
   families: [],
-  phone: { wallpaper: 'wall-dusk', time: '9:47', meridiem: 'PM', day: 'Tuesday', battery: 80 },
+  phone: { wallpaper: 'dusk', time: '9:47', meridiem: 'PM', day: 'Tuesday', battery: 80 },
   contacts: [{ id: 'renz', name: 'Renz', number: '+63 917 555 0143', evidence: 'ev-contact' }],
   threads: [
     { id: 'scammer', service: 'viber', name: 'Renz?', number: '+63 994 000 0000', hue: 220 },

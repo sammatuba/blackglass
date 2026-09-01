@@ -13,7 +13,7 @@ export const PARCEL_OS: CaseOS = {
   minutes: '4–6 min',
   families: ['payment', 'urgency', 'channel'],
   phone: {
-    wallpaper: 'wall-grid',
+    wallpaper: 'grid',
     time: '10:08',
     meridiem: 'AM',
     day: 'Saturday morning',

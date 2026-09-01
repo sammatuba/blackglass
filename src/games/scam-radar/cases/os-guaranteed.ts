@@ -13,7 +13,7 @@ export const GUARANTEED_OS: CaseOS = {
   minutes: '5–7 min',
   families: ['authority', 'toogood', 'urgency', 'payment', 'channel'],
   phone: {
-    wallpaper: 'wall-dawn',
+    wallpaper: 'dawn',
     time: '12:21',
     meridiem: 'PM',
     day: 'Wednesday lunchtime',

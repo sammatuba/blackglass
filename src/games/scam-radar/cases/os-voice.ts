@@ -13,7 +13,7 @@ export const VOICE_OS: CaseOS = {
   minutes: '5–7 min',
   families: ['emotion', 'authority', 'urgency', 'payment', 'channel'],
   phone: {
-    wallpaper: 'wall-dusk',
+    wallpaper: 'dusk',
     time: '9:47',
     meridiem: 'PM',
     day: 'Tuesday evening',
