@@ -13,6 +13,7 @@ import {
 import { sfx, vibrate } from './sound'
 import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp } from './apps'
 import { APP_META } from './apps/shared'
+import { FullscreenToggle, PhoneStage, wallpaperHue } from './Stage'
 
 /* glassOS Device — the found-phone shell. Lock → home → apps, with a
    rule-processing engine pacing messages, calls, and evidence. */
@@ -44,6 +45,8 @@ export function GlassOS({
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
   const [brightness, setBrightness] = useState(100)
+  const [pulse, setPulse] = useState(0)
+  const [confirmExit, setConfirmExit] = useState(false)
 
   const osRef = useRef(os)
   osRef.current = os
@@ -100,6 +103,7 @@ export function GlassOS({
             if (p.msg.from !== 'you') {
               sfx.receive()
               vibrate(18)
+              setPulse((n) => n + 1)
             }
             if (p.msg.from === 'them' && p.msg.text) pushBanner(p.threadId, p.msg.text)
           }
@@ -139,6 +143,7 @@ export function GlassOS({
         if (p.msg.from !== 'you') {
           sfx.receive()
           vibrate([30, 60, 30])
+          setPulse((n) => n + 1)
         }
       }
       void processRules()
@@ -176,9 +181,13 @@ export function GlassOS({
     setLocked(false)
   }, [])
 
-  /* keyboard: Esc = back/home, Enter unlocks */
+  /* keyboard: Esc = back/home, Enter unlocks; the exit dialog takes over while open */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (confirmExit) {
+        if (e.key === 'Escape') setConfirmExit(false)
+        return
+      }
       if (e.key === 'Enter' && locked) unlock()
       if (e.key === 'Escape' && !locked) {
         if (os.call && os.call.phase === 'incoming') return // must answer
@@ -187,7 +196,7 @@ export function GlassOS({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [locked, unlock, goHome, app, os.call])
+  }, [locked, unlock, goHome, app, os.call, confirmExit])
 
   /* ---------- call sound loop ---------- */
   useEffect(() => {
@@ -245,6 +254,7 @@ export function GlassOS({
         onGoHome={goHome}
         onInspect={(id, evidence) => {
           sfx.evidence()
+          setPulse((n) => n + 1)
           const cur = osRef.current
           const ns = evidence
             ? { ...cur, inspected: cur.inspected.includes(id) ? cur.inspected : [...cur.inspected, id], evidence: cur.evidence.includes(evidence) ? cur.evidence : [...cur.evidence, evidence] }
@@ -263,39 +273,101 @@ export function GlassOS({
         }}
         onAcceptCall={acceptCall}
         onEndCall={endCall}
-        onExit={onExit}
       />
     ),
     [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, bump, pushBanner],
   )
 
+  const ringing = os.call?.phase === 'incoming'
+
   return (
-    <div className="relative">
-      {device}
-      {/* notification banners float above the device */}
-      <div className="pointer-events-none absolute left-1/2 top-3 z-50 w-[88%] -translate-x-1/2 space-y-2">
-        {banners.map((b) => (
-          <div
-            key={b.id}
-            className="animate-banner rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold tracking-wide text-white/50 uppercase">
-                {b.icon} {b.app}
-              </span>
-              <span className="ml-auto text-[10px] text-white/40">now</span>
-            </div>
-            <div className="mt-0.5 text-[13px] font-bold text-white/95">{b.title}</div>
-            <div className="line-clamp-2 text-[12.5px] leading-snug text-white/75">{b.text}</div>
+    <>
+      <PhoneStage
+        hue={wallpaperHue(caseDef.phone.wallpaper)}
+        pulse={pulse}
+        ringing={ringing}
+        header={
+          <div className="relative z-10 flex w-full items-center justify-between gap-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setConfirmExit(true)}
+              className="shrink-0 text-sm text-ink-400 transition-colors hover:text-ink-100"
+            >
+              ‹ Put the phone down
+            </button>
+            <span className="truncate text-[11px] tracking-wide text-ink-400 uppercase">
+              {caseDef.level} · {caseDef.tagline}
+            </span>
+            <FullscreenToggle />
           </div>
-        ))}
-      </div>
-      {evidenceCount > 0 && app === null && !locked && (
-        <p className="mt-3 text-center text-xs text-ink-400" aria-live="polite">
-          🧩 clues found this case: <span className="font-semibold text-ink-300">{evidenceCount}</span> — they’re in Notes
-        </p>
+        }
+        footer={
+          <div className="min-h-10 pt-3">
+            {evidenceCount > 0 && app === null && !locked && (
+              <p className="text-center text-xs text-ink-400" aria-live="polite">
+                🧩 clues found this case: <span className="font-semibold text-ink-300">{evidenceCount}</span> — they’re in
+                Notes
+              </p>
+            )}
+          </div>
+        }
+      >
+        <div className="relative w-full">
+          {device}
+          {/* notification banners ride with the device */}
+          <div className="pointer-events-none absolute left-1/2 top-3 z-50 w-[88%] -translate-x-1/2 space-y-2">
+            {banners.map((b) => (
+              <div
+                key={b.id}
+                className="animate-banner rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-bold tracking-wide text-white/50 uppercase">
+                    {b.icon} {b.app}
+                  </span>
+                  <span className="ml-auto text-[10px] text-white/40">now</span>
+                </div>
+                <div className="mt-0.5 text-[13px] font-bold text-white/95">{b.title}</div>
+                <div className="line-clamp-2 text-[12.5px] leading-snug text-white/75">{b.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </PhoneStage>
+
+      {confirmExit && (
+        <div
+          className="fixed inset-0 z-[70] grid place-items-center bg-black/65 p-6 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Put the phone down?"
+        >
+          <div className="w-full max-w-xs rounded-2xl border border-white/10 bg-[#0d1420]/95 p-5 shadow-2xl">
+            <h2 className="font-display text-lg font-semibold text-ink-100">Put the phone down?</h2>
+            <p className="mt-1.5 text-[13px] leading-relaxed text-ink-400">
+              The case resets when you return — evidence and all.
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button
+                autoFocus
+                type="button"
+                onClick={() => setConfirmExit(false)}
+                className="flex-1 rounded-full bg-train px-4 py-2.5 text-sm font-bold text-ink-950 transition-transform active:scale-[0.98]"
+              >
+                Keep playing
+              </button>
+              <button
+                type="button"
+                onClick={onExit}
+                className="flex-1 rounded-full border border-ink-600 px-4 py-2.5 text-sm font-semibold text-ink-300 transition-colors hover:border-ink-400"
+              >
+                Put it down
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   )
 }
 
@@ -322,12 +394,11 @@ function DeviceFrame(props: {
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
-  onExit: () => void
 }) {
   const { caseDef, locked, os } = props
   return (
     <div className="relative mx-auto w-full max-w-[400px]">
-      <div className="relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5 shadow-[0_30px_90px_-30px_rgba(0,0,0,0.95)]">
+      <div className="device-frame relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5">
         {/* screen */}
         <div className="relative h-[74dvh] max-h-[760px] min-h-[560px] overflow-hidden rounded-[2rem] bg-[#0b1220]">
           {/* wallpaper is always behind */}
@@ -379,13 +450,6 @@ function DeviceFrame(props: {
           />
         )}
       </div>
-      <button
-        type="button"
-        onClick={props.onExit}
-        className="mx-auto mt-3 block text-xs text-ink-400 transition-colors hover:text-ink-100"
-      >
-        ‹ Put the phone down
-      </button>
     </div>
   )
 }

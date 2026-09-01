@@ -60,26 +60,7 @@ export function CaseOSGame({ caseDef, onExit }: { caseDef: CaseOS; onExit: () =>
     )
   }
 
-  return (
-    <div className="mx-auto w-full max-w-md px-2">
-      <div className="flex items-center justify-between px-4 pt-3">
-        <button type="button" onClick={onExit} className="text-sm text-ink-400 hover:text-ink-100">
-          ‹ Cases
-        </button>
-        <span className="text-[11px] tracking-wide text-ink-400 uppercase">
-          {caseDef.level} · {caseDef.tagline}
-        </span>
-      </div>
-      <GlassOS
-        key={runKey}
-        caseDef={caseDef}
-        onExit={() => {
-          if (confirm('Put the phone down? The case resets when you return.')) onExit()
-        }}
-        onComplete={finish}
-      />
-    </div>
-  )
+  return <GlassOS key={runKey} caseDef={caseDef} onExit={onExit} onComplete={finish} />
 }
 
 function OsDebrief({
