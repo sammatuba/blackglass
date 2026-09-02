@@ -90,8 +90,21 @@ export const GAMES: GameEntry[] = [
     route: '/scam-radar',
   },
   {
-    id: 'blackglass-phones',
+    id: 'blackglass',
     title: 'BLACKGLASS',
+    tagline: 'Three phones. One morning.',
+    description:
+      'The phone-anthology on glassOS. A link about a vegetable moves through a family on a Saturday — live it from inside Maya\u2019s, Tita Merly\u2019s, and Bea\u2019s phones (each its own UI, its own way of being fooled), then see the one timeline none of them could.',
+    pillar: 'play',
+    topics: ['clickbait', 'group chat', 'AI debunker'],
+    status: 'building',
+    meta: 'Phone-anthology · Anchor I on glassOS',
+    icon: 'phone',
+    route: '/blackglass',
+  },
+  {
+    id: 'blackglass-phones',
+    title: 'BLACKGLASS · classic',
     tagline: 'Four ways to be fooled',
     description:
       'One family, one group chat, four stories. Live a scam from inside Maya’s, Tita Merly’s, and Bea’s phones — then see the one timeline none of them could.',

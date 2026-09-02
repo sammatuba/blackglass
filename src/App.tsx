@@ -4,6 +4,7 @@ import Hub from './app/pages/Hub'
 import LegacyViewer from './app/pages/LegacyViewer'
 
 const ScamRadar = lazy(() => import('./games/scam-radar'))
+const Blackglass = lazy(() => import('./games/blackglass'))
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Hub />} />
         <Route path="/scam-radar/*" element={<ScamRadar />} />
+        <Route path="/blackglass" element={<Blackglass />} />
         <Route path="/legacy/*" element={<LegacyViewer />} />
         <Route path="*" element={<Hub />} />
       </Routes>
