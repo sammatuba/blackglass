@@ -102,6 +102,8 @@ export interface OSReply {
   threadId: string
   /** only offered after this flag is set */
   requires?: string
+  /** no longer offered once this flag is set (siblings after a choice) */
+  hideWhen?: string
   label: string
   sub?: string
   /** decision markers recorded on send */

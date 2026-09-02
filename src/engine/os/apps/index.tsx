@@ -69,7 +69,11 @@ function ThreadList({
     const msgs = visibleMessages(os, t.id)
     const last = msgs[msgs.length - 1]
     const offered = caseDef.replies.some(
-      (r) => r.threadId === t.id && !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires]),
+      (r) =>
+        r.threadId === t.id &&
+        !os.sentReplies.includes(r.id) &&
+        (!r.requires || os.flags[r.requires]) &&
+        !(r.hideWhen && os.flags[r.hideWhen]),
     )
     return { t, last, offered, count: msgs.length }
   })
@@ -142,7 +146,11 @@ function Conversation({
   const offered = caseOver
     ? []
     : caseDef.replies.filter(
-        (r) => r.threadId === thread.id && !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires]),
+        (r) =>
+          r.threadId === thread.id &&
+          !os.sentReplies.includes(r.id) &&
+          (!r.requires || os.flags[r.requires]) &&
+          !(r.hideWhen && os.flags[r.hideWhen]),
       )
   const endRef = useRef<HTMLDivElement>(null)
   const playedVoice = useRef<Set<string>>(new Set())

@@ -187,7 +187,8 @@ export function GlassOS({
     const s = { ...osRef.current, flags: { ...osRef.current.flags, os_unlocked: true } }
     osRef.current = s
     setOS(s)
-  }, [])
+    bump()
+  }, [bump])
 
   /* keyboard: Esc = back/home, Enter unlocks; the exit dialog takes over while open */
   useEffect(() => {
@@ -712,17 +713,17 @@ function AppSurface(props: {
   })()
 
   return (
-    <div className="absolute inset-0 z-20 flex animate-appopen flex-col bg-[#0d1526]/95 backdrop-blur-xl">
+    <div className="absolute inset-0 z-20 flex animate-appopen flex-col bg-[var(--os-bg)]/95 backdrop-blur-xl">
       <div className="mt-9 flex items-center gap-2 px-4 pb-2">
         <button
           type="button"
           onClick={props.onGoHome}
-          aria-label="Home"
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-sm text-white/80 transition-colors hover:bg-white/20"
+          aria-label="Back to home"
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-sm text-[var(--os-ink)] transition-colors hover:bg-[var(--os-hover)]"
         >
           ‹
         </button>
-        <span className="truncate text-[13px] font-bold text-white/95">{meta.name}</span>
+        <span className="truncate text-[13px] font-bold text-[var(--os-ink)]">{meta.name}</span>
       </div>
       <div className="min-h-0 flex-1">{inner}</div>
     </div>

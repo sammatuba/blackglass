@@ -144,7 +144,7 @@ const MAYA: CaseOS = {
     },
     {
       id: 'maya-end',
-      label: 'Put the phone down',
+      label: 'Lock the phone',
       text: [
         'You lock the phone. The kettle is somewhere near boiling.',
         'You knew what the link was the whole time. Knowing did not stop the link. Knowing only let you watch yourself, in good resolution, not stopping it either.',
@@ -261,9 +261,9 @@ const TITA: CaseOS = {
     { title: 'Sa palengke', body: 'kangkong ₱20 · tuyo · Papa’s med ayaw kalimutan' },
   ],
   replies: [
-    { id: 't-open', threadId: 'joy', label: 'Open the link — kung totoo ito, dapat malaman ng lahat', set: { tita_choice: 'opened' } },
-    { id: 't-fwd', threadId: 'joy', label: 'Forward to the Family GC first — they should know right away', set: { tita_choice: 'forward' } },
-    { id: 't-voice', threadId: 'joy', label: 'Send Joy a voice note — ask her more about the cousin', set: { tita_choice: 'voicenote' } },
+    { hideWhen: 'tita_confirmed', id: 't-open', threadId: 'joy', label: 'Open the link — kung totoo ito, dapat malaman ng lahat', set: { tita_choice: 'opened' } },
+    { hideWhen: 'tita_confirmed', id: 't-fwd', threadId: 'joy', label: 'Forward to the Family GC first — they should know right away', set: { tita_choice: 'forward' } },
+    { hideWhen: 'tita_confirmed', id: 't-voice', threadId: 'joy', label: 'Send Joy a voice note — ask her more about the cousin', set: { tita_choice: 'voicenote' } },
   ],
   moments: [
     {
@@ -430,9 +430,9 @@ const BEA: CaseOS = {
     { title: 'work deck (draft)', body: '“the fill-in-the-blank scare template” — slide 4: EXPOSED + they don’t want you to + [profession] silent' },
   ],
   replies: [
-    { id: 'b-tiktok', threadId: 'maya4ever', label: 'Open TikTok — see what’s already circulating', set: { bea_choice: 'tiktok' } },
-    { id: 'b-snopes', threadId: 'maya4ever', label: 'Cross-check the Snopes tab you’ve had open six days', set: { bea_choice: 'snopes' } },
-    { id: 'b-council', threadId: 'maya4ever', label: 'Screenshot it to the council — let them weigh in', set: { bea_choice: 'council' } },
+    { hideWhen: 'bea_consulted', id: 'b-tiktok', threadId: 'maya4ever', label: 'Open TikTok — see what’s already circulating', set: { bea_choice: 'tiktok' } },
+    { hideWhen: 'bea_consulted', id: 'b-snopes', threadId: 'maya4ever', label: 'Cross-check the Snopes tab you’ve had open six days', set: { bea_choice: 'snopes' } },
+    { hideWhen: 'bea_consulted', id: 'b-council', threadId: 'maya4ever', label: 'Screenshot it to the council — let them weigh in', set: { bea_choice: 'council' } },
   ],
   moments: [
     {
