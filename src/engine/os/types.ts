@@ -119,6 +119,10 @@ export interface OSRule {
   /** all listed conditions must hold */
   when: {
     flag?: string
+    /** all of these flags must be set (cross-phone gates use this) */
+    allFlags?: string[]
+    /** inverse condition — the flag must NOT be set */
+    notFlag?: string
     replySent?: string
     call?: 'accepted' | 'declined' | 'ended'
     /** require the ended call to have been declined (or not) */
@@ -167,8 +171,8 @@ export interface CaseOS {
   tagline: string
   blurb: string
   level: string
-  minutes: string
-  families: string[]
+  minutes?: string
+  families?: string[]
   phone: {
     wallpaper: string
     time: string
@@ -195,14 +199,14 @@ export interface CaseOS {
   /** flags seeded into the initial state (cross-phone unlocks, carried choices) */
   initialFlags?: Record<string, FlagValue>
   /** human labels for evidence ids — Notes app + debrief */
-  evidenceLabels: Record<string, string>
+  evidenceLabels?: Record<string, string>
   /** when this flag is set (and the chain drains), the case is complete */
   endFlag: string
   /** initial evidence entries in Notes */
   openingEvidence?: string[]
-  checklist: string[]
-  tells: OSTell[]
-  outcomes: {
+  checklist?: string[]
+  tells?: OSTell[]
+  outcomes?: {
     match: Record<string, FlagValue>
     title: string
     text: string

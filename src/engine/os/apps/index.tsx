@@ -730,7 +730,7 @@ export function ContactsApp({
    ===================================================================== */
 
 export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
-  const evidence = os.evidence.map((id) => ({ id, label: caseDef.evidenceLabels[id] ?? id }))
+  const evidence = os.evidence.map((id) => ({ id, label: caseDef.evidenceLabels?.[id] ?? id }))
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
       <div className="mt-1 rounded-2xl border border-amber-300/25 bg-amber-400/10 p-4">

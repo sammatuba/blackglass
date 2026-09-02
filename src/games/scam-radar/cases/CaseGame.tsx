@@ -73,13 +73,17 @@ function OsDebrief({
 }: {
   caseDef: CaseOS
   state: OSState
-  outcome: CaseOS['outcomes'][number]
+  outcome: NonNullable<CaseOS['outcomes']>[number]
   evidence: { found: number; total: number; bonus: number }
   onReplay: () => void
   onExit: () => void
 }) {
   const total = useRadar((s) => s.totalScore)
   const points = outcome.points + evidence.bonus
+  /* scam-radar cases always define these; the type allows their absence */
+  const families = caseDef.families ?? []
+  const tells = caseDef.tells ?? []
+  const checklist = caseDef.checklist ?? []
   const stamp =
     points >= 40
       ? { text: 'Scam detected', cls: 'border-emerald-400/70 text-emerald-300' }
@@ -146,7 +150,7 @@ function OsDebrief({
               <span className="text-emerald-300" aria-hidden="true">
                 ✓
               </span>
-              {caseDef.evidenceLabels[id] ?? id}
+              {caseDef.evidenceLabels?.[id] ?? id}
             </li>
           ))}
         </ul>
@@ -157,14 +161,14 @@ function OsDebrief({
           What the scam had going for it
         </h3>
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {caseDef.families.map((f) => (
+          {families.map((f) => (
             <span key={f} className="rounded-md bg-ink-700/80 px-2 py-1 text-[11px] font-semibold text-ink-300">
               {FAMILY_BY_ID[f as keyof typeof FAMILY_BY_ID]?.icon} {FAMILY_BY_ID[f as keyof typeof FAMILY_BY_ID]?.label}
             </span>
           ))}
         </div>
         <ul className="mt-4 space-y-2.5">
-          {caseDef.tells.map((t) => (
+          {tells.map((t) => (
             <li key={t.label} className="rounded-xl border border-ink-700 bg-ink-800/60 p-3">
               <div className="text-[13px] font-bold text-ink-100">🔍 {t.label}</div>
               <p className="mt-1 text-[12.5px] leading-relaxed text-ink-400">{t.detail}</p>
@@ -178,7 +182,7 @@ function OsDebrief({
           Print this in your spine
         </h3>
         <ul className="mt-3 space-y-1.5">
-          {caseDef.checklist.map((c) => (
+          {checklist.map((c) => (
             <li key={c} className="flex gap-2 text-[13px] leading-relaxed text-ink-300">
               <span className="text-train" aria-hidden="true">
                 ✓

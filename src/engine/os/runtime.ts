@@ -21,14 +21,19 @@ export function initialOSState(caseDef?: CaseOS): OSState {
   }
 }
 
-/** close the active prose interstitial (the rule pump resumes) */
+/** close the active prose interstitial (the rule pump resumes) and mark
+    it seen — rules key on `dismissed:<id>` to continue after a moment */
 export function dismissMoment(state: OSState): OSState {
-  return { ...state, moment: null }
+  const id = state.moment
+  if (!id) return state
+  return { ...state, moment: null, flags: { ...state.flags, [`dismissed:${id}`]: true } }
 }
 
 function condMet(rule: OSRule, state: OSState): boolean {
   const w = rule.when
   if (w.flag && !state.flags[w.flag]) return false
+  if (w.allFlags?.some((f) => !state.flags[f])) return false
+  if (w.notFlag && state.flags[w.notFlag]) return false
   if (w.replySent && !state.sentReplies.includes(w.replySent)) return false
   if (w.call && (!state.call || state.call.phase !== w.call)) return false
   if (w.callDeclined != null) {
@@ -134,9 +139,9 @@ export function visibleMessages(state: OSState, threadId: string): OSMessage[] {
 /** outcome lookup on the recorded decision flags (first match wins) */
 export function resolveOutcome(caseDef: CaseOS, flags: Record<string, FlagValue>) {
   return (
-    caseDef.outcomes.find((o) =>
+    caseDef.outcomes?.find((o) =>
       Object.entries(o.match).every(([k, v]) => String(flags[k]) === String(v)),
-    ) ?? caseDef.outcomes[caseDef.outcomes.length - 1]
+    ) ?? caseDef.outcomes?.[caseDef.outcomes.length - 1] ?? { match: {}, title: '—', text: '', points: 0 }
   )
 }
 
