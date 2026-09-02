@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { AppId, CaseOS, OSMessage, OSState } from './types'
+import type { AppId, CaseOS, OSMessage, OSMoment, OSState } from './types'
 import {
   applyPushAt,
   applyRule,
   clearCall,
+  dismissMoment as closeMoment,
   initialOSState,
   markReplied,
   pendingRules,
@@ -11,7 +12,7 @@ import {
   visibleMessages,
 } from './runtime'
 import { sfx, vibrate } from './sound'
-import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp } from './apps'
+import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, wallpaperHue } from './Stage'
 
@@ -41,7 +42,7 @@ export function GlassOS({
   const [app, setApp] = useState<AppId | null>(null)
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
-  const [os, setOS] = useState<OSState>(() => initialOSState())
+  const [os, setOS] = useState<OSState>(() => initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
   const [brightness, setBrightness] = useState(100)
@@ -77,6 +78,8 @@ export function GlassOS({
 
   const processRules = useCallback(async () => {
     while (true) {
+      // a prose interstitial is up: hold the world until it's dismissed
+      if (osRef.current.moment) break
       const ready = pendingRules(caseDef, osRef.current)
       if (ready.length === 0) break
       for (const rule of ready) {
@@ -100,7 +103,8 @@ export function GlassOS({
             osRef.current = s
             setOS(s)
             const p = rule.push[idx]
-            if (p.msg.from !== 'you') {
+            const silent = p.msg.kind === 'narr' || p.msg.kind === 'aside'
+            if (!silent && p.msg.from !== 'you') {
               sfx.receive()
               vibrate(18)
               setPulse((n) => n + 1)
@@ -179,6 +183,10 @@ export function GlassOS({
     sfx.unlock()
     vibrate(12)
     setLocked(false)
+    // narrative rules key off this (the anthology's waking beats)
+    const s = { ...osRef.current, flags: { ...osRef.current.flags, os_unlocked: true } }
+    osRef.current = s
+    setOS(s)
   }, [])
 
   /* keyboard: Esc = back/home, Enter unlocks; the exit dialog takes over while open */
@@ -231,6 +239,13 @@ export function GlassOS({
     [bump],
   )
 
+  const dismissMoment = useCallback(() => {
+    const s = closeMoment(osRef.current)
+    osRef.current = s
+    setOS(s)
+    bump()
+  }, [bump])
+
   /* ---------- derived ---------- */
 
   const evidenceCount = os.evidence.length
@@ -273,9 +288,10 @@ export function GlassOS({
         }}
         onAcceptCall={acceptCall}
         onEndCall={endCall}
+        onDismissMoment={dismissMoment}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, bump, pushBanner],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -394,13 +410,18 @@ function DeviceFrame(props: {
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
+  onDismissMoment: () => void
 }) {
   const { caseDef, locked, os } = props
   return (
     <div className="relative mx-auto w-full max-w-[400px]">
       <div className="device-frame relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5">
         {/* screen */}
-        <div className="relative h-[74dvh] max-h-[760px] min-h-[560px] overflow-hidden rounded-[2rem] bg-[#0b1220]">
+        <div
+          className={`os-skin relative h-[74dvh] max-h-[760px] min-h-[560px] overflow-hidden rounded-[2rem] bg-[var(--os-bg)] ${
+            caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''
+          }`}
+        >
           {/* wallpaper is always behind */}
           <div className={`wall-${caseDef.phone.wallpaper} absolute inset-0`} aria-hidden="true" />
           {/* brightness dim */}
@@ -428,6 +449,14 @@ function DeviceFrame(props: {
             />
           )}
 
+          {/* prose interstitial — the world holds until it's dismissed */}
+          {os.moment && (
+            <MomentOverlay
+              moment={caseDef.moments?.find((m) => m.id === os.moment)}
+              onDismiss={props.onDismissMoment}
+            />
+          )}
+
           {/* glare */}
           <div
             className="pointer-events-none absolute inset-0 z-30 rounded-[inherit]"
@@ -446,7 +475,7 @@ function DeviceFrame(props: {
             type="button"
             aria-label="Home"
             onClick={props.onGoHome}
-            className="absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full bg-white/25 transition-colors hover:bg-white/40"
+            className="os-gesturebar absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full transition-colors"
           />
         )}
       </div>
@@ -456,7 +485,7 @@ function DeviceFrame(props: {
 
 function StatusBar({ time, meridiem, battery }: { time: string; meridiem: string; battery: number }) {
   return (
-    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 pt-3.5 text-[11px] font-semibold text-white/90">
+    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 pt-3.5 text-[11px] font-semibold text-[var(--os-ink)]">
       <span>
         {time} <span className="opacity-70">{meridiem}</span>
       </span>
@@ -464,10 +493,46 @@ function StatusBar({ time, meridiem, battery }: { time: string; meridiem: string
         <span className="text-[9px] tracking-tighter">••••</span>
         <span>⌃</span>
         <span className="tabular-nums">{battery}%</span>
-        <span className="inline-block h-2.5 w-5 rounded-[3px] border border-white/70">
-          <span className="block h-full w-full rounded-[2px] bg-white/80" style={{ width: `${battery}%` }} />
+        <span className="inline-block h-2.5 w-5 rounded-[3px] border border-current opacity-80">
+          <span className="block h-full w-full rounded-[2px] bg-current opacity-80" style={{ width: `${battery}%` }} />
         </span>
       </span>
+    </div>
+  )
+}
+
+/* full-screen prose interstitial — the anthology's narration channel */
+function MomentOverlay({
+  moment,
+  onDismiss,
+}: {
+  moment?: OSMoment
+  onDismiss: () => void
+}) {
+  useEffect(() => {
+    sfx.open()
+  }, [])
+  return (
+    <div
+      className="animate-fadein absolute inset-0 z-[45] flex flex-col justify-center overflow-y-auto bg-[var(--os-bg)] px-7 py-10"
+      role="dialog"
+      aria-label="Narrative moment"
+    >
+      <div className="space-y-3.5">
+        {(moment?.text ?? []).map((p, i) => (
+          <p key={i} className="os-narr text-[15px] leading-[1.65]">
+            {p}
+          </p>
+        ))}
+      </div>
+      <button
+        autoFocus
+        type="button"
+        onClick={onDismiss}
+        className="mt-8 w-full rounded-full bg-[var(--os-accent)] px-5 py-3 text-sm font-bold text-[var(--os-accent-ink)] transition-transform active:scale-[0.98]"
+      >
+        {moment?.label ?? 'Continue'}
+      </button>
     </div>
   )
 }
@@ -483,7 +548,7 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
     .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage }[]
 
   return (
-    <div className="absolute inset-0 z-20 flex flex-col px-6 pb-6 pt-14 text-white">
+    <div className="absolute inset-0 z-20 flex flex-col px-6 pb-6 pt-14 text-[var(--os-ink)]">
       <div className="text-center">
         <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
         <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
@@ -498,10 +563,10 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
             key={t.id}
             type="button"
             onClick={onUnlock}
-            className="block w-full rounded-2xl bg-black/45 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-black/60"
+            className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
           >
             <div className="text-[11px] font-bold tracking-wide opacity-75">
-              {t.service === 'sms' ? 'Messages' : t.service === 'viber' ? 'Viber' : 'Messenger'}
+              {SERVICE_LABEL[t.service]}
             </div>
             <div className="text-[13px] font-bold">{t.name}</div>
             <div className="line-clamp-1 text-[12.5px] opacity-85">

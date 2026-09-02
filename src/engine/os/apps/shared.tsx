@@ -30,8 +30,8 @@ export function EmptyState({ icon, title, sub }: { icon: string; title: string; 
         <div className="text-3xl opacity-40" aria-hidden="true">
           {icon}
         </div>
-        <p className="mt-2 text-sm font-semibold text-white/70">{title}</p>
-        {sub && <p className="mt-1 text-xs leading-relaxed text-white/45">{sub}</p>}
+        <p className="mt-2 text-sm font-semibold text-[var(--os-dim)]">{title}</p>
+        {sub && <p className="mt-1 text-xs leading-relaxed text-[var(--os-faint)]">{sub}</p>}
       </div>
     </div>
   )

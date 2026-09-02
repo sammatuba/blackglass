@@ -46,7 +46,7 @@ export interface OSPage {
   id: string
   url: string
   title: string
-  kind: 'checkout' | 'news' | 'dashboard' | 'gov' | 'bank'
+  kind: 'checkout' | 'news' | 'dashboard' | 'gov' | 'bank' | 'video' | 'social'
   /** the sketchy page's own content model, rendered by Browser app */
   headline?: string
   body?: string[]
@@ -54,6 +54,11 @@ export interface OSPage {
   payee?: string
   badge?: string
   fields?: string[]
+  /** video pages (kind: 'video') */
+  creator?: string
+  creatorSub?: string
+  views?: string
+  tag?: string
   tells?: OSTell[]
   evidence?: string
 }
@@ -71,7 +76,7 @@ export interface OSVoicemail {
 export interface OSMessage {
   id: string
   from: 'them' | 'you' | 'sys'
-  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard'
+  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside'
   text?: string
   secs?: number
   photoId?: string
@@ -82,7 +87,7 @@ export interface OSMessage {
 
 export interface OSThread {
   id: string
-  service: 'sms' | 'viber' | 'messenger'
+  service: 'sms' | 'viber' | 'messenger' | 'tiktok' | 'threads'
   name: string
   number?: string
   /** true = shows as a saved contact in the thread header */
@@ -138,6 +143,17 @@ export interface OSRule {
   }
   /** bounce the player to an app (e.g. a call pulls you there) */
   nudgeApp?: AppId
+  /** raise a full-screen prose interstitial inside the phone; the rule
+      pump pauses until it is dismissed */
+  moment?: string
+}
+
+/** full-screen prose interstitial — the anthology's narration channel */
+export interface OSMoment {
+  id: string
+  text: string[]
+  /** continue-button label; defaults to "Continue" */
+  label?: string
 }
 
 export interface OSNote {
@@ -160,6 +176,8 @@ export interface CaseOS {
     day: string
     battery: number
     lockNote?: string
+    /** UI-as-character skin: keys a `.theme-<name>` palette (engine CSS) */
+    theme?: string
   }
   contacts: OSContact[]
   threads: OSThread[]
@@ -172,6 +190,10 @@ export interface CaseOS {
   notes: OSNote[]
   replies: OSReply[]
   rules: OSRule[]
+  /** full-screen prose interstitials, raised by rules (`moment`) */
+  moments?: OSMoment[]
+  /** flags seeded into the initial state (cross-phone unlocks, carried choices) */
+  initialFlags?: Record<string, FlagValue>
   /** human labels for evidence ids — Notes app + debrief */
   evidenceLabels: Record<string, string>
   /** when this flag is set (and the chain drains), the case is complete */
@@ -209,5 +231,7 @@ export interface OSState {
     phase: 'incoming' | 'live' | 'ended'
     declined?: boolean
   }
+  /** active prose interstitial id (pauses the rule pump) */
+  moment: string | null
   done: boolean
 }

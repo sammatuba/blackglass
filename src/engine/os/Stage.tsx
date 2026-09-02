@@ -10,6 +10,10 @@ const WALLPAPER_HUE: Record<string, number> = {
   dawn: 318,
   leaf: 158,
   grid: 215,
+  /* anthology wallpapers */
+  mtpulag: 168,
+  lastsupper: 36,
+  tweet: 205,
 }
 
 export function wallpaperHue(wallpaper: string): number {

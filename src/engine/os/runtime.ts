@@ -7,8 +7,23 @@ import type { FlagValue, OSMessage, OSRule, OSState, CaseOS } from './types'
 
 let pushSeq = 0
 
-export function initialOSState(): OSState {
-  return { inbox: {}, flags: {}, applied: [], sentReplies: [], inspected: [], evidence: [], call: null, done: false }
+export function initialOSState(caseDef?: CaseOS): OSState {
+  return {
+    inbox: {},
+    flags: { ...(caseDef?.initialFlags ?? {}) },
+    applied: [],
+    sentReplies: [],
+    inspected: [],
+    evidence: [],
+    call: null,
+    moment: null,
+    done: false,
+  }
+}
+
+/** close the active prose interstitial (the rule pump resumes) */
+export function dismissMoment(state: OSState): OSState {
+  return { ...state, moment: null }
 }
 
 function condMet(rule: OSRule, state: OSState): boolean {
@@ -76,6 +91,7 @@ export function applyRule(state: OSState, rule: OSRule): OSState {
       phase: 'incoming',
     }
   }
+  if (rule.moment) s.moment = rule.moment
   return s
 }
 
