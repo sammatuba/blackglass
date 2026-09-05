@@ -12,7 +12,7 @@ Both stand on their own. Together they compound: the fiction handles what knowle
 
 Project names are provisional. Describe by essence, not title.
 
-**Current milestone:** Platform foundation shipped (hub, engine, Scam Radar with Feed Triage + 3 Case Files). **Phase 4 in progress: glassOS** — upgrading case files to a found-phone experience (lock/home/apps, typing indicators, calls, evidence apps, sound) per `docs/ROADMAP.md`, then porting the anthology onto it. See `docs/VISION.md` and `docs/GAMES.md`.
+**Current milestone:** Phase 4 (glassOS & the premium pass) is nearly complete. Shipped: the found-phone runtime + immersion layer (desk-at-night stage, theming, narration beats, prose moments, live calls), Scam Radar's 3 cases on glassOS with case-file debriefs, and **all four BLACKGLASS anthology anchors on glassOS** (`src/games/blackglass/` — anchor select, sequenced unlocks, per-character theming, silent witness, choice-carrying timelines). Learn pillar decided: reference shelf, legacy games stay playable. **Remaining:** the 7 diegetic artifacts — pipeline ready (`gen-images.mjs` → `scripts/sync-artifacts.mjs`), **blocked on a fresh `GEMINI_API_KEY` in `.env`** (the current one is rejected, HTTP 400) — and the optional showpiece polish (Kitbitz debrief vignettes, Three.js hero refinement). See `docs/ROADMAP.md`, `docs/VISION.md`, `docs/GAMES.md`.
 
 ---
 
