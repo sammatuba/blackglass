@@ -29,10 +29,16 @@ export default function GlassHero() {
       cancelIdleCallback?: (h: IdleHandle) => void
     }
     let handle: IdleHandle
+    // The hero chunk is deliberately excluded from the PWA precache — if it
+    // isn't there (offline before a capable load), the CSS gradient stands in.
+    const loadScene = () =>
+      void import('./HeroScene')
+        .then((m) => setScene(() => m.default))
+        .catch(() => {})
     if (win.requestIdleCallback) {
-      handle = win.requestIdleCallback(() => void import('./HeroScene').then((m) => setScene(() => m.default)))
+      handle = win.requestIdleCallback(loadScene)
     } else {
-      handle = window.setTimeout(() => void import('./HeroScene').then((m) => setScene(() => m.default)), 400) as unknown as IdleHandle
+      handle = window.setTimeout(loadScene, 400) as unknown as IdleHandle
     }
     return () => {
       if (win.cancelIdleCallback) win.cancelIdleCallback(handle)
