@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { GAMES, PILLAR_META, type Pillar } from '../registry'
+import { GAMES, PILLAR_META, type GameEntry, type Pillar } from '../registry'
 import { GameCard } from '../../ui/GameCard'
 import { FadeIn } from '../../ui/FadeIn'
 import GlassHero from '../../three/GlassHero'
@@ -102,13 +102,17 @@ export default function Hub() {
                   </div>
                 </div>
               </FadeIn>
-              <div className={`grid gap-4 sm:grid-cols-2 ${games.length > 2 ? 'lg:grid-cols-3' : ''}`}>
-                {games.map((game, i) => (
-                  <FadeIn key={game.id} delay={i * 0.06}>
-                    <GameCard game={game} />
-                  </FadeIn>
-                ))}
-              </div>
+              {pillar === 'learn' ? (
+                <ReferenceShelf games={games} />
+              ) : (
+                <div className={`grid gap-4 sm:grid-cols-2 ${games.length > 2 ? 'lg:grid-cols-3' : ''}`}>
+                  {games.map((game, i) => (
+                    <FadeIn key={game.id} delay={i * 0.06}>
+                      <GameCard game={game} />
+                    </FadeIn>
+                  ))}
+                </div>
+              )}
             </section>
           )
         })}
@@ -126,5 +130,44 @@ export default function Hub() {
         </div>
       </footer>
     </div>
+  )
+}
+
+/* The LEARN titles stay playable as legacy, but the hub stops presenting
+   their separate card-game visual language as flagship work — one shelf,
+   one note. Ports onto the platform design system are aspirational. */
+function ReferenceShelf({ games }: { games: GameEntry[] }) {
+  return (
+    <FadeIn>
+      <div className="rounded-2xl border border-ink-700 bg-ink-800/40 p-5 sm:p-6">
+        <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
+          {games.map((g) => (
+            <li key={g.id}>
+              <Link
+                to={`/legacy/${g.legacyPath}`}
+                className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-ink-700/50"
+              >
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-learn/12 text-sm text-learn" aria-hidden="true">
+                  {g.icon === 'eye' ? '👁' : g.icon === 'clipboard' ? '📋' : g.icon === 'search' ? '🔍' : '⚖'}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[13.5px] font-semibold text-ink-100">{g.title}</span>
+                  <span className="block truncate text-[11.5px] text-ink-400">
+                    {g.tagline} · {g.meta}
+                  </span>
+                </span>
+                <span className="shrink-0 text-xs text-ink-400 transition-colors group-hover:text-learn">Open ›</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 border-t border-ink-700 pt-4 text-xs leading-relaxed text-ink-400">
+          The reference games ship as they were built — vanilla, playable, honest about their age.
+          Porting them onto the platform design system is aspirational; for now the design energy
+          goes where the learning is lived, not lectured: <span className="text-ink-300">Play</span> and{' '}
+          <span className="text-ink-300">Train</span>.
+        </p>
+      </div>
+    </FadeIn>
   )
 }

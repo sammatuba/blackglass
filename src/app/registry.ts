@@ -61,7 +61,7 @@ export const PILLAR_META: Record<
   learn: {
     name: 'Learn',
     blurb:
-      'The conceptual frameworks, made playable — trust calibration, algorithmic bias, verification, and AI-risk governance from NIST, UNESCO, and the EU AI Act.',
+      'A reference shelf: the conceptual frameworks as companion games — trust calibration, algorithmic bias, verification, and AI-risk governance from NIST, UNESCO, and the EU AI Act.',
     text: 'text-learn',
     border: 'hover:border-learn/60',
     chipBg: 'bg-learn/12 text-learn',

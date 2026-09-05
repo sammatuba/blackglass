@@ -24,7 +24,7 @@ Ordered workstreams (each ships on its own):
    - Sound: WebAudio-synthesized SFX (message pop, send, unlock, ringtone) with persistent mute; no audio assets needed.
 2. **Port the three cases onto glassOS** — re-authored as thread/photo/page/call content with decoys and verification beats; debrief gains an investigation score (clues found).
 3. **Port the BLACKGLASS anthology onto the engine** — the 4 anchors as glassOS stories (the anthology's UI-as-character idea maps directly onto OS theming); includes the deferred silent-witness 4th phone and unlock orders (`craft/maya/_meta/phone-anthology-architecture.md`). **All four anchors ship on glassOS** (`src/games/blackglass/`): kangkong (three themed phones, sequenced recognition), voiceclone (the live clone call, GCash send, the silent-witness phone on the timeline), deepfake (the liar's dividend), fiveweeks (Bea's drift, dynamic epilogue). Anchor select + per-phone choices carried into each timeline.
-4. **Literacy games refresh decision** — port LEARN titles onto the hub's design system or retire their separate visual language.
+4. **Literacy games refresh decision** ✅ — decided: keep the four LEARN titles playable as legacy, retire their separate visual language at the hub level (Learn pillar is now a compact "reference shelf" with an aspirational-port note). Full platform ports remain aspirational, not scheduled.
 5. **Showpiece polish** — Three.js hub hero refinement; Kitbitz CC0 scene vignettes in case debriefs (`docs/ASSETS.md`).
 6. **Diegetic images** — regenerate the 7 anthology artifacts + new case artifacts via `gen-images.mjs` once Gemini quota resets.
 
