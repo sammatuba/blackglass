@@ -1,4 +1,5 @@
 import type { CaseOS, OSPage } from '../../../engine/os/types'
+import { artifactUrl } from '../artifacts'
 import type { AnthologyAnchor } from '../types'
 
 /* =====================================================================
@@ -17,6 +18,7 @@ const mikeVideo = (): OSPage => ({
   creatorSub: 'government-partnered',
   views: '847K',
   tag: 'GUARANTEED',
+  poster: artifactUrl('tito-mike-deepfake'),
   body: [
     '“…sa partnership ng gobyerno at private sector — guaranteed 30% return in 30 days, SEC-approved, insured. Minimum ₱5,000 lang.”',
     '“Para sa kinabukasan ng pamilya. Para sa medical fund. Para sa mga pangarap na matagal nang naghihintay…”',

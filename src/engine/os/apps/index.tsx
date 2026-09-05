@@ -229,9 +229,16 @@ function Conversation({
                     className="block w-full text-left"
                   >
                     <span className="block overflow-hidden rounded-xl bg-[var(--os-panel)]">
-                      <span className="flex aspect-[4/3] items-center justify-center text-3xl opacity-40" aria-hidden="true">
-                        🖼️
-                      </span>
+                      {(() => {
+                        const photo = caseDef.photos.find((ph) => ph.id === m.photoId)
+                        return photo?.src ? (
+                          <img src={photo.src} alt="" className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                        ) : (
+                          <span className="flex aspect-[4/3] items-center justify-center text-3xl opacity-40" aria-hidden="true">
+                            🖼️
+                          </span>
+                        )
+                      })()}
                     </span>
                     <span className="mt-1 block text-[11px] opacity-70">📷 {m.caption ?? 'Tap to view photo'}</span>
                   </button>
@@ -402,8 +409,14 @@ export function GalleryApp({
             }}
             className="group text-left"
           >
-            <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30] text-3xl opacity-90 transition-opacity group-hover:opacity-100" aria-hidden="true">
-              {p.emoji ?? (p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️')}
+            <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30] text-3xl transition-opacity group-hover:opacity-90">
+              {p.src ? (
+                <img src={p.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+              ) : (
+                <span className="opacity-90" aria-hidden="true">
+                  {p.emoji ?? (p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️')}
+                </span>
+              )}
             </span>
             <span className="mt-1 block truncate text-[11px] text-[var(--os-dim)]">{p.title}</span>
             {!os.inspected.includes(p.id) && <span className="mt-0.5 block text-[10px] font-semibold text-[var(--os-accent)]">new</span>}
@@ -417,8 +430,14 @@ export function GalleryApp({
             ‹ Back
           </button>
           <div className="flex min-h-0 flex-1 flex-col justify-center">
-            <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30] text-5xl opacity-80" aria-hidden="true">
-              {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
+            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]">
+              {open.src ? (
+                <img src={open.src} alt={open.title} className="h-full w-full object-contain" />
+              ) : (
+                <span className="text-5xl opacity-80" aria-hidden="true">
+                  {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
+                </span>
+              )}
             </div>
             <h3 className="mt-3 text-sm font-bold text-[var(--os-ink)]">{open.title}</h3>
             {open.tells && open.tells.length > 0 && (
@@ -596,7 +615,9 @@ export function BrowserApp({
           ) : page.kind === 'social' ? (
             <SocialPageBody page={page} />
           ) : (
-          <div className="space-y-3 p-4">
+            <>
+              {page.image && <img src={page.image} alt="" className="aspect-[16/9] w-full object-cover" />}
+              <div className="space-y-3 p-4">
             <h3 className="text-[17px] font-extrabold leading-tight">{page.title}</h3>
             {page.headline && <p className="text-[12px] font-semibold text-[#5b6b85]">{page.headline}</p>}
             {page.body?.map((b, i) => (
@@ -643,7 +664,8 @@ export function BrowserApp({
                 )}
               </div>
             )}
-          </div>
+            </div>
+          </>
           )}
         </div>
 
@@ -845,11 +867,17 @@ function VideoPageBody({ page }: { page: CaseOS['pages'][number] }) {
   return (
     <div>
       <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-[#1c2333] to-[#0d1220]">
-        <span className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-lg text-white backdrop-blur-sm" aria-hidden="true">
+        {page.poster ? (
+          <img src={page.poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        ) : null}
+        <span
+          className={`relative grid h-12 w-12 place-items-center rounded-full bg-white/15 text-lg text-white backdrop-blur-sm ${page.poster ? 'z-10' : ''}`}
+          aria-hidden="true"
+        >
           ▶
         </span>
         {page.tag && (
-          <span className="absolute bottom-2 left-2 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black tracking-widest text-white">
+          <span className="absolute bottom-2 left-2 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black tracking-widest text-white">
             {page.tag}
           </span>
         )}

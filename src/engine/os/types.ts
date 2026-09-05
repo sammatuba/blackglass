@@ -35,6 +35,9 @@ export interface OSPhoto {
   kind: 'photo' | 'meme' | 'screenshot'
   /** subject emoji used for the faux-photo placeholder */
   emoji?: string
+  /** diegetic artifact image (resolved by the game from its asset glob);
+      falls back to the emoji placeholder when absent */
+  src?: string
   /** normalized tells for the examine layer */
   tells?: OSTell[]
   evidence?: string
@@ -59,6 +62,9 @@ export interface OSPage {
   creatorSub?: string
   views?: string
   tag?: string
+  /** diegetic artifact images (resolved by the game): video poster / page header */
+  poster?: string
+  image?: string
   tells?: OSTell[]
   evidence?: string
 }

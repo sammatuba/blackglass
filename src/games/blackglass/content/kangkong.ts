@@ -1,4 +1,5 @@
 import type { CaseOS, OSPage, OSTell } from '../../../engine/os/types'
+import { artifactUrl } from '../artifacts'
 import type { AnthologyAnchor } from '../types'
 
 /* =====================================================================
@@ -22,6 +23,7 @@ const KK_TELLS: OSTell[] = [
 const kkPage = (): OSPage => ({
   id: 'kangkong',
   url: 'healthtruthph.click/kangkong',
+  image: artifactUrl('kangkong-clickbait'),
   title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent',
   kind: 'news',
   badge: 'Health · Sponsored',
@@ -38,6 +40,7 @@ const kkPage = (): OSPage => ({
 const ampalayaPage = (): OSPage => ({
   id: 'ampalaya',
   url: 'healthtruthph.click/ampalaya',
+  image: artifactUrl('ampalaya-clickbait'),
   title: 'EXPOSED: The Vegetable They Don’t Want You to Eat — Filipino Doctors Are Staying Silent',
   kind: 'news',
   badge: 'Health · Sponsored',
@@ -58,6 +61,7 @@ const anitaPage = (): OSPage => ({
   creatorSub: 'Health Communication Specialist',
   views: '340.2K',
   tag: 'DEBUNKED',
+  poster: artifactUrl('dr-anita-still'),
   body: [
     '“Let’s talk about the vegetable link in your family GC. The .click domain. The EXPOSED headline. The doctors who are ‘staying silent.’ Here is exactly how this template works — and why it is in your thread today.”',
     '“Health misinformation travels fastest through family groups, because it arrives pre-vouched — it comes wrapped in a person you trust.”',
@@ -422,6 +426,7 @@ const BEA: CaseOS = {
       title: 'Screenshot · kangkong link preview',
       kind: 'screenshot',
       emoji: '📱',
+      src: artifactUrl('kangkong-clickbait'),
       evidence: 'ev-kk-shot',
     },
   ],
