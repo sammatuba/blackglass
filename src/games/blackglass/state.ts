@@ -2,15 +2,15 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { FlagValue } from '../../engine/os/types'
 
-/* Anthology progress. Per anchor: which phones have been lived and what
-   was decided in them (choices carry into the other phones and the
-   timeline epilogue). cgAI_ prefix per platform convention. */
+/* Anthology progress. Per anchor: which phones have been lived and the
+   decision flags recorded in each run — the timeline epilogue reads
+   them to render your version of events. cgAI_ prefix per convention. */
 
 interface AnchorProgress {
   /** phoneId -> lived */
   completed: Record<string, boolean>
-  /** decision flags recorded across runs (maya_choice, tita_choice, …) */
-  choices: Record<string, FlagValue>
+  /** phoneId -> final flags of that run (maya_choice, bea_vc, w1…) */
+  runs: Record<string, Record<string, FlagValue>>
 }
 
 interface BlackglassState {
@@ -25,18 +25,19 @@ export const useBlackglass = create<BlackglassState>()(
       anchors: {},
       completePhone: (anchorId, phoneId, flags) =>
         set((s) => {
-          const prev = s.anchors[anchorId] ?? { completed: {}, choices: {} }
-          const choices = { ...prev.choices }
-          for (const [k, v] of Object.entries(flags)) if (k.endsWith('_choice')) choices[k] = v
+          const prev = s.anchors[anchorId] ?? { completed: {}, runs: {} }
           return {
             anchors: {
               ...s.anchors,
-              [anchorId]: { completed: { ...prev.completed, [phoneId]: true }, choices },
+              [anchorId]: {
+                completed: { ...prev.completed, [phoneId]: true },
+                runs: { ...prev.runs, [phoneId]: flags },
+              },
             },
           }
         }),
       reset: () => set({ anchors: {} }),
     }),
-    { name: 'cgAI_blackglass_v1' },
+    { name: 'cgAI_blackglass_v2' },
   ),
 )

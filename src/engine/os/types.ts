@@ -87,7 +87,7 @@ export interface OSMessage {
 
 export interface OSThread {
   id: string
-  service: 'sms' | 'viber' | 'messenger' | 'tiktok' | 'threads'
+  service: 'sms' | 'viber' | 'messenger' | 'tiktok' | 'threads' | 'gcash'
   name: string
   number?: string
   /** true = shows as a saved contact in the thread header */
@@ -147,6 +147,8 @@ export interface OSRule {
     /** subtitle lines shown while the call is live */
     transcript?: string[]
   }
+  /** hang up the active call (the scammer drops the line) */
+  endCall?: boolean
   /** bounce the player to an app (e.g. a call pulls you there) */
   nudgeApp?: AppId
   /** raise a full-screen prose interstitial inside the phone; the rule

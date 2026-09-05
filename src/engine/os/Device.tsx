@@ -214,6 +214,19 @@ export function GlassOS({
     return () => clearInterval(ring)
   }, [os.call?.phase])
 
+  /* a rule can drop the line (the scammer hangs up); sweep it after a beat */
+  useEffect(() => {
+    if (os.call?.phase !== 'ended') return
+    const t = setTimeout(() => {
+      if (osRef.current.call?.phase === 'ended') {
+        const ns = clearCall(osRef.current)
+        osRef.current = ns
+        setOS(ns)
+      }
+    }, 1600)
+    return () => clearTimeout(t)
+  }, [os.call?.phase])
+
   const acceptCall = useCallback(() => {
     sfx.callConnect()
     vibrate(30)

@@ -21,6 +21,14 @@ export interface ReflectionCard {
   body: string
 }
 
+/** the phone no one could reach — a read-only witness on the timeline */
+export interface SilentWitness {
+  time: string
+  who: string
+  label: string
+  lines: string[]
+}
+
 export interface AnthologyAnchor {
   id: string
   title: string
@@ -34,4 +42,5 @@ export interface AnthologyAnchor {
   phones: Record<string, CaseOS>
   timeline: { title: string; intro: string; events: TimelineEvent[]; close: string[] }
   reflection: { title: string; cards: ReflectionCard[]; coda: string }
+  silentWitness?: SilentWitness
 }

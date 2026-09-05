@@ -11,6 +11,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   messenger: 'Messenger',
   tiktok: 'TikTok',
   threads: 'Threads',
+  gcash: 'GCash',
 }
 
 /* =====================================================================
@@ -80,7 +81,7 @@ function ThreadList({
   return (
     <div className="h-full overflow-y-auto pb-6">
       {rows.map(({ t, last, offered, count }) =>
-        count === 0 ? null : (
+        count === 0 && !offered ? null : (
           <button
             key={t.id}
             type="button"

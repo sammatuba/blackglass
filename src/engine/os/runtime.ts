@@ -96,6 +96,9 @@ export function applyRule(state: OSState, rule: OSRule): OSState {
       phase: 'incoming',
     }
   }
+  if (rule.endCall && s.call) {
+    s.call = { ...s.call, phase: 'ended' }
+  }
   if (rule.moment) s.moment = rule.moment
   return s
 }
