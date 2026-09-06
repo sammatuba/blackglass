@@ -70,6 +70,8 @@ const anitaPage = (): OSPage => ({
   ],
   tells: [
     { label: 'The lips lag', detail: 'Forty milliseconds behind the voice in the bridge section — the render can’t quite keep up with the audio it was built to match.' },
+    { label: 'The hands melt', detail: 'Watch the gesture — the fingers ghost through each other, translucent where they overlap. Generated hands still fail at being hands.', at: '0:05' },
+    { label: 'The rest face', detail: 'When she stops talking she doesn’t stop performing — the same smile holds, frame after frame, too still to be alive.', at: '0:07' },
     { label: 'A “Dr.” with no institution', detail: 'No hospital, no university, no license number. Just a specialty, which is not a thing you can check.' },
     { label: 'The lower-third is off', detail: 'The DEBUNKED graphic’s font weight is slightly inconsistent with the rest of the package — as though it was added in post-production.' },
     { label: 'The last ten seconds', detail: 'A gentle pivot to a newsletter — MediaLitPH Weekly, a Linktree, “subscribe for weekly debunks, it’s free.” The debunk is the funnel.' },
