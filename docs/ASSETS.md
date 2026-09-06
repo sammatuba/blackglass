@@ -17,8 +17,8 @@ Where visual assets come from, what each source is good for, and the rules for u
 ## 2. Gemini image pipeline — diegetic artifacts (authoring-time only)
 
 - **What:** the "convincing-but-flawed" AI images characters are fooled by (clickbait thumbnails, AI "proof" photos, deepfake stills), each with planted `tells[]` that the examine layer reveals.
-- **Where:** `play/blackglass-phones/gen-images.mjs` + `assets/manifest.json`. Run `node gen-images.mjs` (needs `GEMINI_API_KEY` in `.env`). Generated PNGs are committed; the runtime has CSS fallbacks so the game works without them.
-- **Status:** quota-exhausted (HTTP 429) as of 2026-08-31 — re-run when quota resets. New Scam Radar case artifacts go in their own manifest (same schema) once the platform lands.
+- **Where:** `play/blackglass-phones/gen-images.mjs` + `assets/manifest.json`. Prompts can be run two keyless ways: through the ChatGPT UI from the worksheet (`play/blackglass-phones/GENERATE-VIA-CHATGPT.md` — how the 7 were made) or locally with open models (`research/ai-visual-workflows-2026.md` §6). After files land in `assets/`: `node gen-images.mjs --emit` then `node scripts/sync-artifacts.mjs`. The runtime keeps CSS fallbacks either way.
+- **Status:** all 7 anthology artifacts generated 2026-09-06 via the ChatGPT worksheet, tells verified, committed. Next register upgrade when wanted: AI-video artifacts (research note §2.1).
 
 ## 3. Typography & chrome
 
@@ -30,4 +30,4 @@ Where visual assets come from, what each source is good for, and the rules for u
 
 1. Every third-party asset ships with its license noted in an `ASSETS.md`-style manifest next to the files.
 2. Kitbitz SVGs may be recolored/scaled freely (CC0) — keep the original catalog `assetId` in metadata for provenance.
-3. Diegetic artifacts stay on the Gemini pipeline; scene/decor art stays on Kitbitz. Never swap them — the distinction *is* the pedagogy.
+3. Diegetic artifacts stay on the AI-generation pipeline (hosted UI/API or open local models — the distinction in `research/ai-visual-workflows-2026.md` is about register, not vendor); scene/decor art stays on Kitbitz/CC0. Never swap them — the distinction *is* the pedagogy.
