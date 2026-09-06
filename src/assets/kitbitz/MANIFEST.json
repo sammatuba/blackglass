@@ -1,0 +1,77 @@
+{
+ "license": {
+  "id": "CC0-1.0",
+  "name": "CC0 1.0 Universal",
+  "url": "https://creativecommons.org/publicdomain/zero/1.0/"
+ },
+ "source": {
+  "assetRepository": "https://github.com/CaptExcellent/kits-library-assets",
+  "assetRevision": "c67532ddf21cef61827de203344282cc9c2cecae"
+ },
+ "note": "Kitbitz catalog objects (CC0). assetId kept for provenance per docs/ASSETS.md rule 2. Used by src/games/scam-radar/cases/Vignette.tsx.",
+ "assets": [
+  {
+   "assetId": "interior-kit:OldFashionSofaFront-Textile-H-M-Brown600@2x",
+   "name": "Cushioned Loveseat",
+   "kit": "interior-kit",
+   "file": "cushioned-loveseat--51901c53.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/OldFashionSofaFront-Textile-H-M-Brown600.svg"
+  },
+  {
+   "assetId": "interior-kit:Lamp Table@2x",
+   "name": "Table Lamp",
+   "kit": "interior-kit",
+   "file": "table-lamp--3ade088a.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/Lamp%20Table.svg"
+  },
+  {
+   "assetId": "interior-kit:OrganicCeramic-V-M-Grass600@2x",
+   "name": "Potted Monstera Plant",
+   "kit": "interior-kit",
+   "file": "potted-monstera-plant--7453374f.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/OrganicCeramic-V-M-Grass600.svg"
+  },
+  {
+   "assetId": "interior-kit:SquaredTable-Wood-V-M-Stone100@2x",
+   "name": "Minimalist Desk",
+   "kit": "interior-kit",
+   "file": "minimalist-desk--533168fb.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/SquaredTable-Wood-V-M-Stone100.svg"
+  },
+  {
+   "assetId": "interior-kit:LampTable-Plastic-V-S-Orange500@2x",
+   "name": "Capsule Desk Lamp",
+   "kit": "interior-kit",
+   "file": "capsule-desk-lamp--2a726de8.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/LampTable-Plastic-V-S-Orange500.svg"
+  },
+  {
+   "assetId": "interior-kit:ShelfCloset3-Wood-V-M-Brown600@2x",
+   "name": "Bookshelf Cabinet",
+   "kit": "interior-kit",
+   "file": "bookshelf-cabinet--9a0de1c7.svg",
+   "source": "https://assets.kitbitz.art/kits/interior-kit/ShelfCloset3-Wood-V-M-Brown600.svg"
+  },
+  {
+   "assetId": "city-kit:Building 01@2x",
+   "name": "Storefront Shop",
+   "kit": "city-kit",
+   "file": "storefront-shop--d7093dc8.svg",
+   "source": "https://assets.kitbitz.art/kits/city-kit/Building%2001.svg"
+  },
+  {
+   "assetId": "city-kit:StreetlightClassic-Metal-V-M-Slate600@2x",
+   "name": "Classic Street Lamp",
+   "kit": "city-kit",
+   "file": "classic-street-lamp--b7834bdf.svg",
+   "source": "https://assets.kitbitz.art/kits/city-kit/StreetlightClassic-Metal-V-M-Slate600.svg"
+  },
+  {
+   "assetId": "city-kit:Planter@2x",
+   "name": "Potted Tree",
+   "kit": "city-kit",
+   "file": "potted-tree--64bb7e7b.svg",
+   "source": "https://assets.kitbitz.art/kits/city-kit/Planter.svg"
+  }
+ ]
+}

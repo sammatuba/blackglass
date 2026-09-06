@@ -10,12 +10,20 @@ import { useRadar } from '../state'
 import { FAMILY_BY_ID } from '../families'
 import { FadeIn } from '../../../ui/FadeIn'
 import { VOICE_OS } from './os-voice'
+import { Vignette } from './Vignette'
 
 import { GUARANTEED_OS } from './os-guaranteed'
 import { PARCEL_OS } from './os-parcel'
 
 /** all cases now run on glassOS */
 export const CASE_PLAYABLE: CaseOS[] = [VOICE_OS, GUARANTEED_OS, PARCEL_OS]
+
+/* where you were sitting when it happened — one quiet scene per case */
+const SCENE_BY_CASE: Record<string, 'sala' | 'desk' | 'street'> = {
+  voice: 'sala',
+  guaranteed: 'desk',
+  'on-hold': 'street',
+}
 
 /* =====================================================================
    glassOS case
@@ -96,9 +104,16 @@ function OsDebrief({
         <div className="inline-block rounded-t-xl border border-b-0 border-ink-600/80 bg-ink-800/90 px-4 py-1.5">
           <p className="text-[10px] font-bold tracking-[0.25em] text-train uppercase">Case file · {caseDef.level}</p>
         </div>
-        <div className="rounded-b-2xl rounded-tr-2xl border border-ink-600/80 bg-ink-900/70 p-5">
-          <h2 className="font-display text-3xl font-semibold text-ink-100">{caseDef.title}</h2>
-          <p className="mt-1 text-xs font-medium text-train">{caseDef.tagline}</p>
+        <div className="overflow-hidden rounded-b-2xl rounded-tr-2xl border border-ink-600/80 bg-ink-900/70">
+          {SCENE_BY_CASE[caseDef.id] && (
+            <div className="-mt-px">
+              <Vignette scene={SCENE_BY_CASE[caseDef.id]} />
+            </div>
+          )}
+          <div className="p-5">
+            <h2 className="font-display text-3xl font-semibold text-ink-100">{caseDef.title}</h2>
+            <p className="mt-1 text-xs font-medium text-train">{caseDef.tagline}</p>
+          </div>
         </div>
       </FadeIn>
 
