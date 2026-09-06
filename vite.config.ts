@@ -39,11 +39,11 @@ export default defineConfig({
         // iframe navigations into legacy apps must load their own HTML
         navigateFallbackDenylist: [/^\/blackglass\/legacy\//],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
-        // The hero is capability-gated in GlassHero (reduced-motion, low
-        // RAM/cores get the CSS gradient) and pauses off-screen — precaching
-        // it would charge every first visit, including devices that can
-        // never run it. It caches at runtime on first capable load instead.
-        globIgnores: ['**/HeroScene-*.js'],
+        // Capability-gated/runtime-loaded media stays out of the precache:
+        // the hero chunk (reduced-motion / low-RAM devices get the CSS
+        // gradient) and artifact clips (multi-MB; cached by the browser on
+        // first play instead of charged to every first visit).
+        globIgnores: ['**/HeroScene-*.js', '**/*.webm', '**/*.mp4'],
       },
     }),
   ],

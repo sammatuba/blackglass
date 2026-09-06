@@ -26,6 +26,8 @@ export interface OSContact {
 export interface OSTell {
   label: string
   detail: string
+  /** timestamp in the artifact where the tell shows (e.g. "0:06") — video artifacts */
+  at?: string
 }
 
 export interface OSPhoto {
@@ -64,6 +66,8 @@ export interface OSPage {
   tag?: string
   /** diegetic artifact images (resolved by the game): video poster / page header */
   poster?: string
+  /** diegetic artifact clip (resolved by the game): when set, the video page plays for real */
+  video?: string
   image?: string
   tells?: OSTell[]
   evidence?: string

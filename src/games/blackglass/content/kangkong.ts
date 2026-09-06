@@ -1,5 +1,5 @@
 import type { CaseOS, OSPage, OSTell } from '../../../engine/os/types'
-import { artifactUrl } from '../artifacts'
+import { artifactUrl, artifactVideo } from '../artifacts'
 import type { AnthologyAnchor } from '../types'
 
 /* =====================================================================
@@ -62,6 +62,7 @@ const anitaPage = (): OSPage => ({
   views: '340.2K',
   tag: 'DEBUNKED',
   poster: artifactUrl('dr-anita-still'),
+  video: artifactVideo('dr-anita-still'),
   body: [
     '“Let’s talk about the vegetable link in your family GC. The .click domain. The EXPOSED headline. The doctors who are ‘staying silent.’ Here is exactly how this template works — and why it is in your thread today.”',
     '“Health misinformation travels fastest through family groups, because it arrives pre-vouched — it comes wrapped in a person you trust.”',

@@ -445,7 +445,14 @@ export function GalleryApp({
                 <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Look again</p>
                 {open.tells.map((t) => (
                   <div key={t.label} className="rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3">
-                    <div className="text-[12px] font-bold text-[var(--os-ink)]">🔍 {t.label}</div>
+                    <div className="text-[12px] font-bold text-[var(--os-ink)]">
+                      🔍 {t.label}
+                      {t.at && (
+                        <span className="ml-1.5 rounded border border-[var(--os-hairline)] px-1 py-px font-mono text-[10px] font-semibold text-[var(--os-accent)]">
+                          {t.at}
+                        </span>
+                      )}
+                    </div>
                     <p className="mt-0.5 text-[11.5px] leading-relaxed text-[var(--os-dim)]">{t.detail}</p>
                   </div>
                 ))}
@@ -675,7 +682,14 @@ export function BrowserApp({
             <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Look again</p>
             {page.tells.map((t) => (
               <div key={t.label} className="rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3">
-                <div className="text-[12px] font-bold text-[var(--os-ink)]">🔍 {t.label}</div>
+                <div className="text-[12px] font-bold text-[var(--os-ink)]">
+                      🔍 {t.label}
+                      {t.at && (
+                        <span className="ml-1.5 rounded border border-[var(--os-hairline)] px-1 py-px font-mono text-[10px] font-semibold text-[var(--os-accent)]">
+                          {t.at}
+                        </span>
+                      )}
+                    </div>
                 <p className="mt-0.5 text-[11.5px] leading-relaxed text-[var(--os-dim)]">{t.detail}</p>
               </div>
             ))}
@@ -862,20 +876,34 @@ export function SettingsApp({
   )
 }
 
-/* fake short-video player (the anthology's debunker trap) */
+/* short-video page (the anthology's debunker trap). Plays for real when a
+   generated clip exists; otherwise the still + fake chrome stand in. */
 function VideoPageBody({ page }: { page: CaseOS['pages'][number] }) {
   return (
     <div>
       <div className="relative flex aspect-video items-center justify-center bg-gradient-to-br from-[#1c2333] to-[#0d1220]">
-        {page.poster ? (
-          <img src={page.poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        ) : null}
-        <span
-          className={`relative grid h-12 w-12 place-items-center rounded-full bg-white/15 text-lg text-white backdrop-blur-sm ${page.poster ? 'z-10' : ''}`}
-          aria-hidden="true"
-        >
-          ▶
-        </span>
+        {page.video ? (
+          <video
+            src={page.video}
+            poster={page.poster}
+            controls
+            playsInline
+            preload="metadata"
+            className="absolute inset-0 h-full w-full bg-black object-contain"
+          />
+        ) : (
+          <>
+            {page.poster ? (
+              <img src={page.poster} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            ) : null}
+            <span
+              className={`relative grid h-12 w-12 place-items-center rounded-full bg-white/15 text-lg text-white backdrop-blur-sm ${page.poster ? 'z-10' : ''}`}
+              aria-hidden="true"
+            >
+              ▶
+            </span>
+          </>
+        )}
         {page.tag && (
           <span className="absolute bottom-2 left-2 z-10 rounded bg-red-600 px-1.5 py-0.5 text-[10px] font-black tracking-widest text-white">
             {page.tag}
