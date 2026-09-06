@@ -12,7 +12,7 @@ Both stand on their own. Together they compound: the fiction handles what knowle
 
 Project names are provisional. Describe by essence, not title.
 
-**Current milestone:** Phase 4 (glassOS & the premium pass) is **complete**. Shipped: the found-phone runtime + immersion layer, Scam Radar's 3 cases on glassOS (case-file debriefs with Kitbitz scene vignettes), **all four BLACKGLASS anthology anchors on glassOS**, the Learn pillar as a reference shelf, hero perf groundwork (Three.js chunk off the PWA precache), and **all 7 diegetic artifacts** (ChatGPT worksheet, tells verified, rendered in-game). **Next candidates (all optional, researched):** AI-video artifacts — the register upgrade with the most upside (`research/ai-visual-workflows-2026.md` §2.1/§6, Wan 2.2 on Kaggle's free T4); further hero TSL/RenderPipeline refinement. Phase 5 is undefined — the natural next planning conversation.
+**Current milestone:** Phase 4 (glassOS & the premium pass) is **complete**. Shipped: the found-phone runtime + immersion layer, Scam Radar's 3 cases on glassOS (case-file debriefs with Kitbitz scene vignettes), **all four BLACKGLASS anthology anchors on glassOS**, the Learn pillar as a reference shelf, hero perf groundwork (Three.js chunk off the PWA precache), and **all 7 diegetic artifacts** (ChatGPT worksheet, tells verified, rendered in-game). **Next candidates (all optional, researched):** AI-video artifacts — pilot path chosen: **Veo 3.1 via the user's Google AI Pro in the Gemini app** (image-to-video from the stills; see `play/blackglass-phones/VIDEO-WORKSHEET.md`); runtime support already shipped. Further hero TSL/RenderPipeline refinement. Phase 5 is undefined — the natural next planning conversation.
 
 ---
 
