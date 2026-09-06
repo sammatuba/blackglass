@@ -157,11 +157,10 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
           if (wasEntry) {
             const others = anchor.order.filter((id) => id !== anchor.entry)
             const names = others.map((id) => anchor.phones[id].title.replace(' 💛', ''))
-            setWakeNote(
-              names.length > 1
-                ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} have woken up.`
-                : `${names[0]} has woken up.`,
-            )
+            /* single-phone anchors have nothing to wake — no note */
+            if (names.length === 1) setWakeNote(`${names[0]} has woken up.`)
+            else if (names.length > 1)
+              setWakeNote(`${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} have woken up.`)
           }
           setScreen('rack')
         }}
