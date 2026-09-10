@@ -1,5 +1,9 @@
-/* Dev helper: drive Maya's morning → Bea's phone → council → For You →
-   the Dr. Anita page, and verify the artifact clip plays (video element). */
+/* Dev helper: drive Maya's morning → Bea's phone → the council → For You →
+   the Dr. Anita page, verify the artifact clip plays for real (video + poster),
+   then ride the coda out to the rack. Exits 0 only when every checkpoint lands.
+
+   The story holds the bea-won chain on `inspected: 'anita'`, so opening the
+   link in For You is required — no race with the coda moment. */
 import { chromium } from 'playwright-core'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
@@ -48,25 +52,41 @@ await tapWhen(/maya 4ever/i, 10000)
 await settle(2000)
 await page.screenshot({ path: '/tmp/av-3-bea-thread.png' })
 await tapWhen(/Screenshot it to the council/i, 10000)
-await settle(6000)
+await settle(1500)
 await page.screenshot({ path: '/tmp/av-4-after-council.png' })
-await tapWhen(/Back to home/i, 8000)
+await tapWhen(/Back to home/i, 12000)
 await settle(600)
 await tapWhen(/Open Messages/i, 8000)
 await tapWhen(/For You/i, 10000)
-await settle(3000)
+
+// the trap's link lands here; bea-won is gated on opening it, so the thread
+// waits for the player instead of racing into the coda
+const link = page.getByRole('button', { name: /EXPOSED vegetable/i }).first()
+await link.waitFor({ state: 'visible', timeout: 15000 })
+await settle(600)
 await page.screenshot({ path: '/tmp/av-5-foryou.png' })
-// dismiss any narrative moment overlaying the thread (e.g. bea-afterglow)
-for (let i = 0; i < 3; i++) {
-  const dlgBtn = page.locator('div[role="dialog"] button').first()
-  if (await dlgBtn.count()) { await dlgBtn.click(); await settle(800) } else break
-}
-const link = page.getByText(/EXPOSED|Anita/i).first()
-if (await link.count()) { await link.click(); await settle(2500) }
-await page.screenshot({ path: '/tmp/av-6-anita.png' })
+await link.click()
+await settle(500)
+
+// the Browser app opens the clip; wait for metadata (readyState ≥ 1)
+await page.locator('video').first().waitFor({ state: 'visible', timeout: 10000 })
+await page.waitForFunction(() => (document.querySelector('video')?.readyState ?? 0) >= 1, null, { timeout: 10000 })
 const vids = await page.locator('video').evaluateAll((els) =>
-  els.map((e) => ({ src: (e.getAttribute('src') ?? '').slice(0, 80), poster: (e.getAttribute('poster') ?? '').slice(0, 80), ready: e.readyState })))
+  els.map((e) => ({ src: (e.getAttribute('src') ?? '').slice(0, 80), poster: (e.getAttribute('poster') ?? '').slice(0, 80), ready: e.readyState, err: e.error?.message ?? null })))
+await page.screenshot({ path: '/tmp/av-6-anita.png' })
 console.log('video elements:', JSON.stringify(vids))
+
+// the chain resumes once the page is inspected: coda moment, then the rack
+const coda = page.locator('div[role="dialog"][aria-label="Narrative moment"] button').first()
+await coda.waitFor({ state: 'visible', timeout: 20000 })
+await page.screenshot({ path: '/tmp/av-7-coda.png' })
+await coda.click()
+await page.getByText(/2 of 3 lived/i).first().waitFor({ state: 'visible', timeout: 15000 })
+await page.screenshot({ path: '/tmp/av-8-rack.png' })
+
+const videoOk = vids.some((v) =>
+  v.src.includes('dr-anita') && v.poster.includes('dr-anita') && v.ready >= 1 && !v.err)
+console.log('video ok:', videoOk)
 console.log('errors:', errors.length ? errors : 'none')
 await browser.close()
-process.exit(vids.length > 0 ? 0 : 2)
+process.exit(videoOk && errors.length === 0 ? 0 : 2)

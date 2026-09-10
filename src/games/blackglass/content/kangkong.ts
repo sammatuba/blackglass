@@ -519,7 +519,9 @@ const BEA: CaseOS = {
     },
     {
       id: 'bea-won',
-      when: { flag: 'bea_watching' },
+      /* the chain holds here until the player actually opens the Dr. Anita
+         clip — the video is the evidence, not an optional detour */
+      when: { flag: 'bea_watching', inspected: 'anita' },
       set: { bea_convinced: true },
       push: [
         { threadId: 'foryou', msg: { from: 'sys', kind: 'narr', text: 'She’s saying everything you just said to Maya. The .click domains. The fill-in-the-blank template. The supplement funnel. And then some things you hadn’t included — how health misinformation travels faster through family groups because it arrives pre-vouched, how “Filipino doctors staying silent” is built to weaponize national distrust of institutions.' } },
