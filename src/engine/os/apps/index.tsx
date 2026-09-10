@@ -325,27 +325,48 @@ function Conversation({
 function VoiceBubble({ secs, onPlay, note }: { secs: number; onPlay: () => void; note?: string }) {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
+  const raf = useRef(0)
+  const elapsed = useRef(0)
+  const last = useRef(0)
   const bars = Array.from({ length: 20 }, (_, i) => 20 + Math.round(60 * Math.abs(Math.sin(i * 1.3))))
+  const duration = () => Math.min(secs, 5) * 400 // compressed playback for pacing
 
-  const start = () => {
-    if (playing) return
-    onPlay()
-    setPlaying(true)
-    setProgress(0)
-    const t0 = performance.now()
-    const dur = Math.min(secs, 5) * 400 // compressed playback for pacing
-    const tick = () => {
-      const p = Math.min(1, (performance.now() - t0) / dur)
-      setProgress(p)
-      if (p < 1) requestAnimationFrame(tick)
-      else setPlaying(false)
+  useEffect(() => () => cancelAnimationFrame(raf.current), [])
+
+  const tick = () => {
+    const now = performance.now()
+    elapsed.current += now - last.current
+    last.current = now
+    const p = Math.min(1, elapsed.current / duration())
+    setProgress(p)
+    if (p < 1) raf.current = requestAnimationFrame(tick)
+    else setPlaying(false)
+  }
+
+  const toggle = () => {
+    if (playing) {
+      cancelAnimationFrame(raf.current)
+      setPlaying(false)
+      return
     }
-    requestAnimationFrame(tick)
+    onPlay()
+    if (progress >= 1) {
+      elapsed.current = 0
+      setProgress(0)
+    }
+    last.current = performance.now()
+    setPlaying(true)
+    raf.current = requestAnimationFrame(tick)
   }
 
   return (
     <div>
-      <button type="button" onClick={start} className="flex items-center gap-2.5" aria-label={`Play voice message, ${secs} seconds`}>
+      <button
+        type="button"
+        onClick={toggle}
+        className="flex items-center gap-2.5"
+        aria-label={playing ? `Pause voice message, ${secs} seconds` : `Play voice message, ${secs} seconds`}
+      >
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-[11px]">
           {playing ? '❚❚' : '▶'}
         </span>
@@ -381,6 +402,7 @@ export function GalleryApp({
   onInspect: (id: string, evidence?: string) => void
 }) {
   const [openId, setOpenId] = useState<string | null>(null)
+  const [zoom, setZoom] = useState(false)
   const photos = caseDef.photos.filter((p) => !p.requires || os.flags[p.requires])
   const open = photos.find((p) => p.id === openId)
 
@@ -389,6 +411,9 @@ export function GalleryApp({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  /* each photo opens at 1× */
+  useEffect(() => setZoom(false), [openId])
 
   useEffect(() => {
     if (open && !os.inspected.includes(open.id)) onInspect(open.id, open.evidence)
@@ -430,15 +455,30 @@ export function GalleryApp({
             ‹ Back
           </button>
           <div className="flex min-h-0 flex-1 flex-col justify-center">
-            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]">
+            <button
+              type="button"
+              onClick={() => setZoom((z) => !z)}
+              aria-label={zoom ? 'Zoom out' : 'Zoom in'}
+              className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]"
+            >
               {open.src ? (
-                <img src={open.src} alt={open.title} className="h-full w-full object-contain" />
+                <img
+                  src={open.src}
+                  alt={open.title}
+                  className={`h-full w-full object-contain transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
+                />
               ) : (
-                <span className="text-5xl opacity-80" aria-hidden="true">
+                <span
+                  className={`text-5xl opacity-80 transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
+                  aria-hidden="true"
+                >
                   {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
                 </span>
               )}
-            </div>
+              <span className="pointer-events-none absolute right-2 bottom-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold text-white/85">
+                {zoom ? '2×' : '1×'}
+              </span>
+            </button>
             <h3 className="mt-3 text-sm font-bold text-[var(--os-ink)]">{open.title}</h3>
             {open.tells && open.tells.length > 0 && (
               <div className="mt-3 space-y-2 overflow-y-auto">
