@@ -1,7 +1,10 @@
 /* Dev helper: load the hub and confirm the hero path is healthy —
    capability gate → idle import → canvas renders, zero console errors.
    The hero chunk is NOT precached, so this also exercises the
-   degrade-to-CSS-gradient path on any load failure. */
+   degrade-to-CSS-gradient path on any load failure.
+   NOTE: this one takes the ORIGIN as SHOT_BASE (it appends /blackglass/):
+     Local: node scripts/hub-smoke.mjs
+     Live:  SHOT_BASE=https://sammatuba.github.io node scripts/hub-smoke.mjs */
 import { chromium } from 'playwright-core'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
