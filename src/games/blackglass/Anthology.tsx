@@ -69,7 +69,7 @@ function AnchorSelect({
   const global = globalStats(anchors, progress)
   const unlocked = allPhonesLived(anchors, progress)
   return (
-    <div className="desk-scene min-h-dvh">
+    <div className="desk-scene animate-screen min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
         <Link to="/" className="text-sm text-ink-400 transition-colors hover:text-ink-100">
           ‹ Hub
@@ -235,7 +235,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
   /* ---- timeline epilogue ---- */
   if (screen === 'timeline') {
     return (
-      <div className="desk-scene min-h-dvh">
+      <div className="desk-scene animate-screen min-h-dvh">
         <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
           <button type="button" onClick={() => setScreen('rack')} className="text-sm text-ink-400 transition-colors hover:text-ink-100">
             ‹ The rack
@@ -315,7 +315,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
   /* ---- reflection ---- */
   if (screen === 'reflection') {
     return (
-      <div className="desk-scene min-h-dvh">
+      <div className="desk-scene animate-screen min-h-dvh">
         <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
           <button type="button" onClick={() => setScreen('rack')} className="text-sm text-ink-400 transition-colors hover:text-ink-100">
             ‹ The rack
@@ -356,7 +356,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
 
   /* ---- the rack ---- */
   return (
-    <div className="desk-scene min-h-dvh">
+    <div className="desk-scene animate-screen min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
         <button type="button" onClick={onBack} className="text-sm text-ink-400 transition-colors hover:text-ink-100">
           ‹ The anthology

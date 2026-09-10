@@ -22,7 +22,7 @@ export function Convergence({ anchors, onBack }: { anchors: AnthologyAnchor[]; o
   const pct = stats.cluesTotal ? Math.round((stats.clues / stats.cluesTotal) * 100) : 0
 
   return (
-    <div className="desk-scene min-h-dvh">
+    <div className="desk-scene animate-screen min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
         <button type="button" onClick={onBack} className="text-sm text-ink-400 transition-colors hover:text-ink-100">
           ‹ The anthology

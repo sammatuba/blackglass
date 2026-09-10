@@ -27,6 +27,8 @@ export interface Banner {
   icon: string
   title: string
   text: string
+  /** where the message landed — tapping the banner opens the thread */
+  threadId: string
 }
 
 export function GlassOS({
@@ -51,6 +53,9 @@ export function GlassOS({
   const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
+  const [bannerLog, setBannerLog] = useState<Banner[]>([])
+  const [shadeOpen, setShadeOpen] = useState(false)
+  const [unread, setUnread] = useState(0)
   const [brightness, setBrightness] = useState(100)
   const [pulse, setPulse] = useState(0)
   const [confirmExit, setConfirmExit] = useState(false)
@@ -87,7 +92,10 @@ export function GlassOS({
       if (inView) return
       const meta = APP_META.messages
       const id = ++bannerId.current
-      setBanners((b) => [...b.slice(-2), { id, app: t.service, icon: meta.icon, title: t.name, text }])
+      const banner: Banner = { id, app: t.service, icon: meta.icon, title: t.name, text, threadId }
+      setBanners((b) => [...b.slice(-2), banner])
+      setBannerLog((log) => [...log.slice(-19), banner])
+      setUnread((n) => Math.min(99, n + 1))
       setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), 3400)
     },
     [caseDef],
@@ -194,6 +202,14 @@ export function GlassOS({
     sfx.open()
     setApp(null)
     setThreadId(null)
+    setShadeOpen(false)
+  }, [])
+
+  /** pull down the notification shade; clears the unread count */
+  const openShade = useCallback(() => {
+    sfx.open()
+    setShadeOpen(true)
+    setUnread(0)
   }, [])
 
   /** leave the device: flush the live run first so nothing is lost */
@@ -220,6 +236,10 @@ export function GlassOS({
         if (e.key === 'Escape') setConfirmExit(false)
         return
       }
+      if (shadeOpen) {
+        if (e.key === 'Escape') setShadeOpen(false)
+        return
+      }
       if (e.key === 'Enter' && locked) unlock()
       if (e.key === 'Escape' && !locked) {
         if (os.call && os.call.phase === 'incoming') return // must answer
@@ -228,7 +248,7 @@ export function GlassOS({
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [locked, unlock, goHome, app, os.call, confirmExit])
+  }, [locked, unlock, goHome, app, os.call, confirmExit, shadeOpen])
 
   /* ---------- call sound loop ---------- */
   useEffect(() => {
@@ -326,9 +346,15 @@ export function GlassOS({
         onAcceptCall={acceptCall}
         onEndCall={endCall}
         onDismissMoment={dismissMoment}
+        bannerLog={bannerLog}
+        shadeOpen={shadeOpen}
+        unread={unread}
+        onOpenShade={openShade}
+        onCloseShade={() => setShadeOpen(false)}
+        onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -367,22 +393,24 @@ export function GlassOS({
       >
         <div className="relative w-full">
           {device}
-          {/* notification banners ride with the device */}
+          {/* notification banners ride with the device; tap to open the thread */}
           <div className="pointer-events-none absolute left-1/2 top-3 z-50 w-[88%] -translate-x-1/2 space-y-2">
             {banners.map((b) => (
-              <div
+              <button
                 key={b.id}
-                className="animate-banner rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 shadow-2xl backdrop-blur-md"
+                type="button"
+                onClick={() => openApp('messages', { threadId: b.threadId })}
+                className="animate-banner pointer-events-auto block w-full rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 text-left shadow-2xl backdrop-blur-md"
               >
-                <div className="flex items-center gap-2">
+                <span className="flex items-center gap-2">
                   <span className="text-[10px] font-bold tracking-wide text-white/50 uppercase">
                     {b.icon} {b.app}
                   </span>
                   <span className="ml-auto text-[10px] text-white/40">now</span>
-                </div>
-                <div className="mt-0.5 text-[13px] font-bold text-white/95">{b.title}</div>
-                <div className="line-clamp-2 text-[12.5px] leading-snug text-white/75">{b.text}</div>
-              </div>
+                </span>
+                <span className="mt-0.5 block text-[13px] font-bold text-white/95">{b.title}</span>
+                <span className="line-clamp-2 block text-[12.5px] leading-snug text-white/75">{b.text}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -448,6 +476,12 @@ function DeviceFrame(props: {
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
   onDismissMoment: () => void
+  bannerLog: Banner[]
+  shadeOpen: boolean
+  unread: number
+  onOpenShade: () => void
+  onCloseShade: () => void
+  onClearLog: () => void
 }) {
   const { caseDef, locked, os } = props
   return (
@@ -494,6 +528,62 @@ function DeviceFrame(props: {
             />
           )}
 
+          {/* notification shade — the banner history, each row opens its thread */}
+          {props.shadeOpen && (
+            <div
+              className="animate-fadein absolute inset-0 z-[44] flex flex-col bg-[#05070d]/95 backdrop-blur-md"
+              role="dialog"
+              aria-label="Notifications"
+            >
+              <div className="flex items-center justify-between px-4 pt-10 pb-2">
+                <span className="text-[11px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Notifications</span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={props.onClearLog}
+                    className="rounded-full border border-[var(--os-hairline)] px-3 py-1 text-[11px] text-[var(--os-dim)]"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={props.onCloseShade}
+                    aria-label="Close notifications"
+                    className="rounded-full bg-[var(--os-chip)] px-3 py-1 text-[11px] font-semibold text-[var(--os-ink)]"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 pb-8">
+                {props.bannerLog.length === 0 ? (
+                  <p className="px-2 py-10 text-center text-xs text-[var(--os-faint)]">No notifications yet.</p>
+                ) : (
+                  [...props.bannerLog].reverse().map((b) => (
+                    <button
+                      key={b.id}
+                      type="button"
+                      onClick={() => {
+                        props.onOpenThread(b.threadId)
+                        props.onCloseShade()
+                      }}
+                      className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold tracking-wide text-[var(--os-faint)] uppercase">
+                          {b.icon} {b.app}
+                        </span>
+                        <span className="ml-auto text-[10px] text-[var(--os-faint)]">now</span>
+                      </span>
+                      <span className="mt-0.5 block text-[13px] font-bold text-[var(--os-ink)]">{b.title}</span>
+                      <span className="line-clamp-2 block text-[12px] leading-snug text-[var(--os-dim)]">{b.text}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
           {/* glare */}
           <div
             className="pointer-events-none absolute inset-0 z-30 rounded-[inherit]"
@@ -504,7 +594,15 @@ function DeviceFrame(props: {
             aria-hidden="true"
           />
           {/* status bar sits above everything except call overlay */}
-          {!locked && <StatusBar time={caseDef.phone.time} meridiem={caseDef.phone.meridiem} battery={caseDef.phone.battery} />}
+          {!locked && (
+            <StatusBar
+              time={caseDef.phone.time}
+              meridiem={caseDef.phone.meridiem}
+              battery={caseDef.phone.battery}
+              unread={props.unread}
+              onOpenShade={props.onOpenShade}
+            />
+          )}
         </div>
         {/* gesture bar */}
         {!locked && (
@@ -520,18 +618,45 @@ function DeviceFrame(props: {
   )
 }
 
-function StatusBar({ time, meridiem, battery }: { time: string; meridiem: string; battery: number }) {
+function StatusBar({
+  time,
+  meridiem,
+  battery,
+  unread,
+  onOpenShade,
+}: {
+  time: string
+  meridiem: string
+  battery: number
+  unread: number
+  onOpenShade: () => void
+}) {
   return (
     <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 pt-3.5 text-[11px] font-semibold text-[var(--os-ink)]">
       <span>
         {time} <span className="opacity-70">{meridiem}</span>
       </span>
-      <span className="flex items-center gap-1.5" aria-hidden="true">
-        <span className="text-[9px] tracking-tighter">••••</span>
-        <span>⌃</span>
-        <span className="tabular-nums">{battery}%</span>
-        <span className="inline-block h-2.5 w-5 rounded-[3px] border border-current opacity-80">
-          <span className="block h-full w-full rounded-[2px] bg-current opacity-80" style={{ width: `${battery}%` }} />
+      <span className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onOpenShade}
+          aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
+          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full text-[10px]"
+        >
+          🔔
+          {unread > 0 && (
+            <span className="absolute -top-1 -right-1.5 grid h-3 min-w-3 place-items-center rounded-full bg-red-500 px-0.5 text-[8px] font-bold text-white">
+              {unread > 9 ? '9+' : unread}
+            </span>
+          )}
+        </button>
+        <span className="flex items-center gap-1.5" aria-hidden="true">
+          <span className="text-[9px] tracking-tighter">••••</span>
+          <span>⌃</span>
+          <span className="tabular-nums">{battery}%</span>
+          <span className="inline-block h-2.5 w-5 rounded-[3px] border border-current opacity-80">
+            <span className="block h-full w-full rounded-[2px] bg-current opacity-80" style={{ width: `${battery}%` }} />
+          </span>
         </span>
       </span>
     </div>
