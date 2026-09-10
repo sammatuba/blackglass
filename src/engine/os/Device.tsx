@@ -81,6 +81,8 @@ export function GlassOS({
     return () => clearTimeout(t)
   }, [os])
 
+
+
   /* ---------- rule processing ---------- */
 
   const pushBanner = useCallback(
@@ -393,12 +395,14 @@ export function GlassOS({
       >
         <div className="relative w-full">
           {device}
-          {/* notification banners ride with the device; tap to open the thread */}
-          <div className="pointer-events-none absolute left-1/2 top-3 z-50 w-[88%] -translate-x-1/2 space-y-2">
+          {/* notification banners ride with the device; tap to open the thread.
+              They sit below the app header so nav controls stay reachable. */}
+          <div className="pointer-events-none absolute left-1/2 top-18 z-50 w-[88%] -translate-x-1/2 space-y-2">
             {banners.map((b) => (
               <button
                 key={b.id}
                 type="button"
+                data-banner
                 onClick={() => openApp('messages', { threadId: b.threadId })}
                 className="animate-banner pointer-events-auto block w-full rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 text-left shadow-2xl backdrop-blur-md"
               >
