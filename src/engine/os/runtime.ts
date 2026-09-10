@@ -148,15 +148,20 @@ export function resolveOutcome(caseDef: CaseOS, flags: Record<string, FlagValue>
   )
 }
 
-export const EVIDENCE_BONUS_CAP = 10
-export function evidenceBonus(caseDef: CaseOS, state: OSState): { found: number; total: number; bonus: number } {
+/** every collectible evidence id in a case, deduped */
+export function evidenceIds(caseDef: CaseOS): string[] {
   const clues: string[] = []
   for (const p of caseDef.photos) if (p.evidence) clues.push(p.evidence)
   for (const pg of caseDef.pages) if (pg.evidence) clues.push(pg.evidence)
   for (const c of caseDef.contacts) if (c.evidence) clues.push(c.evidence)
   for (const v of caseDef.voicemails ?? []) if (v.evidence) clues.push(v.evidence)
   for (const r of caseDef.rules) for (const e of r.evidence ?? []) clues.push(e)
-  const unique = [...new Set(clues)]
+  return [...new Set(clues)]
+}
+
+export const EVIDENCE_BONUS_CAP = 10
+export function evidenceBonus(caseDef: CaseOS, state: OSState): { found: number; total: number; bonus: number } {
+  const unique = evidenceIds(caseDef)
   const found = unique.filter((id) => state.evidence.includes(id)).length
   return { found, total: unique.length, bonus: Math.round((found / Math.max(1, unique.length)) * EVIDENCE_BONUS_CAP) }
 }

@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GlassOS } from '../../engine/os/Device'
-import type { FlagValue } from '../../engine/os/types'
+import type { FlagValue, OSState } from '../../engine/os/types'
 import type { AnthologyAnchor } from './types'
 import { useBlackglass } from './state'
+import { allPhonesLived, anchorStats, choiceText, findChoice, globalStats } from './progress'
+import { Convergence } from './Convergence'
 import { FadeIn } from '../../ui/FadeIn'
 
 type Screen =
   | 'anchors'
   | 'rack'
-  | { phone: string }
+  | { phone: string; resume?: boolean }
   | 'timeline'
   | 'reflection'
 
@@ -30,13 +32,23 @@ function verbFor(phoneId: string): string {
 
 export function Anthology({ anchors }: { anchors: AnthologyAnchor[] }) {
   const [anchorId, setAnchorId] = useState<string | null>(null)
+  const [showConvergence, setShowConvergence] = useState(false)
   const anchor = anchors.find((a) => a.id === anchorId) ?? null
 
   useEffect(() => {
-    document.title = 'BLACKGLASS · the phone anthology'
-  }, [anchorId])
+    document.title = showConvergence
+      ? 'BLACKGLASS · THE CONVERGENCE'
+      : anchor
+        ? `BLACKGLASS · ${anchor.title} — ${anchor.subtitle}`
+        : 'BLACKGLASS · the phone anthology'
+  }, [anchorId, anchor, showConvergence])
 
-  if (!anchor) return <AnchorSelect anchors={anchors} onPick={setAnchorId} />
+  if (showConvergence) {
+    return <Convergence anchors={anchors} onBack={() => setShowConvergence(false)} />
+  }
+  if (!anchor) {
+    return <AnchorSelect anchors={anchors} onPick={setAnchorId} onConvergence={() => setShowConvergence(true)} />
+  }
   return <AnchorRun key={anchor.id} anchor={anchor} onBack={() => setAnchorId(null)} />
 }
 
@@ -44,8 +56,18 @@ export function Anthology({ anchors }: { anchors: AnthologyAnchor[] }) {
    ANCHOR SELECT — the four stories
    ===================================================================== */
 
-function AnchorSelect({ anchors, onPick }: { anchors: AnthologyAnchor[]; onPick: (id: string) => void }) {
+function AnchorSelect({
+  anchors,
+  onPick,
+  onConvergence,
+}: {
+  anchors: AnthologyAnchor[]
+  onPick: (id: string) => void
+  onConvergence: () => void
+}) {
   const progress = useBlackglass((s) => s.anchors)
+  const global = globalStats(anchors, progress)
+  const unlocked = allPhonesLived(anchors, progress)
   return (
     <div className="desk-scene min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
@@ -59,11 +81,19 @@ function AnchorSelect({ anchors, onPick }: { anchors: AnthologyAnchor[]; onPick:
             One family. The same deception moving through different phones, different habits of
             trust. You cannot see clearly from one position — so you will hold all of them.
           </p>
+          {global.lived > 0 && (
+            <p className="mt-4 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-full border border-ink-700 bg-ink-800/60 px-3.5 py-1.5 text-[12px] tabular-nums text-ink-300">
+              <span className="font-semibold text-ink-100">{global.lived}/{global.phones}</span> phones lived
+              <span className="text-ink-600">·</span>
+              <span className="font-semibold text-ink-100">{global.clues}/{global.cluesTotal}</span> clues found
+            </p>
+          )}
         </FadeIn>
         <div className="mt-8 space-y-3">
           {anchors.map((a, i) => {
             const prog = progress[a.id]
-            const done = a.order.filter((id) => prog?.completed[id]).length
+            const stats = anchorStats(a, prog)
+            const done = stats.lived
             const all = done === a.order.length
             return (
               <FadeIn key={a.id} delay={0.05 + i * 0.04}>
@@ -89,11 +119,50 @@ function AnchorSelect({ anchors, onPick }: { anchors: AnthologyAnchor[]; onPick:
                   </h2>
                   <p className="mt-2 text-sm leading-relaxed text-ink-400">{a.blurb}</p>
                   <p className="font-display mt-2 text-[13.5px] italic text-ink-300">{a.question}</p>
+                  {done > 0 && stats.cluesTotal > 0 && (
+                    <p className="mt-2 text-[11px] tabular-nums text-ink-400">
+                      clues found {stats.clues}/{stats.cluesTotal}
+                    </p>
+                  )}
                 </button>
               </FadeIn>
             )
           })}
         </div>
+
+        <FadeIn delay={0.18}>
+          <button
+            type="button"
+            disabled={!unlocked}
+            onClick={onConvergence}
+            className={`mt-6 flex w-full flex-col rounded-2xl border p-5 text-left transition-all ${
+              unlocked
+                ? 'border-play/50 bg-gradient-to-br from-play/12 to-ink-800/40 hover:-translate-y-0.5 hover:border-play'
+                : 'cursor-not-allowed border-ink-800 bg-ink-900/60'
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className={`text-[11px] font-bold tracking-[0.25em] uppercase ${unlocked ? 'text-play' : 'text-ink-500'}`}>
+                The Convergence
+              </span>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
+                  unlocked ? 'bg-play/20 text-play' : 'bg-ink-800 text-ink-400'
+                }`}
+              >
+                {unlocked ? 'Open' : `🔒 ${global.lived}/${global.phones}`}
+              </span>
+            </div>
+            <h2 className={`font-display mt-1.5 text-xl font-semibold ${unlocked ? 'text-ink-100' : 'text-ink-400'}`}>
+              The one timeline none of them could see
+            </h2>
+            <p className={`mt-1.5 text-sm leading-relaxed ${unlocked ? 'text-ink-300' : 'text-ink-500'}`}>
+              {unlocked
+                ? 'Every phone lived. The whole season, assembled from what you did in their hands.'
+                : `Live every phone in every anchor to assemble the season — ${global.lived} of ${global.phones} lived so far.`}
+            </p>
+          </button>
+        </FadeIn>
         <FadeIn delay={0.2}>
           <div className="mt-10 text-center">
             <ResetButton />
@@ -117,9 +186,11 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
   const [wakeNote, setWakeNote] = useState<string | null>(null)
   const progress = useBlackglass((s) => s.anchors[anchor.id])
   const completePhone = useBlackglass((s) => s.completePhone)
+  const clearLive = useBlackglass((s) => s.clearLive)
 
   const completed = progress?.completed ?? {}
   const runs = progress?.runs ?? {}
+  const live = progress?.live ?? {}
   const doneCount = anchor.order.filter((id) => completed[id]).length
   const allDone = doneCount === anchor.order.length
 
@@ -127,33 +198,26 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
     document.title = `BLACKGLASS · ${anchor.title} — ${anchor.subtitle}`
   }, [anchor])
 
-  /* a decision flag recorded in any phone run */
-  const findChoice = (key: string): FlagValue | undefined => {
-    for (const run of Object.values(runs)) if (run[key] !== undefined) return run[key]
-    return undefined
+  const startPhone = (phoneId: string, resume: boolean) => {
+    if (!resume) clearLive(anchor.id, phoneId)
+    setWakeNote(null)
+    setRunKey((k) => k + 1)
+    setScreen({ phone: phoneId, resume })
   }
 
   /* ---- a phone run ---- */
   if (typeof screen === 'object') {
     const phoneId = screen.phone
-    const base = anchor.phones[phoneId]
-    /* sequenced recognition: completions from other phones ride in as
-       initial flags (rules key on done_maya and friends) */
-    const initialFlags: Record<string, FlagValue> = { ...base.initialFlags }
-    for (const other of anchor.order) {
-      if (other !== phoneId && completed[other]) initialFlags[`done_${other}`] = true
-    }
-    const mayaChoice = findChoice('maya_choice')
-    if (mayaChoice !== undefined) initialFlags.maya_choice = mayaChoice
-    const caseDef = { ...base, initialFlags }
     return (
-      <GlassOS
+      <PhoneRun
         key={`${phoneId}-${runKey}`}
-        caseDef={caseDef}
+        anchor={anchor}
+        phoneId={phoneId}
+        resume={screen.resume}
         onExit={() => setScreen('rack')}
         onComplete={(state) => {
           const wasEntry = !completed[phoneId] && phoneId === anchor.entry
-          completePhone(anchor.id, phoneId, state.flags)
+          completePhone(anchor.id, phoneId, state.flags, state.evidence, state.inspected)
           if (wasEntry) {
             const others = anchor.order.filter((id) => id !== anchor.entry)
             const names = others.map((id) => anchor.phones[id].title.replace(' 💛', ''))
@@ -203,9 +267,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
 
           <ol className="mt-8 space-y-0">
             {anchor.timeline.events.map((ev, i) => {
-              const dyn = ev.dynamic
-              const chosen = dyn ? findChoice(dyn.key) : undefined
-              const text = dyn ? (chosen !== undefined ? (dyn.map[String(chosen)] ?? dyn.fallback) : dyn.fallback) : ev.text
+              const text = choiceText(ev, runs) ?? ev.text
               return (
                 <FadeIn key={i} delay={Math.min(0.3, i * 0.04)}>
                   <li className="relative flex gap-4 pb-7">
@@ -339,6 +401,8 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
             {anchor.order.map((id) => {
               const p = anchor.phones[id]
               const done = !!completed[id]
+              const resumable = !!live[id] && !done
+              const clues = progress?.evidence?.[id]?.length ?? 0
               const open = id === anchor.entry || !!completed[anchor.entry]
               const accent = PHONE_THEME_ACCENT[p.phone.theme ?? ''] ?? '#8b8b8b'
               return (
@@ -346,11 +410,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
                   key={id}
                   type="button"
                   disabled={!open}
-                  onClick={() => {
-                    setWakeNote(null)
-                    setRunKey((k) => k + 1)
-                    setScreen({ phone: id })
-                  }}
+                  onClick={() => startPhone(id, resumable)}
                   className={`group flex flex-col rounded-2xl border p-4 text-left transition-all ${
                     open ? 'border-ink-700 bg-ink-800/60 hover:-translate-y-0.5' : 'cursor-not-allowed border-ink-800 bg-ink-900/50 opacity-60'
                   }`}
@@ -374,10 +434,14 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
                     </span>
                   </span>
                   <span className="mt-1 block text-[11.5px] leading-snug text-ink-400">
-                    {open ? p.blurb.split('. ')[0] + '.' : `Locked — live ${anchor.phones[anchor.entry].title}’s story first.`}
+                    {!open
+                      ? `Locked — live ${anchor.phones[anchor.entry].title}’s story first.`
+                      : resumable
+                        ? 'You left this one mid-conversation.'
+                        : p.blurb.split('. ')[0] + '.'}
                   </span>
                   <span className="mt-2 text-[10px] font-bold uppercase tracking-wide" style={{ color: done ? '#6ee7b7' : accent }}>
-                    {done ? '✓ lived' : open ? 'pick up' : 'asleep'}
+                    {done ? `✓ lived${clues ? ` · ${clues} clues` : ''}` : resumable ? '▸ continue' : open ? 'pick up' : 'asleep'}
                   </span>
                 </button>
               )
@@ -413,6 +477,62 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
         </FadeIn>
       </div>
     </div>
+  )
+}
+
+/* one phone run — the case def is memoized and the engine callbacks are
+   identity-stable, so live saves (which re-render the orchestrator) never
+   restart the rule pump mid-conversation */
+function PhoneRun({
+  anchor,
+  phoneId,
+  resume,
+  onExit,
+  onComplete,
+}: {
+  anchor: AnthologyAnchor
+  phoneId: string
+  resume?: boolean
+  onExit: () => void
+  onComplete: (state: OSState) => void
+}) {
+  const progress = useBlackglass((s) => s.anchors[anchor.id])
+  const completed = progress?.completed ?? {}
+  const runs = progress?.runs ?? {}
+  const initial = resume ? progress?.live?.[phoneId] : undefined
+
+  const caseDef = useMemo(() => {
+    const base = anchor.phones[phoneId]
+    /* sequenced recognition: completions from other phones ride in as
+       initial flags (rules key on done_maya and friends) */
+    const initialFlags: Record<string, FlagValue> = { ...base.initialFlags }
+    for (const other of anchor.order) {
+      if (other !== phoneId && completed[other]) initialFlags[`done_${other}`] = true
+    }
+    const mayaChoice = findChoice(runs, 'maya_choice')
+    if (mayaChoice !== undefined) initialFlags.maya_choice = mayaChoice
+    return { ...base, initialFlags }
+  }, [anchor, phoneId, completed, runs])
+
+  const exitRef = useRef(onExit)
+  exitRef.current = onExit
+  const completeRef = useRef(onComplete)
+  completeRef.current = onComplete
+  const handleExit = useCallback(() => exitRef.current(), [])
+  const handleComplete = useCallback((state: OSState) => completeRef.current(state), [])
+  const handleStateChange = useCallback(
+    (state: OSState) => useBlackglass.getState().saveLive(anchor.id, phoneId, state),
+    [anchor.id, phoneId],
+  )
+
+  return (
+    <GlassOS
+      caseDef={caseDef}
+      initialState={initial}
+      onStateChange={handleStateChange}
+      onExit={handleExit}
+      onComplete={handleComplete}
+    />
   )
 }
 

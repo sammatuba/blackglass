@@ -31,18 +31,24 @@ export interface Banner {
 
 export function GlassOS({
   caseDef,
+  initialState,
+  onStateChange,
   onExit,
   onComplete,
 }: {
   caseDef: CaseOS
+  /** resume a saved run — the device opens unlocked, world as it was left */
+  initialState?: OSState
+  /** called with the live state as it changes (debounced); enables resume */
+  onStateChange?: (state: OSState) => void
   onExit: () => void
   onComplete: (state: OSState) => void
 }) {
-  const [locked, setLocked] = useState(true)
+  const [locked, setLocked] = useState(!initialState)
   const [app, setApp] = useState<AppId | null>(null)
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
-  const [os, setOS] = useState<OSState>(() => initialOSState(caseDef))
+  const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
   const [brightness, setBrightness] = useState(100)
@@ -58,6 +64,17 @@ export function GlassOS({
   const viewRef = useRef<{ app: AppId | null; threadId: string | null }>({ app: null, threadId: null })
   viewRef.current = { app, threadId }
   const bannerId = useRef(0)
+  const changeRef = useRef(onStateChange)
+  changeRef.current = onStateChange
+
+  /* persist the live run (debounced) so exiting and coming back resumes */
+  useEffect(() => {
+    if (completedRef.current) return
+    const t = setTimeout(() => {
+      if (!completedRef.current) changeRef.current?.(osRef.current)
+    }, 600)
+    return () => clearTimeout(t)
+  }, [os])
 
   /* ---------- rule processing ---------- */
 
@@ -178,6 +195,12 @@ export function GlassOS({
     setApp(null)
     setThreadId(null)
   }, [])
+
+  /** leave the device: flush the live run first so nothing is lost */
+  const exitNow = useCallback(() => {
+    if (!completedRef.current) changeRef.current?.(osRef.current)
+    onExit()
+  }, [onExit])
 
   const unlock = useCallback(() => {
     sfx.unlock()
@@ -388,7 +411,7 @@ export function GlassOS({
               </button>
               <button
                 type="button"
-                onClick={onExit}
+                onClick={exitNow}
                 className="flex-1 rounded-full border border-ink-600 px-4 py-2.5 text-sm font-semibold text-ink-300 transition-colors hover:border-ink-400"
               >
                 Put it down
