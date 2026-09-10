@@ -105,22 +105,27 @@ carry-forward close. A locked card on the anchor select shows progress toward
 the unlock. Acceptance: unit tests for the resolver; smoke playthrough with
 seeded progress renders dynamic text and totals.
 
-### M4 — Presentation polish (backlog)
-Screen transitions between anthology surfaces, a notification center in glassOS
-(history of banners), deeper stage (reflections, time-of-day per anchor), boot
-sequence for the anthology. No new deps required.
+### M4 — Presentation polish ◐ first slice shipped 2026-09-11
+Shipped: anthology screen transitions (`.animate-screen`, reduced-motion safe);
+glassOS notification center — tappable banners that open their thread, a
+status-bar bell with unread count, and a shade with banner history + Clear
+(`scripts/shade-smoke.mjs`). Remaining: deeper stage (reflections, time-of-day
+per anchor), anthology boot sequence.
 
-### M5 — Interaction depth (backlog)
-Voice-note players with waveform + length-as-information; a real forward/share
-flow for the link messages; artifact zoom/compare (side-by-side for the
-ampalaya/kangkong batch); search in the Notes evidence; "recovered messages"
-forensic mode for a future anchor.
+### M5 — Interaction depth ◐ first slice shipped 2026-09-11
+Shipped: voice-note play/pause (waveform + length chrome, `scripts/artifact-smoke.mjs`);
+artifact zoom in the gallery viewer (1×/2× on the planted tells). Remaining:
+a real forward/share flow for link messages; side-by-side artifact compare
+(ampalaya/kangkong); Notes evidence search; "recovered messages" forensic mode
+for a future anchor.
 
-### M6 — Content breadth (needs writing sessions)
-Anchor V candidates from `craft/maya/_meta/phone-anthology-architecture.md`:
-AI recruiter discrimination, election-season synthetic audio, romance-scam
-profile built from a real OFW's photos, an AI assistant that is the antagonist.
-Each new anchor must ship a new lesson, a new verb, and a new UI posture.
+### M6 — Content breadth ◐ brief ready 2026-09-11
+`craft/maya/_meta/anchor-v-brief.md` specs the recommended Anchor V — **THE
+ASSISTANT** (verb ASK): hallucinated authority, sycophancy, citation-shaped
+confidence, with a new AI-chat app surface and no external assets. Alternatives
+from the architecture doc's axes (AI recruiter, election audio, romance scam)
+remain candidates for Anchor VI+. Each new anchor must ship a new lesson, a new
+verb, and a new UI posture.
 
 ### M7 — External assets (placeholders in place)
 See register. None block play.
