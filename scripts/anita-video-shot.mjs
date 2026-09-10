@@ -22,7 +22,14 @@ const tryTap = async (name, timeout = 4000) => {
   try { await tapWhen(name, timeout); return true } catch { return false }
 }
 
-await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+// GitHub Pages has no SPA fallback — direct routes 404 there; fall in
+// through the hub when that happens (the game route is the local fast path)
+const direct = await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+if (!direct?.ok()) {
+  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+  await page.getByRole('link', { name: /Three phones\. One morning/i }).first().click()
+  await settle(800)
+}
 await settle(500)
 await tapWhen(/THREE PHONES/i)
 await tapWhen(/pick up/i)
