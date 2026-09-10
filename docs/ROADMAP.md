@@ -1,6 +1,6 @@
 # Roadmap
 
-Phases ship something usable each. Phases 1–3 are done; Phase 4 is the premium pass, executed iteratively.
+Phases ship something usable each. Phases 1–4 are done; Phase 5 is the full-game push, executed iteratively. Outcomes, targets, and the placeholder register live in `docs/GAME-PLAN.md`.
 
 ## Phase 1 — Foundation ✅
 Docs + inventory (`docs/GAMES.md`, `VISION.md`, `ASSETS.md`), platform scaffold, hub shell, legacy embedding, PWA, CI workflow, deploy pipeline.
@@ -27,6 +27,18 @@ Ordered workstreams (each ships on its own):
 4. **Literacy games refresh decision** ✅ — decided: keep the four LEARN titles playable as legacy, retire their separate visual language at the hub level (Learn pillar is now a compact "reference shelf" with an aspirational-port note). Full platform ports remain aspirational, not scheduled.
 5. **Showpiece polish** ✅ — Kitbitz CC0 scene vignettes shipped in all three case debriefs (`src/games/scam-radar/cases/Vignette.tsx`, provenance in `src/assets/kitbitz/MANIFEST.json`); hero perf groundwork done: the Three.js hero chunk is excluded from the PWA precache (capability-gated load, degrades to the CSS gradient — first-visit cache 2,417 KB → 1,554 KB), hub smoke added (`scripts/hub-smoke.mjs`). Remaining hero work (TSL/RenderPipeline refinement) is optional and unscheduled.
 6. **Diegetic artifacts** ✅ — all 7 anthology artifacts generated 2026-09-06 via the ChatGPT worksheet (`play/blackglass-phones/GENERATE-VIA-CHATGPT.md`), tells verified, synced into the platform (`src/games/blackglass/assets/artifacts/`). The seam stays keyless and offline; the AI-video register pilot (`dr-anita-still.mp4`) shipped and is verified end-to-end by `scripts/anita-video-shot.mjs`; open-model upgrades and the Tito Mike clip remain optional (`research/ai-visual-workflows-2026.md`).
+
+## Phase 5 — Full game (current)
+
+The complete path: hub → four anchors (10 phones) → **THE CONVERGENCE**. Outcomes and targets in `docs/GAME-PLAN.md`.
+
+1. **Continuity** ✅ — live glassOS runs persist per phone; the rack offers Continue; exiting flushes state (`scripts/resume-smoke.mjs`).
+2. **Case board** ✅ — evidence/inspected stored with each lived run; clues surface on the rack, anchor select, and finale signal report.
+3. **THE CONVERGENCE** ✅ — global finale unlocked by living all 10 phones; the season assembled from recorded choices, with the through-line and discovery totals (`scripts/finale-smoke.mjs`).
+4. **Presentation polish** — screen transitions, notification history, deeper stage. Backlog (M4).
+5. **Interaction depth** — voice-note players, forward/search mechanics, artifact compare. Backlog (M5).
+6. **Content breadth** — new anchors (AI recruiter, election audio, romance scam, assistant-as-antagonist). Needs writing sessions (M6).
+7. **External assets** — Tito Mike clip, voice audio, new diegetic stills, localization. Placeholder register in `docs/GAME-PLAN.md` §7 (M7).
 
 ## Standing constraints (unchanged)
 
