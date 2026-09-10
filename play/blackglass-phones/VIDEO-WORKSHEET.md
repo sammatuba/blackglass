@@ -62,4 +62,4 @@ Veo 3.1 is in the Gemini app for Pro subscribers; it does image-to-video with th
 
 ---
 
-*Runtime support shipped 2026-09-06. Pilot not yet generated — needs a human with a ChatGPT or Kaggle login.*
+*Runtime support shipped 2026-09-06. Pilot generated 2026-09-06 and verified end-to-end 2026-09-11 (`node scripts/anita-video-shot.mjs`) — the clip is required, not optional: Bea's chain now holds on the player opening the Dr. Anita page. Next: Tito Mike, same flow.*
