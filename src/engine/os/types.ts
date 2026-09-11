@@ -141,7 +141,10 @@ export interface OSRule {
     callDeclined?: boolean
     inspected?: string
   }
-  /** sender "typing…" for ~1.4s before the pushes land */
+  /** the sender types in `typingIn` before the pushes land. Derived mode:
+      when the rule has a human line of its own, the pump shows the indicator
+      from that message's own length instead, so this is only for beats with
+      no line (a call about to ring, a message that is only a photo). */
   typingIn?: string
   push?: OSPush[]
   set?: Record<string, FlagValue>

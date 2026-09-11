@@ -9,6 +9,14 @@ const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
+// smoke runs use the fast pace; cadence math is covered by pacing.test.ts
+await page.addInitScript(() => {
+  try {
+    localStorage.setItem('cgAI_glassos_pace', '8')
+  } catch {
+    /* about:blank */
+  }
+})
 page.on('pageerror', (e) => errors.push(String(e)))
 const settle = (ms) => page.waitForTimeout(ms)
 const assert = (cond, msg) => {

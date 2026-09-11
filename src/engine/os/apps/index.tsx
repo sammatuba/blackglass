@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { CaseOS, OSMessage, OSState } from '../types'
 import { visibleMessages } from '../runtime'
 import { isMuted, setMuted, sfx } from '../sound'
+import { paceSpeed, setPaceSpeed } from '../pacing'
 import { Avatar, EmptyState } from './shared'
 /* The glassOS apps. Every app is an evidence surface. */
 
@@ -190,21 +191,21 @@ function Conversation({
         {msgs.map((m) => {
           if (m.kind === 'narr' || m.kind === 'aside') {
             return (
-              <div key={m.id} className={m.kind === 'narr' ? 'os-narr' : 'os-aside'}>
+              <div key={m.id} data-msg={m.id} data-from={m.from ?? 'sys'} className={m.kind === 'narr' ? 'os-narr' : 'os-aside'}>
                 {m.text}
               </div>
             )
           }
           if (m.from === 'sys' && !m.kind) {
             return (
-              <p key={m.id} className="mx-8 rounded-full bg-[var(--os-chip)] px-3 py-1 text-center text-[10.5px] text-[var(--os-dim)]">
+              <p key={m.id} data-msg={m.id} data-from={m.from ?? 'sys'} className="mx-8 rounded-full bg-[var(--os-chip)] px-3 py-1 text-center text-[10.5px] text-[var(--os-dim)]">
                 {m.text}
               </p>
             )
           }
           const out = m.from === 'you'
           return (
-            <div key={m.id} className={`flex ${out ? 'justify-end' : 'justify-start'}`}>
+            <div key={m.id} data-msg={m.id} data-from={m.from} className={`flex ${out ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[82%] ${
                   m.kind === 'callcard'
@@ -865,6 +866,7 @@ export function SettingsApp({
 }) {
   const [muted, setM] = useState(isMuted())
   const [bright, setBright] = useState(100)
+  const [pace, setPace] = useState(paceSpeed())
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
       <h3 className="mt-1 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Display</h3>
@@ -905,6 +907,40 @@ export function SettingsApp({
           <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all ${!muted ? 'left-[22px]' : 'left-0.5'}`} />
         </span>
       </button>
+
+      <h3 className="mt-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Conversations</h3>
+      <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4">
+        <p className="text-[12.5px] font-semibold text-[var(--os-ink)]">Chat pace</p>
+        <p className="mt-1 text-[11.5px] leading-snug text-[var(--os-dim)]">
+          How fast the other side types back. Normal follows human speed.
+        </p>
+        <div role="radiogroup" aria-label="Chat pace" className="mt-3 grid grid-cols-3 gap-2">
+          {[
+            { label: 'Relaxed', speed: 0.75 },
+            { label: 'Normal', speed: 1 },
+            { label: 'Brisk', speed: 1.5 },
+          ].map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              role="radio"
+              aria-checked={pace === p.speed}
+              onClick={() => {
+                setPaceSpeed(p.speed)
+                setPace(p.speed)
+                sfx.open()
+              }}
+              className={`rounded-xl border px-2 py-2 text-[11.5px] font-semibold transition-colors ${
+                pace === p.speed
+                  ? 'border-[var(--os-accent)] bg-[var(--os-panel)] text-[var(--os-ink)]'
+                  : 'border-[var(--os-hairline)] text-[var(--os-dim)]'
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <h3 className="mt-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">About this phone</h3>
       <div className="mt-2 space-y-1 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4 text-[12px] text-[var(--os-dim)]">

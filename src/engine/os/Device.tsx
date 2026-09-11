@@ -12,6 +12,7 @@ import {
   visibleMessages,
 } from './runtime'
 import { sfx, vibrate } from './sound'
+import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, wallpaperHue } from './Stage'
@@ -98,65 +99,118 @@ export function GlassOS({
       setBanners((b) => [...b.slice(-2), banner])
       setBannerLog((log) => [...log.slice(-19), banner])
       setUnread((n) => Math.min(99, n + 1))
-      setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), 3400)
+      setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), Math.max(2500, scaled(bannerMs(text))))
     },
     [caseDef],
   )
 
+  /* one pump at a time: a reply that lands mid-burst queues a re-run instead
+     of interleaving two storylines into the same thread */
+  const pumping = useRef(false)
+  const rerun = useRef(false)
+
   const processRules = useCallback(async () => {
-    while (true) {
-      // a prose interstitial is up: hold the world until it's dismissed
-      if (osRef.current.moment) break
-      const ready = pendingRules(caseDef, osRef.current)
-      if (ready.length === 0) break
-      for (const rule of ready) {
-        if (cancelledRef.current) return
-        if (rule.typingIn) {
-          setTypingIn(rule.typingIn)
-          const ticks = setInterval(() => sfx.typing(), 260)
-          await sleep(1500 + (rule.push?.length ?? 1) * 350)
-          clearInterval(ticks)
-          setTypingIn(null)
-          if (cancelledRef.current) return
-        }
-        let s = applyRule(osRef.current, rule)
-        osRef.current = s
-        setOS(s)
-        if (rule.push) {
-          for (let idx = 0; idx < rule.push.length; idx++) {
+    if (pumping.current) {
+      rerun.current = true
+      return
+    }
+    pumping.current = true
+    try {
+      do {
+        rerun.current = false
+        while (true) {
+          // a prose interstitial is up: hold the world until it's dismissed
+          if (osRef.current.moment) break
+          const ready = pendingRules(caseDef, osRef.current)
+          if (ready.length === 0) break
+          for (const rule of ready) {
             if (cancelledRef.current) return
-            await sleep(idx === 0 ? 250 : 950)
-            s = applyPushAt(osRef.current, rule, idx)
+            let s = applyRule(osRef.current, rule)
             osRef.current = s
             setOS(s)
-            const p = rule.push[idx]
-            const silent = p.msg.kind === 'narr' || p.msg.kind === 'aside'
-            if (!silent && p.msg.from !== 'you') {
-              sfx.receive()
-              vibrate(18)
-              setPulse((n) => n + 1)
+            if (rule.push) {
+              // typing is derived from the pushes: a burst shows the indicator
+              // once, its lines land seconds apart, and prose gets reading air
+              let typingThread: string | null = null
+              let ticks: ReturnType<typeof setInterval> | null = null
+              const stopTyping = () => {
+                if (ticks) clearInterval(ticks)
+                ticks = null
+                if (typingThread) setTypingIn(null)
+                typingThread = null
+              }
+              const startTyping = (threadId: string) => {
+                typingThread = threadId
+                setTypingIn(threadId)
+                ticks = setInterval(() => sfx.typing(), 260)
+              }
+              const hasThemLine = rule.push.some((p) => {
+                const kind = p.msg.kind
+                return kind !== 'narr' && kind !== 'aside' && (p.msg.from ?? 'them') === 'them'
+              })
+              // a rule may ask for a bare typing beat with no line of its own
+              if (rule.typingIn && !hasThemLine) {
+                startTyping(rule.typingIn)
+                await sleep(scaled(typingMs('')))
+                stopTyping()
+                if (cancelledRef.current) return
+              }
+              for (let idx = 0; idx < rule.push.length; idx++) {
+                if (cancelledRef.current) {
+                  stopTyping()
+                  return
+                }
+                const p = rule.push[idx]
+                const kind = p.msg.kind
+                const silent = kind === 'narr' || kind === 'aside'
+                const fromThem = (p.msg.from ?? 'them') === 'them'
+                const text = p.msg.text ?? ''
+                if (silent || !fromThem) {
+                  stopTyping()
+                  await sleep(scaled(silent ? proseMs(text) : continueMs()))
+                } else if (typingThread !== p.threadId) {
+                  stopTyping()
+                  startTyping(p.threadId)
+                  const media = kind === 'voice' || kind === 'photo' || kind === 'link' ? 650 : 0
+                  await sleep(scaled(typingMs(text) + media))
+                } else {
+                  // the same sender, still going: another line, not a new beat
+                  await sleep(scaled(continueMs()))
+                }
+                s = applyPushAt(osRef.current, rule, idx)
+                osRef.current = s
+                setOS(s)
+                if (!silent && p.msg.from !== 'you') {
+                  sfx.receive()
+                  vibrate(18)
+                  setPulse((n) => n + 1)
+                }
+                if (p.msg.from === 'them' && p.msg.text) pushBanner(p.threadId, p.msg.text)
+              }
+              stopTyping()
             }
-            if (p.msg.from === 'them' && p.msg.text) pushBanner(p.threadId, p.msg.text)
+            if (rule.incomingCall) {
+              // ring until answered/declined (the overlay handles the phases)
+              sfx.callIncoming()
+              vibrate([60, 80, 60])
+            }
+            await sleep(scaled(settleMs()))
           }
         }
-        if (rule.incomingCall) {
-          // ring until answered/declined (the overlay handles the phases)
-          sfx.callIncoming()
-          vibrate([60, 80, 60])
+        // the end flag settles the case: close any call, hand state to the debrief
+        if (osRef.current.flags[caseDef.endFlag] && !completedRef.current) {
+          completedRef.current = true
+          if (osRef.current.call) {
+            const s = clearCall(osRef.current)
+            osRef.current = s
+            setOS(s)
+          }
+          await sleep(700)
+          if (!cancelledRef.current) onComplete(osRef.current)
         }
-        await sleep(350)
-      }
-    }
-    // the end flag settles the case: close any call, hand state to the debrief
-    if (osRef.current.flags[caseDef.endFlag] && !completedRef.current) {
-      completedRef.current = true
-      if (osRef.current.call) {
-        const s = clearCall(osRef.current)
-        osRef.current = s
-        setOS(s)
-      }
-      await sleep(700)
-      if (!cancelledRef.current) onComplete(osRef.current)
+      } while (rerun.current && !cancelledRef.current)
+    } finally {
+      pumping.current = false
     }
   }, [caseDef, onComplete, pushBanner])
 
@@ -166,8 +220,8 @@ export function GlassOS({
       // deliver the opening messages (you're on the lock screen; the phone buzzes)
       for (let i = 0; i < caseDef.opening.length; i++) {
         if (cancelledRef.current) return
-        await sleep(i === 0 ? 600 : 900)
         const p = caseDef.opening[i]
+        await sleep(scaled(openingMs(p.msg.text ?? '', i === 0)))
         const s = applyPushAt(osRef.current, { id: '__push', when: {}, push: [p] }, 0)
         osRef.current = s
         setOS(s)
