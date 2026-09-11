@@ -35,7 +35,7 @@ The complete path: hub → four anchors (10 phones) → **THE CONVERGENCE**. Out
 1. **Continuity** ✅ — live glassOS runs persist per phone; the rack offers Continue; exiting flushes state (`scripts/resume-smoke.mjs`).
 2. **Case board** ✅ — evidence/inspected stored with each lived run; clues surface on the rack, anchor select, and finale signal report.
 3. **THE CONVERGENCE** ✅ — global finale unlocked by living all 10 phones; the season assembled from recorded choices, with the through-line and discovery totals (`scripts/finale-smoke.mjs`).
-4. **Presentation polish** ◐ — screen transitions, the glassOS notification center, and human chat cadence (per-message typing, reading air, Settings → Chat pace; audited by `scripts/cadence-smoke.mjs`) shipped; deeper stage still backlog (M4).
+4. **Presentation polish** ◐ — screen transitions, the glassOS notification center, human chat cadence, and the deeper stage (time-of-day desk light + tilt-driven glass sheen) shipped; the anthology boot sequence is still backlog (M4).
 5. **Interaction depth** ◐ — gallery zoom, voice-note play/pause, and Notes search shipped (`scripts/artifact-smoke.mjs`); forward/share and artifact compare still backlog (M5).
 6. **Content breadth** ◐ — Anchor V brief ready: **THE ASSISTANT** (verb ASK) in `craft/maya/_meta/anchor-v-brief.md`; needs a writing session (M6).
 7. **External assets** — Tito Mike clip, voice audio, new diegetic stills, localization. Placeholder register in `docs/GAME-PLAN.md` §7 (M7).

@@ -115,8 +115,10 @@ seconds apart, prose beats wait like reading, and one serialized pump keeps
 storylines from interleaving; players choose Relaxed / Normal / Brisk in
 Settings → Chat pace (`src/engine/os/pacing.ts`, audited at 1× by
 `scripts/cadence-smoke.mjs`; smokes run at 8× via `cgAI_glassos_pace`).
-Remaining: deeper stage (reflections, time-of-day per anchor), anthology boot
-sequence.
+**Deeper stage** (2026-09-12): the desk light follows each case's clock — dawn
+gold, cool day, rose dusk, warm lamp at night (`timeMood`, unit-tested) — and a
+specular sheen slides across the glass with the pointer tilt, reduced-motion
+safe. Remaining: anthology boot sequence.
 
 ### M5 — Interaction depth ◐ two slices shipped 2026-09-11
 Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
