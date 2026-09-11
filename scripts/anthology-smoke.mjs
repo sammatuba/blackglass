@@ -7,6 +7,9 @@ import { chromium } from 'playwright-core'
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
 const errors = []
+// console errors are only collected while we're actually in the game: the
+// hub fallback probes a deep link that 404s on hosts without SPA rewrites
+let auditing = false
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 // smoke runs use the fast pace; cadence math is covered by pacing.test.ts
 await page.addInitScript(() => {
@@ -16,7 +19,7 @@ await page.addInitScript(() => {
     /* about:blank */
   }
 })
-page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
+page.on('console', (m) => m.type() === 'error' && auditing && errors.push(m.text()))
 page.on('pageerror', (e) => errors.push(String(e)))
 
 const tap = async (name, timeout = 8000) => {
@@ -37,8 +40,22 @@ const tryTap = async (name, timeout = 2000) => {
   }
 }
 
-await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
-await settle(700)
+// enter the game (deep link locally; hub fallback where the host 404s a route)
+const gotoGame = async () => {
+  auditing = false
+  const direct = await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+  if (!direct?.ok()) {
+    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+    const card = page.getByRole('link', { name: /Three phones\. One morning/i }).first()
+    await card.waitFor({ state: 'visible', timeout: 15000 })
+    await card.click()
+    await settle(800)
+  }
+  auditing = true
+  await settle(500)
+}
+
+await gotoGame()
 await shot('/tmp/bg-0-select.png')
 
 /* ============ ANCHOR II — IT'S ME (voiceclone) ============ */
@@ -85,8 +102,7 @@ await settle(8000) // drain → completion → rack, the others wake
 await shot('/tmp/bg-8-vc-rack-awake.png')
 
 /* ============ ANCHOR IV — FIVE WEEKS (full run) ============ */
-await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
-await settle(500)
+await gotoGame()
 await tap(/FIVE WEEKS/i)
 await settle(400)
 await tap(/pick up/i)
@@ -111,8 +127,7 @@ await settle(1200)
 await shot('/tmp/bg-10-5w-timeline.png')
 
 /* ============ ANCHOR III — GUARANTEED (Tita spot-check) ============ */
-await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
-await settle(500)
+await gotoGame()
 await tap(/GUARANTEED/i)
 await settle(400)
 await tap(/pick up/i)
@@ -134,8 +149,7 @@ await shot('/tmp/bg-13-df-coda.png')
 await settle(2500)
 
 /* ============ ANCHOR I — THREE PHONES (spot-check) ============ */
-await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
-await settle(500)
+await gotoGame()
 await tap(/THREE PHONES/i)
 await tap(/pick up/i)
 await settle(8200)
@@ -151,3 +165,4 @@ await shot('/tmp/bg-14-kangkong-awake.png')
 
 console.log('console errors:', errors.length ? errors : 'none')
 await browser.close()
+process.exit(errors.length === 0 ? 0 : 2)
