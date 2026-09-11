@@ -105,12 +105,18 @@ carry-forward close. A locked card on the anchor select shows progress toward
 the unlock. Acceptance: unit tests for the resolver; smoke playthrough with
 seeded progress renders dynamic text and totals.
 
-### M4 — Presentation polish ◐ first slice shipped 2026-09-11
+### M4 — Presentation polish ◐ two slices shipped 2026-09-11
 Shipped: anthology screen transitions (`.animate-screen`, reduced-motion safe);
 glassOS notification center — tappable banners that open their thread, a
 status-bar bell with unread count, and a shade with banner history + Clear
-(`scripts/shade-smoke.mjs`). Remaining: deeper stage (reflections, time-of-day
-per anchor), anthology boot sequence.
+(`scripts/shade-smoke.mjs`). **Human cadence** rewired the rule pump: typing is
+derived per message from its own length, bursts show one indicator and land
+seconds apart, prose beats wait like reading, and one serialized pump keeps
+storylines from interleaving; players choose Relaxed / Normal / Brisk in
+Settings → Chat pace (`src/engine/os/pacing.ts`, audited at 1× by
+`scripts/cadence-smoke.mjs`; smokes run at 8× via `cgAI_glassos_pace`).
+Remaining: deeper stage (reflections, time-of-day per anchor), anthology boot
+sequence.
 
 ### M5 — Interaction depth ◐ first slice shipped 2026-09-11
 Shipped: voice-note play/pause (waveform + length chrome, `scripts/artifact-smoke.mjs`);
