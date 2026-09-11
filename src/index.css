@@ -218,9 +218,30 @@ body {
 .desk-scene {
   position: relative;
   background:
-    radial-gradient(120% 90% at 18% -10%, rgba(255, 178, 116, 0.09), transparent 55%),
+    radial-gradient(120% 90% at 18% -10%, var(--stage-ambient, rgba(255, 178, 116, 0.09)), transparent 55%),
     radial-gradient(150% 110% at 50% 120%, rgba(0, 0, 0, 0.6), transparent 55%),
-    linear-gradient(180deg, #0b0f1a 0%, #080b13 45%, #04060c 100%);
+    linear-gradient(180deg, var(--stage-top, #0b0f1a) 0%, var(--stage-mid, #080b13) 45%, #04060c 100%);
+}
+/* the desk light follows the case clock (set on .stage-root by PhoneStage) */
+.stage-root[data-mood='dawn'] {
+  --stage-ambient: rgba(255, 198, 128, 0.14);
+  --stage-top: #12141c;
+  --stage-mid: #0c0e15;
+}
+.stage-root[data-mood='day'] {
+  --stage-ambient: rgba(184, 210, 255, 0.12);
+  --stage-top: #111a2c;
+  --stage-mid: #0a1220;
+}
+.stage-root[data-mood='dusk'] {
+  --stage-ambient: rgba(255, 152, 120, 0.14);
+  --stage-top: #150f18;
+  --stage-mid: #0d0a12;
+}
+.stage-root[data-mood='night'] {
+  --stage-ambient: rgba(255, 178, 116, 0.09);
+  --stage-top: #0b0f1a;
+  --stage-mid: #080b13;
 }
 .stage-root::before,
 .desk-scene::before {
@@ -306,6 +327,24 @@ body {
   transform: translateX(calc(var(--tx, 0) * -18px));
   transition: transform 0.2s ease-out;
 }
+/* the glass sheen: specular light sliding across the phone as it leans */
+.stage-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 2.4rem;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.025) 26%,
+    transparent 44%,
+    transparent 100%
+  );
+  transform: translate(calc(var(--tx, 0) * -12px), calc(var(--ty, 0) * -7px));
+  transition: transform 0.2s ease-out;
+  will-change: transform;
+}
 /* screen light bleeding around the bezel */
 .stage-body .device-frame {
   box-shadow:
@@ -329,7 +368,8 @@ body {
 /* the scene holds still for reduced motion and touch screens */
 @media (prefers-reduced-motion: reduce), (pointer: coarse) {
   .stage-body,
-  .stage-shadow {
+  .stage-shadow,
+  .stage-sheen {
     transform: none;
     transition: none;
   }

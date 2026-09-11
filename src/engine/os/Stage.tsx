@@ -20,8 +20,29 @@ export function wallpaperHue(wallpaper: string): number {
   return WALLPAPER_HUE[wallpaper] ?? 220
 }
 
+export type StageMood = 'dawn' | 'day' | 'dusk' | 'night'
+
+/** the desk light follows the case's clock: dawn gold, cool day, rose dusk,
+    warm lamp at night. Hour is read from the phone's 12-hour display. */
+export function timeMood(time: string, meridiem: string): StageMood {
+  const hour = toHour(time, meridiem)
+  if (hour >= 5 && hour < 8) return 'dawn'
+  if (hour >= 8 && hour < 17) return 'day'
+  if (hour >= 17 && hour < 20) return 'dusk'
+  return 'night'
+}
+
+function toHour(time: string, meridiem: string): number {
+  const h = Number.parseInt(time, 10)
+  if (!Number.isFinite(h)) return 21
+  if (/p\.?m\.?/i.test(meridiem) && h !== 12) return h + 12
+  if (/a\.?m\.?/i.test(meridiem) && h === 12) return 0
+  return h
+}
+
 export function PhoneStage({
   hue,
+  mood = 'night',
   pulse = 0,
   ringing = false,
   header,
@@ -29,6 +50,8 @@ export function PhoneStage({
   children,
 }: {
   hue: number
+  /** the desk's time of day — dawn gold, cool day, rose dusk, lamp-lit night */
+  mood?: StageMood
   /** increment to flash the glow (message arrived, evidence found) */
   pulse?: number
   ringing?: boolean
@@ -67,7 +90,7 @@ export function PhoneStage({
   }, [])
 
   return (
-    <div className="stage-root" onPointerMove={onPointerMove} onPointerLeave={onPointerLeave}>
+    <div className="stage-root" data-mood={mood} onPointerMove={onPointerMove} onPointerLeave={onPointerLeave}>
       {/* the desk plane, catching the phone's light */}
       <div className="stage-surface" style={{ '--stage-hue': hue } as CSSProperties} aria-hidden="true" />
       {header}
@@ -81,6 +104,8 @@ export function PhoneStage({
           />
           <div className="stage-shadow" aria-hidden="true" />
           {children}
+          {/* the glass, catching the room as the phone leans */}
+          <div className="stage-sheen" aria-hidden="true" />
         </div>
       </div>
       {footer}

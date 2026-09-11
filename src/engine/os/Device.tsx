@@ -15,7 +15,7 @@ import { sfx, vibrate } from './sound'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
-import { FullscreenToggle, PhoneStage, wallpaperHue } from './Stage'
+import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
 
 /* glassOS Device — the found-phone shell. Lock → home → apps, with a
    rule-processing engine pacing messages, calls, and evidence. */
@@ -419,6 +419,7 @@ export function GlassOS({
     <>
       <PhoneStage
         hue={wallpaperHue(caseDef.phone.wallpaper)}
+        mood={timeMood(caseDef.phone.time, caseDef.phone.meridiem)}
         pulse={pulse}
         ringing={ringing}
         header={

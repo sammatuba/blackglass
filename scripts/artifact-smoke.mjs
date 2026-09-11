@@ -39,6 +39,10 @@ await settle(500)
 /* ---- voiceclone, Tita Merly: enter the evening ---- */
 await tapWhen(/IT’S ME/i)
 await tapWhen(/pick up/i)
+assert(
+  (await page.locator('.stage-root').getAttribute('data-mood')) === 'night',
+  'the desk light matches the case clock (8:02 PM → night)',
+)
 await settle(4500)
 await tapWhen(/Swipe up to open/i)
 await tapWhen(/Open Viber/i, 12000) // the kitchen moment
