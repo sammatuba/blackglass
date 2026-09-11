@@ -118,12 +118,13 @@ Settings → Chat pace (`src/engine/os/pacing.ts`, audited at 1× by
 Remaining: deeper stage (reflections, time-of-day per anchor), anthology boot
 sequence.
 
-### M5 — Interaction depth ◐ first slice shipped 2026-09-11
-Shipped: voice-note play/pause (waveform + length chrome, `scripts/artifact-smoke.mjs`);
-artifact zoom in the gallery viewer (1×/2× on the planted tells). Remaining:
-a real forward/share flow for link messages; side-by-side artifact compare
-(ampalaya/kangkong); Notes evidence search; "recovered messages" forensic mode
-for a future anchor.
+### M5 — Interaction depth ◐ two slices shipped 2026-09-11
+Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
+gallery viewer (1×/2× on the planted tells); Notes search over evidence + notes
+with match count, empty state, and clear — all audited by
+`scripts/artifact-smoke.mjs`. Remaining: a real forward/share flow for link
+messages; side-by-side artifact compare (ampalaya/kangkong); "recovered
+messages" forensic mode for a future anchor.
 
 ### M6 — Content breadth ◐ brief ready 2026-09-11
 `craft/maya/_meta/anchor-v-brief.md` specs the recommended Anchor V — **THE
