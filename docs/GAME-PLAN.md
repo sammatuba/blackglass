@@ -105,7 +105,7 @@ carry-forward close. A locked card on the anchor select shows progress toward
 the unlock. Acceptance: unit tests for the resolver; smoke playthrough with
 seeded progress renders dynamic text and totals.
 
-### M4 — Presentation polish ◐ two slices shipped 2026-09-11
+### M4 — Presentation polish ◐ three slices shipped 2026-09-11/12
 Shipped: anthology screen transitions (`.animate-screen`, reduced-motion safe);
 glassOS notification center — tappable banners that open their thread, a
 status-bar bell with unread count, and a shade with banner history + Clear
