@@ -1,5 +1,5 @@
-/* Dev helper: artifact surfaces — gallery zoom on a diegetic image, and
-   voice-note play/pause in the message list (voiceclone, Tita Merly).
+/* Dev helper: artifact surfaces — gallery zoom on a diegetic image,
+   voice-note play/pause in the message list, and Notes search.
    Local:  node scripts/artifact-smoke.mjs   (against npm run preview)
    Live:   SHOT_BASE=https://sammatuba.github.io/blackglass node scripts/artifact-smoke.mjs */
 import { chromium } from 'playwright-core'
@@ -68,6 +68,20 @@ await settle(500)
 await page.screenshot({ path: '/tmp/artifact-2-voice.png' })
 await page.getByRole('button', { name: /Pause voice message/ }).first().click()
 await page.getByRole('button', { name: /Play voice message/ }).first().waitFor({ state: 'visible', timeout: 3000 })
+
+/* ---- Notes search: the case board gets a filter ---- */
+await tapWhen(/^Home$/i, 5000)
+await tapWhen(/Open Notes/i, 8000)
+const search = page.getByLabel(/Search notes and evidence/i)
+await search.waitFor({ state: 'visible', timeout: 5000 })
+await search.fill('Renz')
+assert((await page.getByText(/1 of 1 match/).count()) > 0, 'search reports the match count')
+assert((await page.getByText('Kay Renz').count()) > 0, 'the matching note is still shown')
+await page.screenshot({ path: '/tmp/artifact-3-search.png' })
+await search.fill('zzzz')
+assert((await page.getByText(/No notes match/i).count()) > 0, 'empty search state is honest')
+await page.getByRole('button', { name: /Clear search/i }).click()
+assert((await page.getByText('Kay Renz').count()) > 0, 'clearing restores the notes')
 
 console.log('artifact ok — errors:', errors.length ? errors : 'none')
 await browser.close()

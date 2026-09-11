@@ -816,7 +816,13 @@ export function ContactsApp({
    ===================================================================== */
 
 export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
-  const evidence = os.evidence.map((id) => ({ id, label: caseDef.evidenceLabels?.[id] ?? id }))
+  const [query, setQuery] = useState('')
+  const q = query.trim().toLowerCase()
+  const evidence = os.evidence
+    .map((id) => ({ id, label: caseDef.evidenceLabels?.[id] ?? id }))
+    .filter((e) => !q || e.label.toLowerCase().includes(q) || e.id.toLowerCase().includes(q))
+  const notes = caseDef.notes.filter((n) => !q || n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q))
+  const searchable = os.evidence.length + caseDef.notes.length
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
       <div className="mt-1 rounded-2xl border border-amber-300/25 bg-amber-400/10 p-4">
@@ -824,10 +830,41 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
         <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--os-ink)]">{caseDef.blurb}</p>
       </div>
 
+      <div className="relative mt-4">
+        <label htmlFor="notes-search" className="sr-only">
+          Search notes and evidence
+        </label>
+        <input
+          id="notes-search"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search notes & evidence…"
+          className="w-full rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5 text-[12.5px] text-[var(--os-ink)] placeholder:text-[var(--os-faint)]"
+        />
+        {query && (
+          <button
+            type="button"
+            onClick={() => setQuery('')}
+            aria-label="Clear search"
+            className="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-[var(--os-panel)] px-2 py-1 text-[11px] text-[var(--os-dim)]"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+      {q && (
+        <p className="mt-1.5 text-[11px] text-[var(--os-faint)]" aria-live="polite">
+          {evidence.length + notes.length} of {searchable} match “{query.trim()}”
+        </p>
+      )}
+
       <h3 className="mt-5 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Evidence collected · {evidence.length}</h3>
       {evidence.length === 0 ? (
         <p className="mt-2 text-xs leading-relaxed text-[var(--os-faint)]">
-          Nothing yet. Evidence appears here when you inspect photos, numbers, and pages — the way you would on a real phone.
+          {q
+            ? 'No evidence matches.'
+            : 'Nothing yet. Evidence appears here when you inspect photos, numbers, and pages — the way you would on a real phone.'}
         </p>
       ) : (
         <ul className="mt-2 space-y-1.5">
@@ -841,12 +878,16 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
 
       <h3 className="mt-5 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Notes</h3>
       <div className="mt-2 space-y-2 pb-2">
-        {caseDef.notes.map((n) => (
-          <div key={n.title} className="rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3.5">
-            <div className="text-[12.5px] font-bold text-[var(--os-ink)]">{n.title}</div>
-            <p className="mt-1 text-[12px] leading-relaxed text-[var(--os-dim)]">{n.body}</p>
-          </div>
-        ))}
+        {notes.length === 0 && q ? (
+          <p className="text-xs leading-relaxed text-[var(--os-faint)]">No notes match “{query.trim()}”.</p>
+        ) : (
+          notes.map((n) => (
+            <div key={n.title} className="rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3.5">
+              <div className="text-[12.5px] font-bold text-[var(--os-ink)]">{n.title}</div>
+              <p className="mt-1 text-[12px] leading-relaxed text-[var(--os-dim)]">{n.body}</p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   )
