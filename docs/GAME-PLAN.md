@@ -125,16 +125,21 @@ count. Tap anywhere, Enter/Space, or Escape begins now; otherwise it clears at
 3.4s at 1× (a blink at 8×), and reduced motion reveals all lines at once
 (audited by `scripts/cadence-smoke.mjs`).
 
-### M5 — Interaction depth ◐ three slices shipped 2026-09-11/12
+### M5 — Interaction depth ✅ shipped 2026-09-11/12
 Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
 gallery viewer (1×/2× on the planted tells); Notes search over evidence + notes
-with match count, empty state, and clear (`scripts/artifact-smoke.mjs`); and a
+with match count, empty state, and clear (`scripts/artifact-smoke.mjs`); a
 real forward/share flow on link messages — tap Forward, pick a thread, the copy
 lands there marked “Forwarded” with a confirmation toast, or Copy link puts the
 diegetic URL on the clipboard. Forwarding is pure expression: it sets no flags,
 so authored branches stay intact (`forwardMessage` in runtime, unit-tested;
-audited in `scripts/shade-smoke.mjs`). Remaining: side-by-side artifact compare
-(ampalaya/kangkong); “recovered messages” forensic mode for a future anchor.
+audited in `scripts/shade-smoke.mjs`). **Side-by-side artifact compare**
+(2026-09-12): Bea's gallery now holds the healthtruthph batch — the kangkong
+screenshot Maya sent, plus ampalaya and malunggay siblings under `bea_fast` —
+and the photo viewer can pair any two artifacts. A shared `series` on the
+photos names the tell (“The sameness is the tell”); either column opens full
+size (`scripts/compare-smoke.mjs`). “Recovered messages” forensic mode is
+reserved for a future anchor (M6).
 
 ### M6 — Content breadth ◐ brief ready 2026-09-11
 `craft/maya/_meta/anchor-v-brief.md` specs the recommended Anchor V — **THE
@@ -161,7 +166,7 @@ See register. None block play.
 ## 8. Verification (no analytics by design)
 
 - **Unit:** pure progress/finale logic in `progress.test.ts`; engine rule tests stay green.
-- **Smoke:** `scripts/anita-video-shot.mjs` (artifact + anchor flow), `scripts/resume-smoke.mjs` (continuity), `scripts/finale-smoke.mjs` (seeded convergence), existing anthology smoke; `npm run build` + Lighthouse budgets.
+- **Smoke:** `scripts/anita-video-shot.mjs` (artifact + anchor flow), `scripts/resume-smoke.mjs` (continuity), `scripts/finale-smoke.mjs` (seeded convergence), `scripts/compare-smoke.mjs` (seeded batch compare), existing anthology smoke; `npm run build` + Lighthouse budgets.
 - **Playtest signal:** qualitative — where do players stop, what do they re-open, what do they quote back. No instrumentation; feedback is conversation.
 
 ---
