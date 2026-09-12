@@ -71,6 +71,21 @@ assert((await page.getByRole('dialog', { name: 'Notifications' }).count()) === 0
 assert((await page.getByText('Santos Family GC 🏠').count()) > 0, 'shade row opened the GC thread')
 assert((await bell.getAttribute('aria-label')) === 'Notifications', 'unread cleared after opening the shade')
 
+// forward the link: the sheet offers the other threads, and the copy is marked
+await tapWhen(/↪ Forward/i, 6000)
+await page.getByRole('dialog', { name: 'Forward link' }).waitFor({ state: 'visible', timeout: 5000 })
+await page.getByRole('button', { name: /Bea 💛/ }).first().click()
+await settle(500)
+assert((await page.getByRole('status').innerText()).includes('Forwarded to Bea'), 'the forward confirms')
+await page.screenshot({ path: '/tmp/shade-4-forward.png' })
+
+// the forwarded copy lives in Bea's thread, marked and pointing at the same page
+await tapWhen(/^Home$/i, 5000)
+await tapWhen(/Open Messages/i, 8000)
+await tapWhen(/Bea 💛/i, 8000)
+assert((await page.getByText('↪ Forwarded').count()) > 0, 'the forwarded copy carries the mark')
+assert((await page.getByText(/EXPOSED: The Vegetable/).count()) > 0, 'the forwarded card is the same link')
+
 console.log('shade ok — errors:', errors.length ? errors : 'none')
 await browser.close()
 process.exit(errors.length === 0 ? 0 : 2)

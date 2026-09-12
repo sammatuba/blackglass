@@ -5,6 +5,7 @@ import {
   applyRule,
   clearCall,
   dismissMoment as closeMoment,
+  forwardMessage,
   initialOSState,
   markReplied,
   pendingRules,
@@ -399,6 +400,14 @@ export function GlassOS({
           setOS(ns)
           bump()
         }}
+        onForward={(m, to) => {
+          // pure expression: the copy lands in the thread, no flags move
+          sfx.send()
+          vibrate(10)
+          const ns = forwardMessage(osRef.current, to, { pageId: m.pageId, caption: m.caption })
+          osRef.current = ns
+          setOS(ns)
+        }}
         onAcceptCall={acceptCall}
         onEndCall={endCall}
         onDismissMoment={dismissMoment}
@@ -532,6 +541,7 @@ function DeviceFrame(props: {
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
+  onForward: (msg: OSMessage, toThreadId: string) => void
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
   onDismissMoment: () => void
@@ -909,6 +919,7 @@ function AppSurface(props: {
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
+  onForward: (msg: OSMessage, toThreadId: string) => void
   onBrightness: (n: number) => void
 }) {
   const { app } = props
@@ -916,7 +927,7 @@ function AppSurface(props: {
   const inner = (() => {
     switch (app) {
       case 'messages':
-        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} />
+        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onForward={props.onForward} />
       case 'gallery':
         return <GalleryApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
       case 'phone':

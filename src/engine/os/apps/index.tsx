@@ -28,6 +28,7 @@ export function MessagesApp({
   onSendReply,
   onOpenPage,
   onInspect,
+  onForward,
 }: {
   caseDef: CaseOS
   os: OSState
@@ -37,6 +38,7 @@ export function MessagesApp({
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
   onInspect: (id: string, evidence?: string) => void
+  onForward: (msg: OSMessage, toThreadId: string) => void
 }) {
   const caseOver = !!os.flags[caseDef.endFlag]
   if (!activeThreadId) {
@@ -54,6 +56,7 @@ export function MessagesApp({
       onSendReply={onSendReply}
       onOpenPage={onOpenPage}
       onInspect={onInspect}
+      onForward={onForward}
     />
   )
 }
@@ -134,6 +137,7 @@ function Conversation({
   onSendReply,
   onOpenPage,
   onInspect,
+  onForward,
 }: {
   caseDef: CaseOS
   os: OSState
@@ -143,6 +147,7 @@ function Conversation({
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
   onInspect: (id: string, evidence?: string) => void
+  onForward: (msg: OSMessage, toThreadId: string) => void
 }) {
   const msgs = visibleMessages(os, thread.id)
   const offered = caseOver
@@ -156,6 +161,41 @@ function Conversation({
       )
   const endRef = useRef<HTMLDivElement>(null)
   const playedVoice = useRef<Set<string>>(new Set())
+  const [forwarding, setForwarding] = useState<OSMessage | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const targets = caseDef.threads.filter((t) => t.id !== thread.id)
+
+  useEffect(() => {
+    if (!forwarding) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setForwarding(null)
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [forwarding])
+
+  useEffect(
+    () => () => {
+      if (toastTimer.current) clearTimeout(toastTimer.current)
+    },
+    [],
+  )
+
+  const showToast = (text: string) => {
+    setToast(text)
+    if (toastTimer.current) clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToast(null), 2400)
+  }
+
+  const copyLink = async (m: OSMessage) => {
+    sfx.open()
+    const url = caseDef.pages.find((p) => p.id === m.pageId)?.url ?? ''
+    try {
+      await navigator.clipboard.writeText(url)
+      showToast('Link copied')
+    } catch {
+      showToast('Could not copy the link')
+    }
+  }
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
@@ -167,7 +207,7 @@ function Conversation({
   }
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="relative flex h-full flex-col">
       {/* header */}
       <div className="flex items-center gap-2.5 border-b border-[var(--os-hairline)] px-4 py-2.5">
         <Avatar name={thread.name} hue={thread.hue} size="sm" />
@@ -244,25 +284,51 @@ function Conversation({
                     <span className="mt-1 block text-[11px] opacity-70">📷 {m.caption ?? 'Tap to view photo'}</span>
                   </button>
                 ) : m.kind === 'link' ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sfx.open()
-                      if (m.pageId) onOpenPage(m.pageId)
-                    }}
-                    className="block w-full text-left"
-                  >
-                    <span className="block overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-[var(--os-panel)]">
-                      <span className="flex items-center gap-2 px-2.5 py-2">
-                        <span className="grid h-7 w-7 place-items-center rounded-md bg-amber-400/90 text-xs font-black text-black">!</span>
-                        <span className="min-w-0">
-                          <span className="block truncate text-[12px] font-bold">{caseDef.pages.find((p) => p.id === m.pageId)?.title ?? 'Link'}</span>
-                          <span className="block truncate text-[10.5px] opacity-55">{caseDef.pages.find((p) => p.id === m.pageId)?.url}</span>
+                  <div>
+                    {m.forwarded && <div className="mb-1 text-[10px] font-bold tracking-wide opacity-60">↪ Forwarded</div>}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sfx.open()
+                        if (m.pageId) onOpenPage(m.pageId)
+                      }}
+                      className="block w-full text-left"
+                    >
+                      <span className="block overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-[var(--os-panel)]">
+                        <span className="flex items-center gap-2 px-2.5 py-2">
+                          <span className="grid h-7 w-7 place-items-center rounded-md bg-amber-400/90 text-xs font-black text-black">!</span>
+                          <span className="min-w-0">
+                            <span className="block truncate text-[12px] font-bold">{caseDef.pages.find((p) => p.id === m.pageId)?.title ?? 'Link'}</span>
+                            <span className="block truncate text-[10.5px] opacity-55">{caseDef.pages.find((p) => p.id === m.pageId)?.url}</span>
+                          </span>
                         </span>
                       </span>
+                    </button>
+                    <span className="mt-1 flex items-center gap-3 text-[11px] opacity-70">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sfx.open()
+                          if (m.pageId) onOpenPage(m.pageId)
+                        }}
+                        className="font-medium"
+                      >
+                        🔗 Tap to open in Browser
+                      </button>
+                      {targets.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            sfx.open()
+                            setForwarding(m)
+                          }}
+                          className="font-semibold text-[var(--os-accent)]"
+                        >
+                          ↪ Forward
+                        </button>
+                      )}
                     </span>
-                    <span className="mt-1 block text-[11px] opacity-70">🔗 Tap to open in Browser</span>
-                  </button>
+                  </div>
                 ) : m.kind === 'callcard' ? (
                   <div className="rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-2 text-center text-[12px] text-[var(--os-ink)]">
                     {m.text}
@@ -319,6 +385,61 @@ function Conversation({
           </div>
         )}
       </div>
+
+      {/* forwarded / copied confirmation */}
+      {toast && (
+        <div
+          role="status"
+          className="pointer-events-none absolute bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-black/85 px-4 py-2 text-[12px] font-semibold whitespace-nowrap text-white shadow-lg"
+        >
+          {toast}
+        </div>
+      )}
+
+      {/* forward sheet — pick a thread, or copy the link out */}
+      {forwarding && (
+        <div className="absolute inset-0 z-40 flex items-end bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="Forward link">
+          <div className="w-full rounded-3xl border border-[var(--os-hairline)] bg-[var(--os-panel)] p-4">
+            <div className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Forward to</div>
+            <div className="mt-3 max-h-64 space-y-2 overflow-y-auto">
+              {targets.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    onForward(forwarding, t.id)
+                    showToast(`Forwarded to ${t.name}`)
+                    setForwarding(null)
+                  }}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-2.5 text-left"
+                >
+                  <Avatar name={t.name} hue={t.hue} size="sm" />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-semibold text-[var(--os-ink)]">{t.name}</span>
+                    <span className="block text-[10.5px] text-[var(--os-dim)]">{SERVICE_LABEL[t.service]}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 flex gap-2">
+              <button
+                type="button"
+                onClick={() => void copyLink(forwarding)}
+                className="flex-1 rounded-xl border border-[var(--os-hairline)] px-3 py-2.5 text-[12.5px] font-semibold text-[var(--os-dim)]"
+              >
+                Copy link
+              </button>
+              <button
+                type="button"
+                onClick={() => setForwarding(null)}
+                className="flex-1 rounded-xl bg-[var(--os-chip)] px-3 py-2.5 text-[12.5px] font-semibold text-[var(--os-ink)]"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

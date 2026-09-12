@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   applyPushAt,
   applyRule,
+  forwardMessage,
   initialOSState,
   markInspected,
   markReplied,
@@ -65,6 +66,21 @@ describe('glassOS runtime', () => {
     expect(thread[0].from).toBe('you')
     expect(thread[0].text).toBe('Who is this?')
     expect(s.flags.d1).toBe('probe')
+  })
+
+  it('forwards a link as a marked copy without touching story flags', () => {
+    let s = initialOSState()
+    s = markReplied(s, 'scammer', 'r1', 'Who is this?', { d1: 'probe' })
+    s = forwardMessage(s, 'other', { pageId: 'pg1', caption: 'from Renz' })
+    const thread = visibleMessages(s, 'other')
+    expect(thread).toHaveLength(1)
+    expect(thread[0].from).toBe('you')
+    expect(thread[0].kind).toBe('link')
+    expect(thread[0].pageId).toBe('pg1')
+    expect(thread[0].caption).toBe('from Renz')
+    expect(thread[0].forwarded).toBe(true)
+    expect(s.flags).toEqual({ d1: 'probe' })
+    expect(s.sentReplies).toEqual(['r1'])
   })
 
   it('fires a reply-triggered rule chain in author order', () => {

@@ -126,6 +126,18 @@ export function markInspected(state: OSState, id: string, evidence?: string): OS
   return { ...state, inspected, evidence: ev }
 }
 
+/** the player forwards a link: a marked copy lands in the target thread.
+    Pure expression — it sets no flags, so authored branches stay intact */
+export function forwardMessage(state: OSState, toThreadId: string, link: { pageId?: string; caption?: string }): OSState {
+  return appendMsg(state, toThreadId, {
+    from: 'you',
+    kind: 'link',
+    pageId: link.pageId,
+    caption: link.caption,
+    forwarded: true,
+  })
+}
+
 export function setCallPhase(state: OSState, phase: 'incoming' | 'live' | 'ended', declined = false): OSState {
   if (!state.call) return state
   return { ...state, call: { ...state.call, phase, declined: declined || state.call.declined } }

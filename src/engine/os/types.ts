@@ -93,6 +93,8 @@ export interface OSMessage {
   pageId?: string
   at?: string
   caption?: string
+  /** forwarded by the player — the bubble carries a Forwarded mark */
+  forwarded?: boolean
 }
 
 export interface OSThread {
