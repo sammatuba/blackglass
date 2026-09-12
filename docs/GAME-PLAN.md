@@ -120,13 +120,16 @@ gold, cool day, rose dusk, warm lamp at night (`timeMood`, unit-tested) — and 
 specular sheen slides across the glass with the pointer tilt, reduced-motion
 safe. Remaining: anthology boot sequence.
 
-### M5 — Interaction depth ◐ two slices shipped 2026-09-11
+### M5 — Interaction depth ◐ three slices shipped 2026-09-11/12
 Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
 gallery viewer (1×/2× on the planted tells); Notes search over evidence + notes
-with match count, empty state, and clear — all audited by
-`scripts/artifact-smoke.mjs`. Remaining: a real forward/share flow for link
-messages; side-by-side artifact compare (ampalaya/kangkong); "recovered
-messages" forensic mode for a future anchor.
+with match count, empty state, and clear (`scripts/artifact-smoke.mjs`); and a
+real forward/share flow on link messages — tap Forward, pick a thread, the copy
+lands there marked “Forwarded” with a confirmation toast, or Copy link puts the
+diegetic URL on the clipboard. Forwarding is pure expression: it sets no flags,
+so authored branches stay intact (`forwardMessage` in runtime, unit-tested;
+audited in `scripts/shade-smoke.mjs`). Remaining: side-by-side artifact compare
+(ampalaya/kangkong); “recovered messages” forensic mode for a future anchor.
 
 ### M6 — Content breadth ◐ brief ready 2026-09-11
 `craft/maya/_meta/anchor-v-brief.md` specs the recommended Anchor V — **THE
