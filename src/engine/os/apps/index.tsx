@@ -525,17 +525,34 @@ export function GalleryApp({
 }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [zoom, setZoom] = useState(false)
+  const [compareWith, setCompareWith] = useState<string | null>(null)
+  const [picking, setPicking] = useState(false)
   const photos = caseDef.photos.filter((p) => !p.requires || os.flags[p.requires])
   const open = photos.find((p) => p.id === openId)
+  const compare = photos.find((p) => p.id === compareWith)
+  const others = open ? photos.filter((p) => p.id !== open.id) : []
+  const compareNote =
+    open?.series && compare?.series && open.series.id === compare.series.id
+      ? open.series.note
+      : 'Two artifacts, side by side.'
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpenId(null)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      if (picking) setPicking(false)
+      else if (compareWith) setCompareWith(null)
+      else setOpenId(null)
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [picking, compareWith])
 
-  /* each photo opens at 1× */
-  useEffect(() => setZoom(false), [openId])
+  /* each photo opens at 1×, alone */
+  useEffect(() => {
+    setZoom(false)
+    setCompareWith(null)
+    setPicking(false)
+  }, [openId])
 
   useEffect(() => {
     if (open && !os.inspected.includes(open.id)) onInspect(open.id, open.evidence)
@@ -545,7 +562,8 @@ export function GalleryApp({
   if (photos.length === 0) return <EmptyState icon="🌸" title="No photos yet" sub="Photos arrive as the story moves." />
   return (
     <div className="h-full overflow-y-auto px-3 pb-8">
-      <div className="grid grid-cols-2 gap-2 pt-1">
+      {!open && (
+        <div className="grid grid-cols-2 gap-2 pt-1">
         {photos.map((p) => (
           <button
             key={p.id}
@@ -569,58 +587,153 @@ export function GalleryApp({
             {!os.inspected.includes(p.id) && <span className="mt-0.5 block text-[10px] font-semibold text-[var(--os-accent)]">new</span>}
           </button>
         ))}
-      </div>
+        </div>
+      )}
 
       {open && (
-        <div className="absolute inset-0 z-50 flex animate-fadein flex-col bg-black/95 p-4 pt-10" role="dialog" aria-label={`Photo: ${open.title}`}>
-          <button type="button" onClick={() => setOpenId(null)} className="absolute left-4 top-3 rounded-full bg-[var(--os-chip)] px-3 py-1.5 text-xs text-[var(--os-ink)]" aria-label="Close photo">
-            ‹ Back
-          </button>
-          <div className="flex min-h-0 flex-1 flex-col justify-center">
+        <div className="absolute inset-0 z-50 flex animate-fadein flex-col bg-[#05070d] p-4 pt-10" role="dialog" aria-label={`Photo: ${open.title}`}>
+          <div className="flex items-center justify-between gap-2">
             <button
               type="button"
-              onClick={() => setZoom((z) => !z)}
-              aria-label={zoom ? 'Zoom out' : 'Zoom in'}
-              className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]"
+              onClick={() => (compareWith ? setCompareWith(null) : setOpenId(null))}
+              className="rounded-full bg-[var(--os-chip)] px-3 py-1.5 text-xs text-[var(--os-ink)]"
+              aria-label={compareWith ? 'Exit compare' : 'Close photo'}
             >
-              {open.src ? (
-                <img
-                  src={open.src}
-                  alt={open.title}
-                  className={`h-full w-full object-contain transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
-                />
-              ) : (
-                <span
-                  className={`text-5xl opacity-80 transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
-                  aria-hidden="true"
-                >
-                  {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
-                </span>
-              )}
-              <span className="pointer-events-none absolute right-2 bottom-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold text-white/85">
-                {zoom ? '2×' : '1×'}
-              </span>
+              ‹ Back
             </button>
-            <h3 className="mt-3 text-sm font-bold text-[var(--os-ink)]">{open.title}</h3>
-            {open.tells && open.tells.length > 0 && (
-              <div className="mt-3 space-y-2 overflow-y-auto">
-                <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Look again</p>
-                {open.tells.map((t) => (
-                  <div key={t.label} className="rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3">
-                    <div className="text-[12px] font-bold text-[var(--os-ink)]">
-                      🔍 {t.label}
-                      {t.at && (
-                        <span className="ml-1.5 rounded border border-[var(--os-hairline)] px-1 py-px font-mono text-[10px] font-semibold text-[var(--os-accent)]">
-                          {t.at}
-                        </span>
-                      )}
-                    </div>
-                    <p className="mt-0.5 text-[11.5px] leading-relaxed text-[var(--os-dim)]">{t.detail}</p>
-                  </div>
-                ))}
-              </div>
+            {photos.length > 1 && (
+              <button
+                type="button"
+                onClick={() => {
+                  sfx.open()
+                  setPicking(true)
+                }}
+                className="rounded-full bg-[var(--os-chip)] px-3 py-1.5 text-xs font-semibold text-[var(--os-ink)]"
+              >
+                ⇄ Compare
+              </button>
             )}
           </div>
+          <div className="flex min-h-0 flex-1 flex-col justify-center">
+            {compare ? (
+              <div>
+                <p className="mb-3 rounded-xl border border-white/15 bg-white/10 px-3 py-2 text-center text-[11.5px] leading-relaxed text-white/90">
+                  {compareNote}
+                </p>
+                <div className="grid grid-cols-2 gap-2">
+                  {[open, compare].map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        sfx.open()
+                        setOpenId(p.id)
+                      }}
+                      className="text-left"
+                    >
+                      <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]">
+                        {p.src ? (
+                          <img src={p.src} alt={p.title} className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-3xl opacity-90" aria-hidden="true">
+                            {p.emoji ?? (p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️')}
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-1.5 block text-[10.5px] leading-snug text-white/80">{p.title}</span>
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-3 text-center text-[10.5px] text-white/55">Tap either artifact to open it full size.</p>
+              </div>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setZoom((z) => !z)}
+                  aria-label={zoom ? 'Zoom out' : 'Zoom in'}
+                  className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]"
+                >
+                  {open.src ? (
+                    <img
+                      src={open.src}
+                      alt={open.title}
+                      className={`h-full w-full object-contain transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
+                    />
+                  ) : (
+                    <span
+                      className={`text-5xl opacity-80 transition-transform duration-300 ${zoom ? 'scale-[1.75]' : ''}`}
+                      aria-hidden="true"
+                    >
+                      {open.emoji ?? (open.kind === 'meme' ? '🥬' : open.kind === 'screenshot' ? '📱' : '🖼️')}
+                    </span>
+                  )}
+                  <span className="pointer-events-none absolute right-2 bottom-2 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold text-white/85">
+                    {zoom ? '2×' : '1×'}
+                  </span>
+                </button>
+                <h3 className="mt-3 text-sm font-bold text-[var(--os-ink)]">{open.title}</h3>
+                {open.tells && open.tells.length > 0 && (
+                  <div className="mt-3 space-y-2 overflow-y-auto">
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Look again</p>
+                    {open.tells.map((t) => (
+                      <div key={t.label} className="rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3">
+                        <div className="text-[12px] font-bold text-[var(--os-ink)]">
+                          🔍 {t.label}
+                          {t.at && (
+                            <span className="ml-1.5 rounded border border-[var(--os-hairline)] px-1 py-px font-mono text-[10px] font-semibold text-[var(--os-accent)]">
+                              {t.at}
+                            </span>
+                          )}
+                        </div>
+                        <p className="mt-0.5 text-[11.5px] leading-relaxed text-[var(--os-dim)]">{t.detail}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {picking && (
+            <div className="absolute inset-0 z-[60] flex items-end bg-black/70 p-3" role="dialog" aria-label="Pick an artifact to compare">
+              <div className="w-full rounded-3xl border border-[var(--os-hairline)] bg-[var(--os-panel)] p-4">
+                <div className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Compare with</div>
+                <div className="mt-3 grid max-h-64 grid-cols-2 gap-2 overflow-y-auto">
+                  {others.map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        sfx.open()
+                        setCompareWith(p.id)
+                        setPicking(false)
+                      }}
+                      className="text-left"
+                    >
+                      <span className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-xl border border-[var(--os-hairline)] bg-gradient-to-br from-[#2a3a5c] to-[#131c30]">
+                        {p.src ? (
+                          <img src={p.src} alt="" className="h-full w-full object-cover" loading="lazy" />
+                        ) : (
+                          <span className="text-3xl opacity-90" aria-hidden="true">
+                            {p.emoji ?? (p.kind === 'meme' ? '🥬' : p.kind === 'screenshot' ? '📱' : '🖼️')}
+                          </span>
+                        )}
+                      </span>
+                      <span className="mt-1 block truncate text-[10.5px] text-[var(--os-dim)]">{p.title}</span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPicking(false)}
+                  className="mt-3 w-full rounded-xl bg-[var(--os-chip)] px-3 py-2.5 text-[12.5px] font-semibold text-[var(--os-ink)]"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

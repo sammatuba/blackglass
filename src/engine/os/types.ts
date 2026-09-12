@@ -42,6 +42,8 @@ export interface OSPhoto {
   src?: string
   /** normalized tells for the examine layer */
   tells?: OSTell[]
+  /** artifacts from the same batch compare side by side; the note names the tell */
+  series?: { id: string; note: string }
   evidence?: string
   /** only visible in the gallery after this flag is set */
   requires?: string
