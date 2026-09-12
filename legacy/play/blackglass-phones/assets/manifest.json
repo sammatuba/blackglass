@@ -1,0 +1,129 @@
+{
+  "$comment": "Diegetic-artifact manifest for BLACKGLASS phone-anthology. Each entry is something a character is FOOLED BY, generated at authoring time by gen-images.mjs and referenced as a static local file at runtime. Generate convincing-but-FLAWED: the planted tells are the pedagogical payload, surfaced later by the tells-reveal layer. No real people, URLs, or phone numbers — every artifact is fictional and non-functional.",
+  "version": 1,
+  "defaultModel": "gemini-2.5-flash-image",
+  "outDir": ".",
+  "format": "png",
+  "globalStyle": "Photographic realism of a screenshot taken on a phone, slight JPEG-compression softness, the look of something forwarded many times. All depicted people are fictional and resemble no real individual. Any text should look real-ish but be subtly garbled or low-res, never a working URL or real brand.",
+
+  "artifacts": [
+    {
+      "id": "kangkong-clickbait",
+      "title": "The link",
+      "what": "The clickbait preview that started in the family GC — the gift everyone forwarded.",
+      "file": "kangkong-clickbait.png",
+      "kind": "link",
+      "aspect": "4:3",
+      "size": "1200x900",
+      "fallback": "link-card",
+      "prompt": "A lurid Filipino clickbait health-article preview image / link thumbnail. A photo of fresh kangkong (water spinach) on a dark teal-green background, with a thick hand-drawn RED CIRCLE around the bundle and a red diagonal slash, like it is being labelled dangerous. Top banner reads 'EXPOSED' in heavy yellow uppercase. Smaller faux-headline text below in white sans-serif. In a lower corner, a small inset stock-style headshot of a generic 'concerned doctor' in a white coat with a stethoscope. Garish, high-contrast, screenshot-of-a-forwarded-link aesthetic. Looks mass-produced for engagement.",
+      "tellsNote": "Planted, findable flaws — see tells[]. The red circle should have a slightly inconsistent/offset drop shadow (pasted-on); the doctor face should be subtly AI-uncanny (too-smooth skin, plastic catchlights); any small print should be illegibly garbled.",
+      "tells": [
+        { "id": "red-circle", "label": "The urgency lever", "detail": "EXPOSED + a red circle is not information, it's a grab for your attention — 'look here, not there.' Maya knew this on sight; she designs these.", "x": 0.5, "y": 0.46 },
+        { "id": "fake-doctor", "label": "A doctor who isn't one", "detail": "The 'doctor' inset is a generic synthetic stock face. 'Doctor' is the word that turns care into authority — and authority into permission to stop asking.", "x": 0.82, "y": 0.8 },
+        { "id": "garbled-text", "label": "Text that doesn't survive a second look", "detail": "The small print is garbled — the giveaway of an image churned out at scale, not a real publication.", "x": 0.5, "y": 0.78 }
+      ]
+    },
+    {
+      "id": "ampalaya-clickbait",
+      "title": "The sibling",
+      "what": "Same template, different vegetable. Proof it's a factory, not a finding.",
+      "file": "ampalaya-clickbait.png",
+      "kind": "link",
+      "aspect": "4:3",
+      "size": "1200x900",
+      "fallback": "link-card",
+      "editFrom": "kangkong-clickbait",
+      "prompt": "The SAME clickbait template as the kangkong image, identical layout and styling, but the vegetable is now ampalaya (bitter gourd / bitter melon). Same dark teal-green background, same heavy yellow 'EXPOSED' banner, same thick red circle and slash around the ampalaya, same generic 'concerned doctor' inset in the lower corner. The point is that it is obviously the same fill-in-the-blank factory template with a different vegetable swapped in.",
+      "tellsNote": "Sameness is the tell. Keep layout pixel-aligned to the kangkong version.",
+      "tells": [
+        { "id": "same-template", "label": "Same template, swapped vegetable", "detail": "Identical layout to the kangkong link — only the vegetable and the noun changed. They're running these in batches, A/B testing which produce Filipinos fear most.", "x": 0.5, "y": 0.5 }
+      ]
+    },
+    {
+      "id": "malunggay-clickbait",
+      "title": "The batch",
+      "what": "A third one. The template is the product; the vegetable is just the variable.",
+      "file": "malunggay-clickbait.png",
+      "kind": "link",
+      "aspect": "4:3",
+      "size": "1200x900",
+      "fallback": "link-card",
+      "editFrom": "kangkong-clickbait",
+      "optional": true,
+      "prompt": "The SAME clickbait template again, identical layout and styling, vegetable now malunggay (moringa) leaves. Same dark teal-green background, yellow 'EXPOSED' banner, red circle and slash, generic doctor inset. A third sibling in the same factory batch.",
+      "tells": [
+        { "id": "third-sibling", "label": "A third sibling", "detail": "A whole batch. The template is the product; the vegetable is just the variable.", "x": 0.5, "y": 0.5 }
+      ]
+    },
+    {
+      "id": "dr-anita-still",
+      "title": "The debunker",
+      "what": "The AI 'fact-checker' that fooled the one person who was right about everything else.",
+      "file": "dr-anita-still.png",
+      "kind": "video",
+      "aspect": "9:16",
+      "size": "900x1600",
+      "fallback": "video-card",
+      "prompt": "A vertical TikTok video still of a fictional Filipina 'fact-checker' debunk explainer — the photographic frame only, NO overlaid wordmarks or caption graphics (those are added by the app). A poised woman in her late thirties in a blazer, seated at a clean white desk, a tidy bookshelf softly out of focus behind her, professional ring-light look. She is mid-sentence, mouth slightly open between phonemes. Educated-Manila, trustworthy, polished. Leave clean empty space across the lower third where a caption will be placed. The whole package signals medical authority.",
+      "tellsNote": "Realistic-but-flawed: skin slightly too smooth/AI; catchlights too perfect; one earring subtly different from the other; a few hair strands that don't quite resolve; book spines unreadable/melted; mouth caught mid-phoneme to imply the lip-sync drift the prose describes. Do NOT bake in any text — the 'DEBUNKED' tag and the 'Dr. Anita V.' credential are drawn by the app so they can be deliberately, subtly inconsistent.",
+      "tells": [
+        { "id": "no-institution", "label": "A 'Dr.' with no institution", "detail": "Just a specialty — 'Health Communication Specialist' — and no hospital, no university, no license body. The title does all the work; nothing stands behind it.", "x": 0.5, "y": 0.74 },
+        { "id": "font-weight", "label": "A caption added in post", "detail": "The lower-third font weight is subtly inconsistent with itself — the credential was layered on afterward, not part of any real broadcast package.", "x": 0.5, "y": 0.8 },
+        { "id": "uncanny-face", "label": "A face that's almost a face", "detail": "Skin too even, catchlights too perfect, the earrings not quite a pair. A synthetic presenter — and her lips run about 40ms behind her voice, which you only notice if you're looking.", "x": 0.5, "y": 0.32 }
+      ]
+    },
+    {
+      "id": "dr-anita-outro",
+      "title": "The last ten seconds",
+      "what": "Where the debunk quietly becomes a funnel — the part nobody watches.",
+      "file": "dr-anita-outro.png",
+      "kind": "video",
+      "aspect": "9:16",
+      "size": "900x1600",
+      "fallback": "video-card",
+      "editFrom": "dr-anita-still",
+      "prompt": "The final-frame still of the SAME fictional presenter's video — same woman, same blazer, same desk and shelf, kept consistent. The screen has now pivoted to a call-to-action end card: large friendly text inviting viewers to subscribe to a fictional newsletter 'MediaLitPH Weekly', a small placeholder link-tree style button, and 'subscribe for weekly debunks — it's free ✦'. The debunk has quietly become a funnel. Keep any URL illegible and obviously fake.",
+      "tellsNote": "Same person as dr-anita-still (use editFrom). The CTA IS the tell — the revenue model surfacing in the last ten seconds nobody watches.",
+      "tells": [
+        { "id": "the-funnel", "label": "The debunk is a funnel", "detail": "The last ten seconds — the part nobody watches — pivot to a newsletter and a link. The 'public service' has a revenue model. That's what it was for.", "x": 0.5, "y": 0.55 }
+      ]
+    },
+    {
+      "id": "clone-accident-photo",
+      "title": "The proof photo",
+      "what": "The image the cloned voice sends to make the accident real — generated, like the voice itself.",
+      "anchor": "voiceclone",
+      "file": "clone-accident-photo.png",
+      "kind": "photo",
+      "aspect": "4:3",
+      "size": "1200x900",
+      "fallback": "photo-frame",
+      "prompt": "A blurry, hastily-taken night-time phone photo of a minor car fender-bender on a Manila street — a scuffed and dented rear bumper of a sedan under sodium streetlight, another car's headlights flaring, wet asphalt reflections, a sliver of a sari-sari store and tangled overhead wires in the background. Looks like a panicked snapshot sent as 'proof.' Photographic, low light, slight motion blur.",
+      "tellsNote": "Realistic-but-flawed AI tells: the license plate is warped/garbled and unreadable; background store signage is melted nonsense text; a reflection or shadow falls the wrong way; the dented metal bends like rubber, not crumpled steel. No real plate number, no real store name.",
+      "tells": [
+        { "id": "garbled-plate", "label": "A plate that won't resolve", "detail": "The license plate smears into nonsense — the one detail that could be verified is the one the generator can't render. Real proof has a readable plate.", "x": 0.46, "y": 0.62 },
+        { "id": "melted-signage", "label": "Signage that says nothing", "detail": "The sari-sari store text in the background is warped gibberish — the hallmark of an image a machine invented rather than a camera captured.", "x": 0.8, "y": 0.3 },
+        { "id": "rubber-metal", "label": "Metal that bends like rubber", "detail": "The dent folds too smoothly — real crumpled steel creases and tears. The 'damage' was imagined, not photographed.", "x": 0.4, "y": 0.5 }
+      ]
+    },
+    {
+      "id": "tito-mike-deepfake",
+      "title": "The endorsement",
+      "what": "The deepfake of a trusted face — the video a whole family believed on sight.",
+      "anchor": "deepfake",
+      "file": "tito-mike-deepfake.png",
+      "kind": "video",
+      "aspect": "9:16",
+      "size": "900x1600",
+      "fallback": "video-card",
+      "prompt": "A vertical screen-grab of a fictional Filipino evening-news anchor — a distinguished, grandfatherly man in his early 60s in a dark suit, seated at a glossy news desk with a softly blurred blue studio and a Philippine flag behind him, warm trustworthy broadcast lighting. He is mid-sentence, addressing the camera with calm authority. Leave clean lower-third space for a caption the app adds. A composite, fictional anchor resembling no real person.",
+      "tellsNote": "Realistic-but-flawed deepfake tells: mouth caught slightly mid-phoneme so it won't quite match a natural rest; a faint seam at the jawline/neck where a face-swap blends; eyes a touch too symmetric and glassy; a small official-looking corner 'government seal' that is subtly garbled/melted and unreadable. Do NOT reproduce any real broadcaster logo or real government seal.",
+      "tells": [
+        { "id": "mouth-phoneme", "label": "A mouth a half-beat behind", "detail": "Freeze the frame and his lips don't quite land on the word — the sync drifts by a fraction. The face looks real; the speech was puppeted onto it.", "x": 0.5, "y": 0.46 },
+        { "id": "melted-seal", "label": "A seal that says nothing", "detail": "The 'government seal' in the corner is a melted, unreadable graphic — official from across the room, gibberish up close. No real agency issued it.", "x": 0.8, "y": 0.2 },
+        { "id": "glassy-symmetry", "label": "A face too even to be a face", "detail": "The gaze is a touch too symmetric, the jawline too smooth — the tells of a face generated or swapped, not filmed.", "x": 0.5, "y": 0.3 }
+      ]
+    }
+  ]
+}
