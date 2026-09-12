@@ -4,6 +4,7 @@
    Local:  node scripts/finale-smoke.mjs
    Live:   SHOT_BASE=https://sammatuba.github.io/blackglass node scripts/finale-smoke.mjs */
 import { chromium } from 'playwright-core'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
@@ -71,9 +72,11 @@ await page.addInitScript((seed) => {
   localStorage.setItem('cgAI_blackglass_v2', JSON.stringify({ state: { anchors: seed }, version: 0 }))
 }, anchors)
 
-const direct = await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+// the deep link is expected to 404 where the host has no SPA fallback; never
+// wait for networkidle on it — a 404 document can leave the request hung
+const direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
 if (!direct?.ok()) {
-  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+  await gotoWithRetry(page, `${BASE}/`)
   await page.getByRole('link', { name: /Three phones\. One morning/i }).first().click()
   await settle(800)
 }

@@ -3,6 +3,7 @@
    GCash send, the real-Renz reveal), a full fiveweeks run to the
    dynamic timeline, and a deepfake spot-check. */
 import { chromium } from 'playwright-core'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
@@ -43,9 +44,11 @@ const tryTap = async (name, timeout = 2000) => {
 // enter the game (deep link locally; hub fallback where the host 404s a route)
 const gotoGame = async () => {
   auditing = false
-  const direct = await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+  // the deep link is expected to 404 where the host has no SPA fallback; never
+  // wait for networkidle on it — a 404 document can leave the request hung
+  const direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
   if (!direct?.ok()) {
-    await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+    await gotoWithRetry(page, `${BASE}/`)
     const card = page.getByRole('link', { name: /Three phones\. One morning/i }).first()
     await card.waitFor({ state: 'visible', timeout: 15000 })
     await card.click()

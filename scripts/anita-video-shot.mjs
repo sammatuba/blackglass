@@ -5,6 +5,7 @@
    The story holds the bea-won chain on `inspected: 'anita'`, so opening the
    link in For You is required — no race with the coda moment. */
 import { chromium } from 'playwright-core'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
@@ -32,9 +33,11 @@ const tryTap = async (name, timeout = 4000) => {
 
 // GitHub Pages has no SPA fallback — direct routes 404 there; fall in
 // through the hub when that happens (the game route is the local fast path)
-const direct = await page.goto(`${BASE}/blackglass/blackglass`, { waitUntil: 'networkidle' })
+// the deep link is expected to 404 where the host has no SPA fallback; never
+// wait for networkidle on it — a 404 document can leave the request hung
+const direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
 if (!direct?.ok()) {
-  await page.goto(`${BASE}/`, { waitUntil: 'networkidle' })
+  await gotoWithRetry(page, `${BASE}/`)
   await page.getByRole('link', { name: /Three phones\. One morning/i }).first().click()
   await settle(800)
 }

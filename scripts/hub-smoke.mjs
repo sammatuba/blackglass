@@ -6,6 +6,7 @@
      Local: node scripts/hub-smoke.mjs
      Live:  SHOT_BASE=https://sammatuba.github.io node scripts/hub-smoke.mjs */
 import { chromium } from 'playwright-core'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch()
@@ -14,7 +15,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
 page.on('pageerror', (e) => errors.push(String(e)))
 
-await page.goto(`${BASE}/blackglass/`, { waitUntil: 'networkidle' })
+await gotoWithRetry(page, `${BASE}/blackglass/`)
 await page.waitForTimeout(2500) // idle callback + hero chunk import + first frames
 
 const canvasCount = await page.locator('canvas').count()
