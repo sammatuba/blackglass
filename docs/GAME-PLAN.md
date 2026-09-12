@@ -105,7 +105,7 @@ carry-forward close. A locked card on the anchor select shows progress toward
 the unlock. Acceptance: unit tests for the resolver; smoke playthrough with
 seeded progress renders dynamic text and totals.
 
-### M4 — Presentation polish ◐ three slices shipped 2026-09-11/12
+### M4 — Presentation polish ✅ shipped 2026-09-11/12
 Shipped: anthology screen transitions (`.animate-screen`, reduced-motion safe);
 glassOS notification center — tappable banners that open their thread, a
 status-bar bell with unread count, and a shade with banner history + Clear
@@ -118,7 +118,12 @@ Settings → Chat pace (`src/engine/os/pacing.ts`, audited at 1× by
 **Deeper stage** (2026-09-12): the desk light follows each case's clock — dawn
 gold, cool day, rose dusk, warm lamp at night (`timeMood`, unit-tested) — and a
 specular sheen slides across the glass with the pointer tilt, reduced-motion
-safe. Remaining: anthology boot sequence.
+safe. **The cold open** (2026-09-12): picking an anchor plays a pace-aware boot
+card — BLACKGLASS, the anchor number and title, the subtitle big, the episode's
+question, then the glassOS signal line with the entry phone's clock and phone
+count. Tap anywhere, Enter/Space, or Escape begins now; otherwise it clears at
+3.4s at 1× (a blink at 8×), and reduced motion reveals all lines at once
+(audited by `scripts/cadence-smoke.mjs`).
 
 ### M5 — Interaction depth ◐ three slices shipped 2026-09-11/12
 Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
