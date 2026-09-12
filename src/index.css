@@ -395,6 +395,39 @@ body {
   animation: screen-in 0.3s cubic-bezier(0.22, 0.8, 0.36, 1) both;
 }
 
+/* the anthology cold open */
+.boot-line {
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity 0.5s cubic-bezier(0.22, 0.8, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 0.8, 0.36, 1);
+}
+.boot-line.is-on {
+  opacity: 1;
+  transform: none;
+}
+.boot-grid {
+  background-image: linear-gradient(rgba(148, 163, 184, 0.045) 1px, transparent 1px);
+  background-size: 100% 3px;
+  -webkit-mask-image: radial-gradient(70% 80% at 32% 42%, black, transparent 86%);
+  mask-image: radial-gradient(70% 80% at 32% 42%, black, transparent 86%);
+}
+@keyframes boot-progress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+.boot-progress {
+  width: 0%;
+  animation-name: boot-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 /* glassOS motion */
 @keyframes banner-drop {
   from {

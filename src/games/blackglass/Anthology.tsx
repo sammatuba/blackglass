@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GlassOS } from '../../engine/os/Device'
+import { scaled } from '../../engine/os/pacing'
 import type { FlagValue, OSState } from '../../engine/os/types'
 import type { AnthologyAnchor } from './types'
 import { useBlackglass } from './state'
@@ -32,6 +33,7 @@ function verbFor(phoneId: string): string {
 
 export function Anthology({ anchors }: { anchors: AnthologyAnchor[] }) {
   const [anchorId, setAnchorId] = useState<string | null>(null)
+  const [booting, setBooting] = useState(false)
   const [showConvergence, setShowConvergence] = useState(false)
   const anchor = anchors.find((a) => a.id === anchorId) ?? null
 
@@ -47,9 +49,121 @@ export function Anthology({ anchors }: { anchors: AnthologyAnchor[] }) {
     return <Convergence anchors={anchors} onBack={() => setShowConvergence(false)} />
   }
   if (!anchor) {
-    return <AnchorSelect anchors={anchors} onPick={setAnchorId} onConvergence={() => setShowConvergence(true)} />
+    return (
+      <AnchorSelect
+        anchors={anchors}
+        onPick={(id) => {
+          setAnchorId(id)
+          setBooting(true)
+        }}
+        onConvergence={() => setShowConvergence(true)}
+      />
+    )
   }
-  return <AnchorRun key={anchor.id} anchor={anchor} onBack={() => setAnchorId(null)} />
+  if (booting) {
+    return (
+      <AnchorBoot
+        anchor={anchor}
+        index={anchors.findIndex((a) => a.id === anchor.id)}
+        onDone={() => setBooting(false)}
+      />
+    )
+  }
+  return (
+    <AnchorRun
+      key={anchor.id}
+      anchor={anchor}
+      onBack={() => {
+        setBooting(false)
+        setAnchorId(null)
+      }}
+    />
+  )
+}
+
+/* =====================================================================
+   THE COLD OPEN — picking an anchor plays a short boot card before the
+   rack. It is pace-aware (a smoke run at 8× gets a blink), skippable by
+   tap, key, or Escape, and reduced-motion safe: all lines land at once
+   and the card clears after a beat.
+   ===================================================================== */
+
+const BOOT_REVEALS = [450, 900, 1350, 1800] // ms at 1×, for steps 2..5
+const BOOT_TOTAL = 3400
+
+function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index: number; onDone: () => void }) {
+  const entry = anchor.phones[anchor.entry]
+  const accent = PHONE_THEME_ACCENT[entry.phone.theme ?? ''] ?? '#8b8b8b'
+  const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][index] ?? String(index + 1)
+  const phones = anchor.order.length === 1 ? 'one phone' : `${anchor.order.length} phones`
+
+  const [step, setStep] = useState(1)
+  const doneRef = useRef(onDone)
+  doneRef.current = onDone
+  const fired = useRef(false)
+  const finish = useCallback(() => {
+    if (fired.current) return
+    fired.current = true
+    doneRef.current()
+  }, [])
+
+  useEffect(() => {
+    const reduced =
+      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduced) {
+      setStep(BOOT_REVEALS.length + 1)
+      const t = setTimeout(finish, scaled(1400))
+      return () => clearTimeout(t)
+    }
+    const timers = BOOT_REVEALS.map((ms, i) => setTimeout(() => setStep(i + 2), scaled(ms)))
+    timers.push(setTimeout(finish, scaled(BOOT_TOTAL)))
+    return () => timers.forEach(clearTimeout)
+  }, [finish])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') finish()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [finish])
+
+  const line = (n: number) => `boot-line${step >= n ? ' is-on' : ''}`
+
+  return (
+    <div
+      className="animate-screen fixed inset-0 z-50 flex cursor-pointer flex-col justify-center overflow-hidden bg-ink-950 px-8 text-ink-100"
+      style={{ backgroundImage: `radial-gradient(70% 50% at 22% 32%, ${accent}1c, transparent 72%)` }}
+      onClick={finish}
+    >
+      <div className="boot-grid pointer-events-none absolute inset-0" aria-hidden="true" />
+
+      <p className={`${line(1)} text-[11px] font-bold tracking-[0.4em] text-play uppercase`}>BLACKGLASS</p>
+      <p className={`${line(1)} font-display mt-6 text-[13px] font-semibold tracking-[0.25em] text-ink-300 uppercase`}>
+        Anchor {roman} · {anchor.title}
+      </p>
+      <h1 className={`${line(2)} font-display mt-2 text-5xl font-semibold`}>{anchor.subtitle}</h1>
+      <p className={`${line(3)} font-display mt-4 max-w-md text-lg italic text-ink-300`}>{anchor.question}</p>
+      <p className={`${line(4)} mt-8 font-mono text-[11.5px] tracking-wide text-ink-400`}>glassOS 4.0 · signal acquired</p>
+      <p className={`${line(4)} mt-1 font-mono text-[11.5px] tracking-wide text-ink-400`}>
+        {entry.phone.time} {entry.phone.meridiem} · {phones}
+      </p>
+
+      <div className={`${line(5)} mt-10 flex items-center gap-3`}>
+        <span className="h-px w-10 shrink-0 bg-ink-600" aria-hidden="true" />
+        <button
+          type="button"
+          onClick={finish}
+          className="text-[12px] font-semibold tracking-[0.2em] text-ink-100 uppercase"
+        >
+          tap to begin
+        </button>
+      </div>
+      <div className={`${line(5)} mt-6 h-px w-56 max-w-full overflow-hidden bg-ink-800`} aria-hidden="true">
+        <span className="boot-progress block h-full" style={{ background: accent, animationDuration: `${scaled(BOOT_TOTAL)}ms` }} />
+      </div>
+    </div>
+  )
 }
 
 /* =====================================================================

@@ -40,6 +40,13 @@ await settle(500)
 
 /* ---- voiceclone, Tita: every reply is a human on the other end ---- */
 await tapWhen(/IT’S ME/i)
+/* the cold open lands at human pace; the full card holds until you begin */
+await page.getByText(/Anchor II/i).first().waitFor({ state: 'visible', timeout: 5000 })
+await settle(2100) // step 5 at 1× — auto-clears at 3.4s
+const begin = page.getByRole('button', { name: /tap to begin/i })
+await page.screenshot({ path: '/tmp/bg-boot.png' })
+await begin.click()
+await settle(300)
 await tapWhen(/pick up/i)
 // the opening previews drip in; wait for the last one (the photo)
 await page.getByText('📷 Photo').first().waitFor({ state: 'visible', timeout: 15000 })
