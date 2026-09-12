@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Manual Pages deploy: build and push dist/ to the gh-pages branch.
-# Used while account Actions are unavailable (billing lock); the
-# committed Actions workflow (deploy.yml) is the long-term path.
+# Actions here are manual-only on the free tier (see
+# .github/workflows/ci.yml), so this script is the deploy path; GitHub's
+# built-in pages-build-deployment workflow publishes the push.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

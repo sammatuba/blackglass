@@ -1,0 +1,40 @@
+# Minimal, manual-only CI.
+#
+# Actions on this account run on the free tier, so this workflow deliberately
+# does NOT trigger on push or PR — no failing runs pile up in the Actions tab.
+# Start it by hand from the Actions tab, or:
+#   gh workflow run ci.yml
+#
+# Deployment is separate and manual: `bash scripts/deploy.sh` force-pushes
+# dist/ to the gh-pages branch, which the built-in pages-build-deployment
+# workflow publishes.
+#
+# If Actions billing is sorted later: add `push`/`pull_request` triggers here,
+# and only if the Pages source is switched from the gh-pages branch to
+# "GitHub Actions", add a deploy job (actions/upload-pages-artifact +
+# actions/deploy-pages) back.
+name: CI (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build

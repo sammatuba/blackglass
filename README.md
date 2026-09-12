@@ -43,7 +43,7 @@ npm run dev      # dev server
 npm run build    # production build → dist/
 ```
 
-The built site is a PWA (offline after first visit) and deploys to GitHub Pages via Actions. Legacy apps ship verbatim into `dist/legacy/` and are embedded from the hub.
+The built site is a PWA (offline after first visit) and deploys to GitHub Pages via `bash scripts/deploy.sh` (`dist/` force-pushed to the `gh-pages` branch). GitHub Actions is a manual-only test-and-build check (`.github/workflows/ci.yml`) — no automatic runs on push. Legacy apps ship verbatim into `dist/legacy/` and are embedded from the hub.
 
 ## Docs
 
