@@ -139,7 +139,7 @@ export function FullscreenToggle() {
       aria-pressed={on}
       aria-label={on ? 'Exit fullscreen' : 'Fullscreen'}
       title={on ? 'Exit fullscreen' : 'Fullscreen'}
-      className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-sm text-ink-300 transition-colors hover:text-ink-100"
+      className="relative grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-sm text-ink-300 transition-colors hover:text-ink-100 before:absolute before:-inset-2 before:content-['']"
     >
       {on ? '⤡' : '⛶'}
     </button>

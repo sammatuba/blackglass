@@ -70,9 +70,9 @@ export const PILLAR_META: Record<
 }
 
 export const STATUS_LABEL: Record<GameStatus, string> = {
-  legacy: 'Legacy build',
-  building: 'In development',
-  shipped: 'New',
+  legacy: 'LEGACY',
+  building: 'BETA',
+  shipped: 'NEW',
 }
 
 export const GAMES: GameEntry[] = [

@@ -8,7 +8,7 @@ export function GameCard({ game }: { game: GameEntry }) {
   return (
     <Link
       to={href}
-      className={`group relative flex flex-col rounded-2xl border border-ink-700 bg-ink-800/70 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:bg-ink-800 hover:shadow-[0_12px_36px_-12px_rgba(0,0,0,0.7)] ${pillar.border} focus-visible:-translate-y-1`}
+      className={`group relative flex flex-col rounded-card border border-ink-700 bg-ink-800/70 p-5 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1 hover:bg-ink-800 hover:shadow-lift ${pillar.border} focus-visible:-translate-y-1`}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <span
@@ -17,7 +17,7 @@ export function GameCard({ game }: { game: GameEntry }) {
           <Icon name={game.icon} className="h-6 w-6" />
         </span>
         <span
-          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide uppercase ${pillar.chipBg}`}
+          className="rounded-full bg-ink-700/60 px-2.5 py-1 text-2xs font-semibold tracking-wide text-ink-300 uppercase"
         >
           {STATUS_LABEL[game.status]}
         </span>

@@ -167,10 +167,10 @@ export function FeedGame({ onExit }: { onExit: () => void }) {
             aria-live="polite"
             className={`mt-4 rounded-2xl border p-4 ${
               result!.quality === 'hit'
-                ? 'border-emerald-500/40 bg-emerald-500/10'
+                ? 'border-ok/40 bg-ok/10'
                 : result!.quality === 'partial'
-                  ? 'border-amber-400/40 bg-amber-400/10'
-                  : 'border-red-500/40 bg-red-500/10'
+                  ? 'border-warn/40 bg-warn/10'
+                  : 'border-danger/40 bg-danger/10'
             }`}
           >
             <div className="flex items-baseline justify-between gap-2">
@@ -178,7 +178,7 @@ export function FeedGame({ onExit }: { onExit: () => void }) {
               <p className="text-xs font-semibold text-train tabular-nums">+{result!.points} pts</p>
             </div>
             <p className="mt-2 text-[13px] leading-relaxed text-ink-300">{item.explain}</p>
-            <p className="mt-2 border-t border-white/10 pt-2 text-[13px] leading-relaxed text-ink-100">
+            <p className="mt-2 border-t border-ink-700 pt-2 text-[13px] leading-relaxed text-ink-100">
               <span className="font-semibold text-train">Scam-ready move: </span>
               {item.action}
             </p>
@@ -188,7 +188,7 @@ export function FeedGame({ onExit }: { onExit: () => void }) {
                   <span
                     key={f}
                     className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${
-                      result!.hitFamilies.includes(f) ? 'bg-emerald-500/20 text-emerald-300' : 'bg-ink-700 text-ink-300'
+                      result!.hitFamilies.includes(f) ? 'bg-ok/20 text-ok' : 'bg-ink-700 text-ink-300'
                     }`}
                   >
                     {FAMILY_BY_ID[f].icon} {FAMILY_BY_ID[f].short}

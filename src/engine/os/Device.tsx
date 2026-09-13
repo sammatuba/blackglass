@@ -468,16 +468,16 @@ export function GlassOS({
                 type="button"
                 data-banner
                 onClick={() => openApp('messages', { threadId: b.threadId })}
-                className="animate-banner pointer-events-auto block w-full rounded-2xl border border-white/10 bg-[#111827]/95 px-4 py-3 text-left shadow-2xl backdrop-blur-md"
+                className="animate-banner pointer-events-auto block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/95 px-4 py-3 text-left shadow-2xl backdrop-blur-md"
               >
                 <span className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold tracking-wide text-white/50 uppercase">
+                  <span className="text-2xs font-bold tracking-wide text-[var(--os-dim)] uppercase">
                     {b.icon} {b.app}
                   </span>
-                  <span className="ml-auto text-[10px] text-white/40">now</span>
+                  <span className="ml-auto text-2xs text-[var(--os-faint)]">now</span>
                 </span>
-                <span className="mt-0.5 block text-[13px] font-bold text-white/95">{b.title}</span>
-                <span className="line-clamp-2 block text-[12.5px] leading-snug text-white/75">{b.text}</span>
+                <span className="mt-0.5 block text-[13px] font-bold text-[var(--os-ink)]">{b.title}</span>
+                <span className="line-clamp-2 block text-[13px] leading-snug text-[var(--os-dim)]">{b.text}</span>
               </button>
             ))}
           </div>
@@ -491,7 +491,7 @@ export function GlassOS({
           aria-modal="true"
           aria-label="Put the phone down?"
         >
-          <div className="w-full max-w-xs rounded-2xl border border-white/10 bg-[#0d1420]/95 p-5 shadow-2xl">
+          <div className="w-full max-w-xs rounded-2xl border border-ink-700 bg-ink-800/95 p-5 shadow-2xl">
             <h2 className="font-display text-lg font-semibold text-ink-100">Put the phone down?</h2>
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-400">
               The case resets when you return — evidence and all.
@@ -639,10 +639,10 @@ function DeviceFrame(props: {
                       className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold tracking-wide text-[var(--os-faint)] uppercase">
+                        <span className="text-2xs font-bold tracking-wide text-[var(--os-faint)] uppercase">
                           {b.icon} {b.app}
                         </span>
-                        <span className="ml-auto text-[10px] text-[var(--os-faint)]">now</span>
+                        <span className="ml-auto text-2xs text-[var(--os-faint)]">now</span>
                       </span>
                       <span className="mt-0.5 block text-[13px] font-bold text-[var(--os-ink)]">{b.title}</span>
                       <span className="line-clamp-2 block text-[12px] leading-snug text-[var(--os-dim)]">{b.text}</span>
@@ -679,7 +679,7 @@ function DeviceFrame(props: {
             type="button"
             aria-label="Home"
             onClick={props.onGoHome}
-            className="os-gesturebar absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full transition-colors"
+            className="os-gesturebar absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full transition-colors before:absolute before:-inset-x-8 before:-inset-y-3 before:content-['']"
           />
         )}
       </div>
@@ -810,12 +810,12 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
       <button
         type="button"
         onClick={onUnlock}
-        className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-white/12 px-5 py-2.5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-white/25"
+        className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 py-2.5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
       >
         ⌃ Swipe up to open
       </button>
       {caseDef.phone.lockNote && (
-        <p className="mt-3 text-center text-[10.5px] italic leading-snug opacity-60">{caseDef.phone.lockNote}</p>
+        <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">{caseDef.phone.lockNote}</p>
       )}
       <p className="sr-only">Press Enter or activate the unlock button to open the phone.</p>
     </div>
@@ -860,27 +860,27 @@ function HomeScreen({
         >
           {meta.icon}
           {badge != null && badge > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+            <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[var(--os-danger)] px-1 text-2xs font-bold text-[var(--os-danger-ink)]">
               {badge}
             </span>
           )}
         </span>
-        <span className="text-[10px] font-medium opacity-85">{meta.name}</span>
+        <span className="text-2xs font-medium opacity-85">{meta.name}</span>
       </button>
     )
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col px-5 pb-4 pt-12 text-white">
+    <div className="absolute inset-0 z-10 flex flex-col px-5 pb-4 pt-12 text-[var(--os-ink)]">
       <div className="grid grid-cols-4 gap-x-3 gap-y-5">
         {tiles.map(renderIcon)}
       </div>
 
       <div className="mt-auto">
-        <div className="mx-auto mb-4 w-max rounded-full bg-white/10 px-4 py-1 text-[10px] opacity-70">
+        <div className="mx-auto mb-4 w-max rounded-full bg-[var(--os-chip)] px-4 py-1 text-2xs text-[var(--os-dim)]">
           {os.evidence.length > 0 ? `🧩 ${os.evidence.length} clue${os.evidence.length > 1 ? 's' : ''} in Notes` : 'glassOS 4.0'}
         </div>
-        <div className="flex items-center justify-around rounded-3xl bg-white/12 px-4 py-3 backdrop-blur-md">
+        <div className="flex items-center justify-around rounded-3xl bg-[var(--os-chip)] px-4 py-3 backdrop-blur-md">
           {dockApps.map(({ id, badge }) => {
             const meta = APP_META[id]
             return (
@@ -893,7 +893,7 @@ function HomeScreen({
               >
                 {meta.icon}
                 {badge != null && badge > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[var(--os-danger)] px-1 text-2xs font-bold text-[var(--os-danger-ink)]">
                     {badge}
                   </span>
                 )}
@@ -950,7 +950,7 @@ function AppSurface(props: {
           type="button"
           onClick={props.onGoHome}
           aria-label="Back to home"
-          className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-sm text-[var(--os-ink)] transition-colors hover:bg-[var(--os-hover)]"
+          className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-sm text-[var(--os-ink)] transition-colors hover:bg-[var(--os-hover)] before:absolute before:-inset-2 before:content-['']"
         >
           ‹
         </button>
@@ -980,17 +980,17 @@ function CallOverlay({
   const live = call.phase === 'live'
   const saved = caseDef.contacts.some((c) => c.number === call.number)
   return (
-    <div className="absolute inset-0 z-50 flex animate-fadein flex-col items-center bg-gradient-to-b from-[#101a30]/98 to-[#05070d]/98 px-6 pb-10 pt-16 text-white backdrop-blur-xl">
-      <div className="text-[10px] tracking-[0.25em] opacity-60 uppercase">
+    <div className="absolute inset-0 z-50 flex animate-fadein flex-col items-center bg-gradient-to-b from-[var(--os-panel)]/98 to-[var(--os-bg)]/98 px-6 pb-10 pt-16 text-[var(--os-ink)] backdrop-blur-xl">
+      <div className="text-2xs tracking-[0.25em] text-[var(--os-dim)] uppercase">
         {call.phase === 'incoming' ? 'Incoming Viber call' : outgoing ? `Calling ${saved ? 'saved contact' : 'number'}` : call.phase === 'live' ? 'Connected' : 'Call ended'}
       </div>
-      <div className="font-display mt-6 grid h-24 w-24 place-items-center rounded-full bg-white/10 text-4xl font-semibold">
+      <div className="font-display mt-6 grid h-24 w-24 place-items-center rounded-full bg-[var(--os-chip)] text-4xl font-semibold">
         {call.from.trim().charAt(0)}
       </div>
       <div className="mt-4 text-center">
         <div className="text-xl font-bold">{call.from}</div>
-        <div className="mt-1 text-[12px] opacity-70">{call.number}</div>
-        {call.sub && <div className="mt-1 text-[11px] opacity-55">{call.sub}</div>}
+        <div className="mt-1 text-[12px] text-[var(--os-dim)]">{call.number}</div>
+        {call.sub && <div className="mt-1 text-2xs text-[var(--os-faint)]">{call.sub}</div>}
       </div>
 
       {live && call.transcript && (
@@ -998,7 +998,7 @@ function CallOverlay({
           {call.transcript.map((line, i) => (
             <p
               key={i}
-              className="rounded-xl bg-white/8 px-3.5 py-2 text-center text-[12.5px] leading-relaxed opacity-0 [animation:rise_0.5s_ease_forwards]"
+              className="rounded-xl bg-[var(--os-chip)] px-3.5 py-2 text-center text-[12.5px] leading-relaxed opacity-0 [animation:rise_0.5s_ease_forwards]"
               style={{ animationDelay: `${i * 1.4}s` }}
             >
               {line}
@@ -1015,28 +1015,28 @@ function CallOverlay({
               onClick={() => onEnd(true)}
               className="flex flex-col items-center gap-1.5"
             >
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-red-500 text-2xl shadow-lg transition-transform active:scale-95">
+              <span className="grid h-16 w-16 place-items-center rounded-full bg-[var(--os-danger)] text-2xl shadow-lg transition-transform active:scale-95">
                 ✕
               </span>
-              <span className="text-[11px] opacity-70">Decline</span>
+              <span className="text-2xs text-[var(--os-dim)]">Decline</span>
             </button>
             <button type="button" onClick={onAccept} className="flex flex-col items-center gap-1.5">
-              <span className="grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-2xl shadow-lg transition-transform active:scale-95">
+              <span className="grid h-16 w-16 place-items-center rounded-full bg-[var(--os-ok)] text-2xl shadow-lg transition-transform active:scale-95">
                 ✆
               </span>
-              <span className="text-[11px] opacity-70">Accept</span>
+              <span className="text-2xs text-[var(--os-dim)]">Accept</span>
             </button>
           </>
         ) : (
           <button type="button" onClick={() => onEnd(false)} className="flex flex-col items-center gap-1.5">
             <span
               className={`grid h-16 w-16 place-items-center rounded-full text-2xl shadow-lg transition-transform active:scale-95 ${
-                live ? 'bg-red-500' : 'bg-white/15'
+                live ? 'bg-[var(--os-danger)]' : 'bg-[var(--os-chip)]'
               }`}
             >
               {live ? '✕' : '↺'}
             </span>
-            <span className="text-[11px] opacity-70">{live ? 'End call' : 'Close'}</span>
+            <span className="text-2xs text-[var(--os-dim)]">{live ? 'End call' : 'Close'}</span>
           </button>
         )}
       </div>
@@ -1045,7 +1045,7 @@ function CallOverlay({
           {Array.from({ length: 16 }).map((_, i) => (
             <span
               key={i}
-              className="w-1 rounded-full bg-emerald-400/70"
+              className="w-1 rounded-full bg-[var(--os-ok)]/70"
               style={{ height: 6 + Math.abs(Math.sin(i * 1.7)) * 18, animation: `pulse-wave 1.1s ease-in-out ${i * 0.08}s infinite alternate` }}
             />
           ))}

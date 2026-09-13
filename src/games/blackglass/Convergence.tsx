@@ -149,7 +149,7 @@ function ReportStat({ value, label }: { value: string; label: string }) {
   return (
     <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-3 py-3">
       <div className="font-display text-2xl font-semibold tabular-nums text-ink-100">{value}</div>
-      <div className="mt-0.5 text-[10.5px] tracking-wide text-ink-400 uppercase">{label}</div>
+      <div className="mt-0.5 text-2xs tracking-wide text-ink-400 uppercase">{label}</div>
     </div>
   )
 }

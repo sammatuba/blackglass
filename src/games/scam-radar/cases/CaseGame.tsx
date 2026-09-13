@@ -94,10 +94,10 @@ function OsDebrief({
   const checklist = caseDef.checklist ?? []
   const stamp =
     points >= 40
-      ? { text: 'Scam detected', cls: 'border-emerald-400/70 text-emerald-300' }
+      ? { text: 'Scam detected', cls: 'border-ok/70 text-ok' }
       : points >= 20
-        ? { text: 'Close call', cls: 'border-amber-400/70 text-amber-300' }
-        : { text: 'Taken in', cls: 'border-red-400/70 text-red-300' }
+        ? { text: 'Close call', cls: 'border-warn/70 text-warn' }
+        : { text: 'Taken in', cls: 'border-danger/70 text-danger' }
   return (
     <div className="mx-auto w-full max-w-md px-4 pt-8 pb-12">
       <FadeIn>
@@ -121,10 +121,10 @@ function OsDebrief({
         <div
           className={`relative mt-5 rounded-2xl border p-4 ${
             points >= 40
-              ? 'border-emerald-500/35 bg-emerald-500/8'
+              ? 'border-ok/35 bg-ok/8'
               : points >= 20
-                ? 'border-amber-400/35 bg-amber-400/8'
-                : 'border-red-500/35 bg-red-500/8'
+                ? 'border-warn/35 bg-warn/8'
+                : 'border-danger/35 bg-danger/8'
           }`}
         >
           <span

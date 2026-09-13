@@ -42,7 +42,7 @@ export default function Hub() {
 
       <main id="main" className="relative z-10 mx-auto max-w-6xl px-5 pb-20 sm:px-8">
         {/* HERO */}
-        <section className="relative py-16 text-center sm:py-24" aria-labelledby="hero-title">
+        <section data-od-id="hero" className="relative py-16 text-center sm:py-24" aria-labelledby="hero-title">
           <GlassHero />
           <div className="relative">
             <FadeIn>
@@ -68,7 +68,7 @@ export default function Hub() {
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <Link
                   to="/scam-radar"
-                  className="rounded-full bg-train px-6 py-3 text-sm font-bold text-ink-950 shadow-[0_8px_30px_-8px_rgba(245,185,66,0.5)] transition-transform duration-200 hover:-translate-y-0.5"
+                  className="rounded-full border border-train/60 px-6 py-3 text-sm font-bold text-train transition-colors duration-200 hover:bg-train/10"
                 >
                   Start scam training →
                 </Link>
@@ -88,7 +88,7 @@ export default function Hub() {
           const meta = PILLAR_META[pillar]
           const games = GAMES.filter((g) => g.pillar === pillar)
           return (
-            <section key={pillar} className="py-10 sm:py-14" aria-labelledby={`pillar-${pillar}`}>
+            <section key={pillar} data-od-id={`pillar-${pillar}`} className="py-10 sm:py-14" aria-labelledby={`pillar-${pillar}`}>
               <FadeIn>
                 <div className="mb-6 flex items-baseline gap-3">
                   <span className={`font-display text-3xl font-semibold ${meta.text}`} aria-hidden="true">

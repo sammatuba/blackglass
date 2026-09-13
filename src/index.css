@@ -9,6 +9,7 @@
   --color-ink-600: #31405f;
   --color-ink-400: #8fa0bd;
   --color-ink-300: #c3cde0;
+  --color-ink-200: #dce4f0;
   --color-ink-100: #f4f7fc;
 
   /* pillar accents */
@@ -16,8 +17,23 @@
   --color-train: #f5b942;
   --color-learn: #22d3ee;
 
+  /* verdict / state semantics (scam-radar, case files) */
+  --color-ok: #34d399;
+  --color-warn: #f5b942;
+  --color-danger: #f87171;
+
   --font-display: "Fraunces Variable", Georgia, "Times New Roman", serif;
   --font-ui: "Inter Variable", system-ui, -apple-system, sans-serif;
+
+  /* smallest readable size — nothing on screen may go below this */
+  --text-2xs: 0.6875rem;
+
+  /* shared surface vocabulary */
+  --radius-card: 1rem;
+  --radius-well: 0.75rem;
+  --shadow-card: 0 8px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-lift: 0 12px 36px -12px rgba(0, 0, 0, 0.7);
+  --ease-glass: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
@@ -109,7 +125,7 @@ body {
   --os-panel: #111a2e;
   --os-ink: rgba(255, 255, 255, 0.95);
   --os-dim: rgba(255, 255, 255, 0.62);
-  --os-faint: rgba(255, 255, 255, 0.45);
+  --os-faint: rgba(255, 255, 255, 0.62);
   --os-hairline: rgba(255, 255, 255, 0.1);
   --os-hover: rgba(255, 255, 255, 0.05);
   --os-chip: rgba(255, 255, 255, 0.08);
@@ -119,6 +135,10 @@ body {
   --os-bub-out-ink: #ffffff;
   --os-accent: #10b981;
   --os-accent-ink: #064e3b;
+  --os-ok: #10b981;
+  --os-ok-ink: #ffffff;
+  --os-danger: #ef4444;
+  --os-danger-ink: #ffffff;
   --os-chip-border: rgba(16, 185, 129, 0.4);
   --os-chip-bg: rgba(16, 185, 129, 0.1);
   --os-chip-bg-hover: rgba(16, 185, 129, 0.2);
@@ -131,7 +151,7 @@ body {
   --os-panel: #14141b;
   --os-ink: #e9e1d0;
   --os-dim: #9c9486;
-  --os-faint: #6b6455;
+  --os-faint: #857b68;
   --os-hairline: rgba(255, 255, 255, 0.08);
   --os-hover: rgba(255, 255, 255, 0.05);
   --os-chip: rgba(255, 255, 255, 0.08);
@@ -153,7 +173,7 @@ body {
   --os-panel: #fffdf7;
   --os-ink: #2b2620;
   --os-dim: #7c7060;
-  --os-faint: #a99e8c;
+  --os-faint: #7f7563;
   --os-hairline: rgba(0, 0, 0, 0.08);
   --os-hover: rgba(0, 0, 0, 0.04);
   --os-chip: rgba(0, 0, 0, 0.06);
@@ -175,7 +195,7 @@ body {
   --os-panel: #f4f7f9;
   --os-ink: #16202a;
   --os-dim: #5c6b7a;
-  --os-faint: #93a1b0;
+  --os-faint: #66717f;
   --os-hairline: rgba(0, 0, 0, 0.08);
   --os-hover: rgba(0, 0, 0, 0.03);
   --os-chip: rgba(0, 0, 0, 0.05);

@@ -6,7 +6,7 @@ import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' })
 const errors = []
 // console errors are only collected while we're actually in the game: the
 // hub fallback probes a deep link that 404s on hosts without SPA rewrites

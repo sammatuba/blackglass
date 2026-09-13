@@ -62,7 +62,7 @@ export const FAMILY_BY_ID = Object.fromEntries(FAMILIES.map((f) => [f.id, f])) a
 export type Verdict = 'scam' | 'legit' | 'verify'
 
 export const VERDICT_META: Record<Verdict, { label: string; key: string; classes: string }> = {
-  scam: { label: 'Scam', key: '1', classes: 'bg-red-500/15 text-red-300 border-red-500/40 hover:bg-red-500/25' },
-  verify: { label: 'Verify first', key: '2', classes: 'bg-amber-400/15 text-amber-300 border-amber-400/40 hover:bg-amber-400/25' },
-  legit: { label: 'Legit', key: '3', classes: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25' },
+  scam: { label: 'Scam', key: '1', classes: 'bg-danger/15 text-danger border-danger/40 hover:bg-danger/25' },
+  verify: { label: 'Verify first', key: '2', classes: 'bg-warn/15 text-warn border-warn/40 hover:bg-warn/25' },
+  legit: { label: 'Legit', key: '3', classes: 'bg-ok/15 text-ok border-ok/40 hover:bg-ok/25' },
 }

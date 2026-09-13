@@ -3,7 +3,7 @@
 import { chromium } from 'playwright-core'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('pageerror', (e) => errors.push(String(e)))

@@ -543,7 +543,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
                   </span>
                   <span className="mt-3 flex items-center justify-between gap-2">
                     <span className="text-[13.5px] font-bold text-ink-100">{p.title}</span>
-                    <span className="rounded px-1.5 py-0.5 text-[9.5px] font-black tracking-[0.15em]" style={{ background: `${accent}22`, color: accent }}>
+                    <span className="rounded px-1.5 py-0.5 text-2xs font-black tracking-[0.15em]" style={{ background: `${accent}22`, color: accent }}>
                       {verbFor(id)}
                     </span>
                   </span>
@@ -554,7 +554,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
                         ? 'You left this one mid-conversation.'
                         : p.blurb.split('. ')[0] + '.'}
                   </span>
-                  <span className="mt-2 text-[10px] font-bold uppercase tracking-wide" style={{ color: done ? '#6ee7b7' : accent }}>
+                  <span className="mt-2 text-2xs font-bold uppercase tracking-wide" style={{ color: done ? '#6ee7b7' : accent }}>
                     {done ? `✓ lived${clues ? ` · ${clues} clues` : ''}` : resumable ? '▸ continue' : open ? 'pick up' : 'asleep'}
                   </span>
                 </button>

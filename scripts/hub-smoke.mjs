@@ -9,7 +9,7 @@ import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))

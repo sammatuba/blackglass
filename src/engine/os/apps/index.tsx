@@ -96,7 +96,7 @@ function ThreadList({
             <span className="min-w-0 flex-1">
               <span className="flex items-baseline gap-2">
                 <span className="truncate text-[14px] font-bold text-[var(--os-ink)]">{t.name}</span>
-                {last?.at && <span className="ml-auto shrink-0 text-[10px] text-[var(--os-faint)]">{last.at}</span>}
+                {last?.at && <span className="ml-auto shrink-0 text-2xs text-[var(--os-faint)]">{last.at}</span>}
               </span>
               <span className={`mt-0.5 line-clamp-1 block text-[12.5px] ${offered ? 'font-semibold text-[var(--os-ink)]' : 'text-[var(--os-dim)]'}`}>
                 {typingHint(t.id, caseDef, os) ? (
@@ -337,7 +337,7 @@ function Conversation({
                   m.text
                 )}
                 {m.at && m.kind !== 'callcard' && (
-                  <div className={`mt-0.5 text-[9.5px] ${out ? 'text-right' : ''} text-[var(--os-faint)]`}>{m.at}</div>
+                  <div className={`mt-0.5 text-2xs ${out ? 'text-right' : ''} text-[var(--os-faint)]`}>{m.at}</div>
                 )}
               </div>
             </div>
@@ -584,7 +584,7 @@ export function GalleryApp({
               )}
             </span>
             <span className="mt-1 block truncate text-[11px] text-[var(--os-dim)]">{p.title}</span>
-            {!os.inspected.includes(p.id) && <span className="mt-0.5 block text-[10px] font-semibold text-[var(--os-accent)]">new</span>}
+            {!os.inspected.includes(p.id) && <span className="mt-0.5 block text-2xs font-semibold text-[var(--os-accent)]">new</span>}
           </button>
         ))}
         </div>
@@ -764,7 +764,7 @@ export function PhoneApp({
 
   return (
     <div className="h-full overflow-y-auto pb-8">
-      <h3 className="px-4 pt-2 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Voicemail</h3>
+      <h3 className="px-4 pt-2 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Voicemail</h3>
       {vms.length === 0 ? (
         <p className="px-4 py-6 text-xs text-[var(--os-faint)]">No voicemails.</p>
       ) : (
@@ -791,7 +791,7 @@ export function PhoneApp({
             </button>
             {openId === v.id && (
               <div className="mt-1 space-y-1.5 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3" aria-live="polite">
-                <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Transcript</p>
+                <p className="text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Transcript</p>
                 {v.transcript.map((line, i) => (
                   <p key={i} className="text-[12.5px] leading-relaxed text-[var(--os-ink)]">
                     {line}
@@ -804,10 +804,10 @@ export function PhoneApp({
       )}
       {(caseDef.recents?.length ?? 0) > 0 && (
         <>
-          <h3 className="mt-5 px-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Recents</h3>
+          <h3 className="mt-5 px-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Recents</h3>
           {(caseDef.recents ?? []).map((r, i) => (
             <div key={i} className="flex items-center gap-3 px-5 py-2.5">
-              <span className={`text-sm ${r.missed ? 'text-red-400' : 'text-[var(--os-dim)]'}`} aria-hidden="true">
+              <span className={`text-sm ${r.missed ? 'text-[var(--os-danger)]' : 'text-[var(--os-dim)]'}`} aria-hidden="true">
                 {r.missed ? '↙' : r.outgoing ? '↗' : '📞'}
               </span>
               <span className="min-w-0 flex-1">
@@ -1006,7 +1006,7 @@ export function ContactsApp({
         onChange={(e) => setQ(e.target.value)}
         placeholder="Search contacts"
         aria-label="Search contacts"
-        className="mx-1 mb-2 rounded-full border border-[var(--os-hairline)] bg-[var(--os-chip)] px-4 py-2 text-[13px] text-[var(--os-ink)] placeholder:text-[var(--os-faint)] focus:outline-none"
+        className="mx-1 mb-2 rounded-full border border-[var(--os-hairline)] bg-[var(--os-chip)] px-4 py-2 text-[13px] text-[var(--os-ink)] placeholder:text-[var(--os-faint)]"
       />
       <div className="min-h-0 flex-1 overflow-y-auto pb-6">
         {list.map((c) => (
@@ -1059,8 +1059,8 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
   const searchable = os.evidence.length + caseDef.notes.length
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
-      <div className="mt-1 rounded-2xl border border-amber-300/25 bg-amber-400/10 p-4">
-        <div className="text-[11px] font-bold tracking-[0.2em] text-amber-300 uppercase">Case notes</div>
+      <div className="mt-1 rounded-2xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] p-4">
+        <div className="text-2xs font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Case notes</div>
         <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--os-ink)]">{caseDef.blurb}</p>
       </div>
 
@@ -1093,7 +1093,7 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
         </p>
       )}
 
-      <h3 className="mt-5 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Evidence collected · {evidence.length}</h3>
+      <h3 className="mt-5 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Evidence collected · {evidence.length}</h3>
       {evidence.length === 0 ? (
         <p className="mt-2 text-xs leading-relaxed text-[var(--os-faint)]">
           {q
@@ -1110,7 +1110,7 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
         </ul>
       )}
 
-      <h3 className="mt-5 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Notes</h3>
+      <h3 className="mt-5 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Notes</h3>
       <div className="mt-2 space-y-2 pb-2">
         {notes.length === 0 && q ? (
           <p className="text-xs leading-relaxed text-[var(--os-faint)]">No notes match “{query.trim()}”.</p>
@@ -1144,7 +1144,7 @@ export function SettingsApp({
   const [pace, setPace] = useState(paceSpeed())
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
-      <h3 className="mt-1 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Display</h3>
+      <h3 className="mt-1 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Display</h3>
       <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4">
         <label htmlFor="brightness" className="text-[12.5px] font-semibold text-[var(--os-ink)]">
           Brightness
@@ -1164,7 +1164,7 @@ export function SettingsApp({
         />
       </div>
 
-      <h3 className="mt-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Sound</h3>
+      <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Sound</h3>
       <button
         type="button"
         role="switch"
@@ -1183,7 +1183,7 @@ export function SettingsApp({
         </span>
       </button>
 
-      <h3 className="mt-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Conversations</h3>
+      <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Conversations</h3>
       <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4">
         <p className="text-[12.5px] font-semibold text-[var(--os-ink)]">Chat pace</p>
         <p className="mt-1 text-[11.5px] leading-snug text-[var(--os-dim)]">
@@ -1217,7 +1217,7 @@ export function SettingsApp({
         </div>
       </div>
 
-      <h3 className="mt-4 text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">About this phone</h3>
+      <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">About this phone</h3>
       <div className="mt-2 space-y-1 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4 text-[12px] text-[var(--os-dim)]">
         <p>glassOS 4.0 · sandbox device</p>
         <p>Nothing here is real: not the numbers, not the pages, not the money. That’s what makes it safe to practice on.</p>

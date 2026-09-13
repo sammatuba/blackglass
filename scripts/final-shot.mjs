@@ -1,5 +1,5 @@
 import { chromium } from 'playwright-core'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 900 } })
 page.on('pageerror', (e) => errors.push(String(e)))
