@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#F8FAFC">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Bias Bounty - Find Hidden Unfairness in AI</title>
+    <meta name="description" content="Investigate AI systems and learn to recognize patterns of algorithmic bias. Educational game featuring UNESCO, OECD, NIST, and EU framework alignment.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/card-base.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="game-header">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">🔍</span>
+                    <h1>Bias Bounty <span class="lite">Full</span></h1>
+                </div>
+            </div>
+            <div class="header-center">
+                <div id="phase-indicator" class="phase-badge">
+                    <span class="phase-number">1</span>
+                    <span class="phase-name">Reveal System</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="score-display">
+                    <span class="score-label">Score</span>
+                    <span id="score" class="score-value">0</span>
+                </div>
+                <div class="progress">
+                    <span id="system-counter">System 1/8</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pattern Reference Bar -->
+        <div id="pattern-bar" class="pattern-bar hidden">
+            <div class="pattern-ref" data-pattern="bad-start" title="The AI learned from biased history">
+                <span class="ref-icon">📚</span>
+                <span class="ref-name">Bad Start</span>
+            </div>
+            <div class="pattern-ref" data-pattern="wrong-measuring" title="The AI measures success poorly">
+                <span class="ref-icon">📏</span>
+                <span class="ref-name">Wrong Measuring</span>
+            </div>
+            <div class="pattern-ref" data-pattern="sneaky-shortcuts" title="The AI finds hidden ways to discriminate">
+                <span class="ref-icon">🎭</span>
+                <span class="ref-name">Sneaky Shortcuts</span>
+            </div>
+        </div>
+
+        <!-- Main Game Area -->
+        <main id="game-board">
+            <!-- Content dynamically rendered by JS -->
+        </main>
+
+        <!-- Controls -->
+        <nav id="controls" class="game-controls">
+            <button id="prev-btn" class="btn btn-secondary" disabled>
+                <span class="btn-icon">←</span>
+                <span>Back</span>
+            </button>
+            <div id="timer-display" class="timer hidden">
+                <span class="timer-icon">⏱️</span>
+                <span id="timer-value">60</span>s
+            </div>
+            <button id="next-btn" class="btn btn-primary">
+                <span>Next Phase</span>
+                <span class="btn-icon">→</span>
+            </button>
+        </nav>
+
+        <!-- Help Button -->
+        <button id="help-btn" class="help-button" title="How to Play (?)">?</button>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal hidden">
+            <div class="modal-content">
+                <button class="modal-close">&times;</button>
+                <h2>How to Play</h2>
+                <div class="help-sections">
+                    <div class="help-section">
+                        <h3>🎯 Goal</h3>
+                        <p>Investigate AI systems together and identify how unfairness enters them. Match problems to one of three bias patterns.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🔴 Bad Start</h3>
+                        <p><strong>The AI learned from biased history.</strong><br>
+                        The past trained the future. Look for training data that reflects historical discrimination.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🟡 Wrong Measuring</h3>
+                        <p><strong>The AI measures success poorly.</strong><br>
+                        What gets measured gets misled. The metric doesn't match the real goal.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🟢 Sneaky Shortcuts</h3>
+                        <p><strong>The AI finds hidden ways to discriminate.</strong><br>
+                        Correlation masquerading as truth. Uses proxies to discriminate indirectly.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>🎮 Gameplay</h3>
+                        <p>1. <strong>Reveal System</strong> - Learn about an AI system<br>
+                        2. <strong>Reveal Problems</strong> - See 3 issues with that system<br>
+                        3. <strong>Observe</strong> - Study silently (timed)<br>
+                        4. <strong>Discuss & Vote</strong> - Match problems to patterns<br>
+                        5. <strong>Commit</strong> - Confirm your answers<br>
+                        6. <strong>Reflect</strong> - Learn from results and impacts</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>📚 Frameworks</h3>
+                        <p>This game aligns with UNESCO AI Competency, OECD AI Principles, NIST AI Risk Management Framework, and EU Ethics Guidelines.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3>⌨️ Keyboard Shortcuts</h3>
+                        <p><kbd>→</kbd> or <kbd>Space</kbd> Next Phase<br>
+                        <kbd>←</kbd> Previous Phase<br>
+                        <kbd>?</kbd> Toggle Help<br>
+                        <kbd>1-3</kbd> Select Pattern (during voting)<br>
+                        <kbd>Esc</kbd> Close Modal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti" class="confetti-canvas"></canvas>
+
+    <script src="../shared/game-utils.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,892 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "lastUpdated": "2026-02-05",
+    "frameworks": {
+      "unesco": "AI Competency Framework for Students",
+      "oecd": "OECD AI Principles",
+      "nist": "AI Risk Management Framework (RMF 1.0)",
+      "eu": "Ethics Guidelines for Trustworthy AI",
+      "coe": "Council of Europe AI Literacy Framework"
+    }
+  },
+  "concepts": {
+    "automationBias": {
+      "id": "automationBias",
+      "name": "Automation Bias",
+      "icon": "🤖",
+      "definition": "The tendency to over-rely on automated systems, leading to errors when the AI is wrong.",
+      "realWorld": "Pilots who trust GPS over their own eyes, doctors who accept AI diagnoses without review.",
+      "howToSpot": "You feel uncomfortable disagreeing with the AI, even when you have doubts.",
+      "frameworks": {
+        "oecd": "Human-Centred Values and Fairness - Principle 1.2",
+        "nist": "Govern function - Human oversight",
+        "eu": "Human Agency & Oversight requirement",
+        "coe": "Human Dimension - Agency and oversight"
+      }
+    },
+    "contextualRisk": {
+      "id": "contextualRisk",
+      "name": "Contextual Risk Assessment",
+      "icon": "⚖️",
+      "definition": "Evaluating the stakes of a decision to determine appropriate oversight level.",
+      "realWorld": "A spam filter mistake is low-risk; a medical diagnosis mistake is high-risk.",
+      "howToSpot": "Ask: 'What happens if the AI is wrong? Can we recover?'",
+      "frameworks": {
+        "nist": "MAP function - Context establishment",
+        "eu": "Risk-based approach (AI Act)",
+        "oecd": "Robustness, Security, and Safety - Principle 1.4"
+      }
+    },
+    "trainingDataBias": {
+      "id": "trainingDataBias",
+      "name": "Training Data Bias",
+      "icon": "📊",
+      "definition": "AI learns patterns from historical data, including historical prejudices.",
+      "realWorld": "Hiring AIs that penalize career gaps (often women), facial recognition that fails on dark skin.",
+      "howToSpot": "Ask: 'Who was represented in the training data? What groups might be missing?'",
+      "frameworks": {
+        "unesco": "Ethics of AI - Bias recognition",
+        "oecd": "Human-Centred Values and Fairness",
+        "eu": "Diversity & Fairness requirement",
+        "nist": "Measure function - Bias assessment"
+      }
+    },
+    "proxyVariables": {
+      "id": "proxyVariables",
+      "name": "Proxy Variables",
+      "icon": "🔍",
+      "definition": "When you remove a biased variable (like race), the AI finds proxies (like zip code) that correlate with it.",
+      "realWorld": "Credit scores using zip code as a proxy for socioeconomic status and race.",
+      "howToSpot": "The AI claims to be 'neutral' but outcomes still disadvantage certain groups.",
+      "frameworks": {
+        "eu": "Diversity & Fairness - Indirect discrimination",
+        "oecd": "Human-Centred Values - Fairness",
+        "coe": "Human Dimension - Non-discrimination"
+      }
+    },
+    "aiHallucination": {
+      "id": "aiHallucination",
+      "name": "AI Hallucination",
+      "icon": "👻",
+      "definition": "AI generates confident-sounding but false information, including fake citations and fabricated facts.",
+      "realWorld": "Lawyers submitting AI-generated briefs with fake case citations. Researchers citing non-existent papers.",
+      "howToSpot": "Check specific claims, citations, and data points independently.",
+      "frameworks": {
+        "nist": "Measure function - Accuracy validation",
+        "dec": "Critical Thinking and Judgment - Hallucination Detection",
+        "eu": "Technical Robustness - Reliability"
+      }
+    },
+    "confidenceVsAccuracy": {
+      "id": "confidenceVsAccuracy",
+      "name": "Confidence ≠ Accuracy",
+      "icon": "🎯",
+      "definition": "AI expresses high confidence even when wrong. Confidence is not a reliable indicator of correctness.",
+      "realWorld": "Facial recognition systems with 99% confidence that are wrong, medical AIs confidently misdiagnosing.",
+      "howToSpot": "Treat high confidence as marketing, not evidence of correctness.",
+      "frameworks": {
+        "nist": "Measure function - Calibration",
+        "dec": "Critical Thinking - Confidence interpretation",
+        "unesco": "AI Techniques - Understanding limitations"
+      }
+    },
+    "contextualBlindness": {
+      "id": "contextualBlindness",
+      "name": "Contextual Blindness",
+      "icon": "🔲",
+      "definition": "AI processes keywords and patterns but lacks real-world context and common sense.",
+      "realWorld": "Content moderation flagging educational discussions about extremism as extremist content.",
+      "howToSpot": "The AI decision makes sense at a surface level but fails with deeper context.",
+      "frameworks": {
+        "eu": "Transparency - Explainability limitations",
+        "coe": "Technological Dimension - Understanding AI limitations",
+        "dec": "Understanding AI and Data - Pattern vs meaning"
+      }
+    },
+    "appropriateTrust": {
+      "id": "appropriateTrust",
+      "name": "Appropriate Trust",
+      "icon": "🤝",
+      "definition": "Calibrating trust based on the AI's track record, the stakes, and your own expertise.",
+      "realWorld": "Trusting spell-check but not letting it rewrite your legal contracts without review.",
+      "howToSpot": "Neither blind acceptance nor blanket rejection—evaluate each case.",
+      "frameworks": {
+        "nist": "Govern function - Trust calibration",
+        "oecd": "Human-Centred Values - Appropriate reliance",
+        "coe": "Practical Dimension - Informed usage"
+      }
+    },
+    "humanInCommand": {
+      "id": "humanInCommand",
+      "name": "Human-in-Command",
+      "icon": "👤",
+      "definition": "The ultimate authority to decide NOT to use an AI system when it's inappropriate.",
+      "realWorld": "A judge refusing to use a biased risk assessment tool, a doctor overriding an AI diagnosis.",
+      "howToSpot": "You have the right and responsibility to say 'no' to AI assistance.",
+      "frameworks": {
+        "eu": "Human Agency & Oversight - HIC vs HITL vs HOTL",
+        "oecd": "Accountability - Principle 1.5",
+        "coe": "Human Dimension - Democratic oversight"
+      }
+    }
+  },
+  "scenarios": [
+    {
+      "id": 1,
+      "category": "Customer Service",
+      "stakes": 1,
+      "title": "Support Ticket Routing",
+      "description": "An AI system is routing customer support tickets to the appropriate department. A customer wrote: 'I was charged twice for my subscription this month. Please refund the duplicate charge.'",
+      "aiRecommendation": "Route to Billing Department",
+      "aiReasoning": "Keywords 'charge,' 'account,' 'refund' detected. Pattern matches 10,000+ previous billing inquiries with 98% accuracy.",
+      "aiConfidence": 96,
+      "aiIsCorrect": true,
+      "aiError": null,
+      "correctAction": "accept",
+      "conceptTaught": "appropriateTrust",
+      "investigationClues": [
+        {
+          "id": "c1_1",
+          "text": "The customer's account shows two identical charges on the same day.",
+          "cost": 1,
+          "reveals": "confirmation"
+        },
+        {
+          "id": "c1_2",
+          "text": "Previous tickets with similar language were all resolved by the Billing team.",
+          "cost": 1,
+          "reveals": "trackRecord"
+        },
+        {
+          "id": "c1_3",
+          "text": "The AI has 98% accuracy on billing-related routing.",
+          "cost": 1,
+          "reveals": "performance"
+        }
+      ],
+      "explanation": "This is a straightforward pattern-matching task where AI excels. The keywords clearly indicate a billing issue, and the AI has strong historical performance in this domain.",
+      "whyAccept": "Simple, clear-cut routing decisions with clear keywords are where AI excels. Low stakes, high confidence, and strong track record.",
+      "whyOverride": "Not needed here—this is exactly the type of task AI handles well. Override would waste human resources.",
+      "consequences": {
+        "acceptCorrect": "✅ The customer received a prompt refund within 24 hours. Customer satisfaction score: 9/10. Support team efficiency improved.",
+        "acceptWrong": "⚠️ The ticket sat in Billing for 2 days before being redirected. Customer frustration increased. Minor delay.",
+        "overrideCorrect": "ℹ️ You manually routed the ticket correctly, but this took 5 minutes of your time that could have been automated.",
+        "overrideWrong": "❌ You routed the ticket to the wrong department. It bounced between teams for 3 days. Customer filed a complaint."
+      },
+      "frameworks": {
+        "nist": "MAP - Low risk context, MEASURE - High accuracy track record",
+        "oecd": "Appropriate use case for automation",
+        "pedagogicalGoal": "Teach players to recognize when AI is genuinely helpful and efficient"
+      }
+    },
+    {
+      "id": 2,
+      "category": "Hiring",
+      "stakes": 3,
+      "title": "Job Candidate Screening",
+      "description": "You are a hiring manager reviewing finalists for a senior software engineer position. The AI has ranked all candidates. Candidate #47 has the strongest technical background, but the AI ranked them 3rd overall.",
+      "aiRecommendation": "Rank #3: Candidate #47 - Good technical skills, but employment history concerns",
+      "aiReasoning": "Strong coding assessment (top 5%), but 6-month employment gap detected. Communication score lowered due to 'speech pattern variation.'",
+      "aiConfidence": 87,
+      "aiIsCorrect": false,
+      "aiError": "The AI penalized Candidate #47 for a 6-month employment gap (medical leave) and lowered their 'communication score' due to their non-native accent—even though their written communication is excellent. The top 2 candidates have weaker technical skills but continuous employment and native accents.",
+      "correctAction": "override",
+      "conceptTaught": "trainingDataBias",
+      "investigationClues": [
+        {
+          "id": "c2_1",
+          "text": "Candidate #47 took 6 months off for cancer treatment (documented, now in remission).",
+          "cost": 1,
+          "reveals": "bias"
+        },
+        {
+          "id": "c2_2",
+          "text": "The AI training data shows 73% of 'top performers' had no employment gaps.",
+          "cost": 1,
+          "reveals": "bias"
+        },
+        {
+          "id": "c2_3",
+          "text": "Candidate #47's 'speech pattern variation' = non-native accent. Their written technical explanations scored in the 99th percentile.",
+          "cost": 1,
+          "reveals": "bias"
+        }
+      ],
+      "explanation": "AI hiring systems often penalize valid career gaps (especially medical) and exhibit accent bias. The #1 and #2 candidates have weaker technical skills but fit the AI's biased pattern of 'continuous employment + native accent.'",
+      "whyAccept": "The AI identified 'concerns' that might seem reasonable at first glance—gaps and communication scores.",
+      "whyOverride": "Medical gaps should not be penalized, and 'communication' scores often measure accent similarity to training data, not actual ability. Candidate #47 is clearly the strongest technically.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ You followed standard procedure. The selected candidate performed adequately but lacked the technical depth for complex challenges.",
+        "acceptWrong": "❌ You accepted the AI's biased ranking. Candidate #47 was rejected and took a position at a competitor. Six months later, they led a breakthrough project that your company lost. The selected candidate struggled with technical requirements.",
+        "overrideCorrect": "✅ You recognized the bias and prioritized Candidate #47. They joined your team and within 6 months, architected a critical system that reduced infrastructure costs by 40%. Their diverse perspective improved team problem-solving.",
+        "overrideWrong": "⚠️ You overrode the AI based on incomplete information. The candidate you selected performed well technically but had communication challenges with non-technical stakeholders."
+      },
+      "frameworks": {
+        "unesco": "Ethics of AI - Recognizing bias in training data",
+        "oecd": "Human-Centred Values and Fairness",
+        "eu": "Diversity & Fairness requirement",
+        "pedagogicalGoal": "Demonstrate how AI can systematically disadvantage qualified candidates from underrepresented groups even without explicit malicious programming"
+      }
+    },
+    {
+      "id": 3,
+      "category": "Medical",
+      "stakes": 3,
+      "title": "Diagnostic Imaging - Clear Case",
+      "description": "A radiology AI system has analyzed a patient's chest X-ray. The patient has mild respiratory symptoms but no fever. The X-ray shows clear lungs with no abnormalities.",
+      "aiRecommendation": "Normal - No abnormalities detected (98% confidence)",
+      "aiReasoning": "No visible masses, fluid buildup, or structural abnormalities detected. Pattern matches 50,000+ normal scans.",
+      "aiConfidence": 98,
+      "aiIsCorrect": true,
+      "aiError": null,
+      "correctAction": "accept",
+      "conceptTaught": "contextualRisk",
+      "investigationClues": [
+        {
+          "id": "c3_1",
+          "text": "The X-ray is high quality with no motion artifacts.",
+          "cost": 1,
+          "reveals": "quality"
+        },
+        {
+          "id": "c3_2",
+          "text": "AI has 99.2% sensitivity for detecting abnormalities in this type of scan.",
+          "cost": 1,
+          "reveals": "performance"
+        },
+        {
+          "id": "c3_3",
+          "text": "Patient symptoms are mild and non-specific.",
+          "cost": 1,
+          "reveals": "context"
+        }
+      ],
+      "explanation": "Even in high-stakes medical contexts, AI can be highly reliable for clear-cut cases. The key is knowing when to trust it (clear images, well-defined patterns) vs. when to be skeptical (edge cases, ambiguous findings).",
+      "whyAccept": "The scan is clear, the AI has excellent track record on normal scans, and findings align with clinical picture. High stakes + high confidence + clear case = appropriate to trust.",
+      "whyOverride": "While appropriate to be cautious, overriding a clear normal scan without cause could lead to unnecessary procedures and patient anxiety.",
+      "consequences": {
+        "acceptCorrect": "✅ The patient avoided unnecessary anxiety and radiation exposure from a follow-up CT scan. They recovered from mild symptoms within a week with supportive care. Healthcare resources were conserved.",
+        "acceptWrong": "❌ A small abnormality was missed. The patient's condition worsened over 2 weeks, requiring emergency intervention. Early detection would have prevented complications.",
+        "overrideCorrect": "✅ Your caution led to a specialist review that caught a subtle early-stage finding. Timely treatment prevented progression. The patient and family are grateful.",
+        "overrideWrong": "⚠️ You ordered unnecessary additional testing. The patient experienced anxiety waiting for results and was exposed to additional radiation. Healthcare costs increased by $800."
+      },
+      "frameworks": {
+        "nist": "Context matters - High stakes but also high AI capability for this specific task",
+        "eu": "High-risk domain but appropriate use case",
+        "pedagogicalGoal": "Teach that high stakes doesn't always mean reject AI—it means be more careful about when to trust it"
+      }
+    },
+    {
+      "id": 4,
+      "category": "Research",
+      "stakes": 2,
+      "title": "Scientific Literature Review",
+      "description": "An AI research assistant has summarized findings on a medical topic for a literature review you're writing.",
+      "aiRecommendation": "Key finding: Treatment X shows 40% better outcomes than placebo",
+      "aiReasoning": "Synthesized from 12 peer-reviewed studies published 2020-2024. High confidence in statistical significance.",
+      "aiConfidence": 92,
+      "aiIsCorrect": false,
+      "aiError": "The AI hallucinated two of the cited studies (they don't exist). It also missed that 3 recent large-scale studies found no significant effect. The '40% better' figure comes from a small, industry-funded study with methodological issues.",
+      "correctAction": "override",
+      "conceptTaught": "aiHallucination",
+      "investigationClues": [
+        {
+          "id": "c4_1",
+          "text": "Two of the cited studies cannot be found in PubMed or Google Scholar.",
+          "cost": 1,
+          "reveals": "hallucination"
+        },
+        {
+          "id": "c4_2",
+          "text": "The '40% better' study had only 45 participants and was funded by the drug manufacturer.",
+          "cost": 1,
+          "reveals": "bias"
+        },
+        {
+          "id": "c4_3",
+          "text": "A 2023 meta-analysis with 5,000+ participants found no significant effect.",
+          "cost": 1,
+          "reveals": "contradiction"
+        }
+      ],
+      "explanation": "AI systems can hallucinate citations and cherry-pick data that matches patterns while missing contradictory evidence. Always verify citations and check for contradictory studies.",
+      "whyAccept": "The AI sounds authoritative with specific numbers and dates—classic signs of hallucination that can fool even experienced researchers.",
+      "whyOverride": "Hallucinated citations are a known AI failure mode. Always verify sources, especially in research where accuracy is critical.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ Your literature review was accurate and contributed to evidence-based practice. The paper was well-received.",
+        "acceptWrong": "❌ You included hallucinated citations in your literature review. During peer review, the fake studies were discovered. Your paper was rejected, damaging your credibility. A retraction notice was issued for a related publication that cited the same error.",
+        "overrideCorrect": "✅ You caught the hallucinated citations before publication. After thorough verification, you found the contradictory evidence and presented a balanced view. Your paper was published and has been cited 47 times as a model of careful AI-assisted research.",
+        "overrideWrong": "⚠️ You spent an extra week verifying sources that turned out to be legitimate. Minor delay, but no harm done."
+      },
+      "frameworks": {
+        "nist": "MEASURE - Verification required",
+        "dec": "Critical Thinking - Hallucination Detection",
+        "pedagogicalGoal": "Teach that authoritative-sounding AI output can be completely fabricated—verification is essential"
+      }
+    },
+    {
+      "id": 5,
+      "category": "Finance",
+      "stakes": 2,
+      "title": "Loan Application - Edge Case",
+      "description": "A loan approval AI has evaluated a mortgage application. The applicant has limited credit history but recently started a new job.",
+      "aiRecommendation": "Approve - Moderate risk (12% default probability)",
+      "aiReasoning": "Limited credit history is offset by stable employment history prior to recent job change. Debt-to-income ratio is acceptable.",
+      "aiConfidence": 75,
+      "aiIsCorrect": true,
+      "aiError": null,
+      "correctAction": "accept",
+      "conceptTaught": "confidenceVsAccuracy",
+      "investigationClues": [
+        {
+          "id": "c5_1",
+          "text": "The applicant's new job is in the same industry with a 15% salary increase.",
+          "cost": 1,
+          "reveals": "context"
+        },
+        {
+          "id": "c5_2",
+          "text": "The AI confidence is only 75% - lower than typical approvals.",
+          "cost": 1,
+          "reveals": "uncertainty"
+        },
+        {
+          "id": "c5_3",
+          "text": "The applicant has been paying rent on time for 5 years (not in credit report).",
+          "cost": 1,
+          "reveals": "context"
+        }
+      ],
+      "explanation": "This is a judgment call. The AI is making a reasonable assessment with appropriate uncertainty (75% confidence). Either accepting with monitoring or requesting additional review could be defensible.",
+      "whyAccept": "The AI has made a reasonable assessment, the risk is moderate, and the 75% confidence appropriately signals uncertainty. The decision is within normal lending parameters.",
+      "whyOverride": "The lower confidence score suggests uncertainty, and additional context (rent history) could improve the decision. A human review might be prudent for a borderline case.",
+      "consequences": {
+        "acceptCorrect": "✅ The applicant received the mortgage and has made all payments on time for the past year. They sent a thank-you note saying this was their first step toward financial stability.",
+        "acceptWrong": "⚠️ The applicant defaulted after 8 months. While the loss was within expected risk parameters, you question whether additional review might have helped.",
+        "overrideCorrect": "✅ Your additional review discovered strong compensating factors. The applicant was approved with slightly adjusted terms and has been a reliable borrower.",
+        "overrideWrong": "ℹ️ Your caution delayed the application by 2 weeks. The applicant nearly lost the house to another buyer. They were eventually approved and are doing fine, but experienced significant stress."
+      },
+      "frameworks": {
+        "nist": "Contextual judgment - MEASURE function shows uncertainty",
+        "oecd": "Appropriate trust calibration",
+        "pedagogicalGoal": "Demonstrate gray areas where reasonable people can disagree—low confidence is a signal for caution, not necessarily rejection"
+      }
+    },
+    {
+      "id": 6,
+      "category": "Content",
+      "stakes": 2,
+      "title": "Social Media Moderation",
+      "description": "An automated content moderation system flagged a user's post for review. The post discusses historical events.",
+      "aiRecommendation": "Remove - Potential hate speech detected (87% confidence)",
+      "aiReasoning": "Keywords match patterns associated with extremist content. References to historical conflicts and ethnic groups.",
+      "aiConfidence": 87,
+      "aiIsCorrect": false,
+      "aiError": "The post is actually an educational discussion about preventing genocide, written by a history teacher. The AI detected keywords without understanding context or intent.",
+      "correctAction": "override",
+      "conceptTaught": "contextualBlindness",
+      "investigationClues": [
+        {
+          "id": "c6_1",
+          "text": "The post author is a verified history teacher with 10+ years of experience.",
+          "cost": 1,
+          "reveals": "context"
+        },
+        {
+          "id": "c6_2",
+          "text": "The full post includes 'Never Again' and references to Holocaust education.",
+          "cost": 1,
+          "reveals": "context"
+        },
+        {
+          "id": "c6_3",
+          "text": "The AI flagged keywords 'genocide' and 'ethnic cleansing' but missed the educational framing.",
+          "cost": 1,
+          "reveals": "blindness"
+        }
+      ],
+      "explanation": "Content moderation AI struggles with context, nuance, and educational discussions about sensitive topics. Keywords without context lead to false positives.",
+      "whyAccept": "The keywords are genuinely concerning—if this were actual hate speech, failing to act would be harmful and could expose the platform to liability.",
+      "whyOverride": "Context matters. Educational discussions about preventing atrocities use the same vocabulary as the atrocities themselves. AI cannot distinguish intent without deeper understanding.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ The concerning content was removed. No further issues reported.",
+        "acceptWrong": "❌ The history teacher's educational post about preventing genocide was removed. Their account was temporarily suspended. The teacher wrote an op-ed about algorithmic censorship of Holocaust education. The platform faced criticism from educators and civil liberties groups. The teacher's students were confused about why their teacher's important lesson disappeared.",
+        "overrideCorrect": "✅ You recognized the educational context. The post remained visible and helped educate thousands about recognizing early warning signs of genocide. The teacher sent thanks: 'My grandfather was a survivor. Thank you for not letting a machine erase his story.' The post was shared by a major museum and reached 2.3M people.",
+        "overrideWrong": "⚠️ The content you allowed turned out to be borderline. While not hate speech, it was inflammatory. Several users reported discomfort. No major harm, but you question your judgment."
+      },
+      "frameworks": {
+        "eu": "Transparency - Explainability limitations",
+        "coe": "Understanding AI limitations",
+        "pedagogicalGoal": "Show that AI processes patterns, not meaning—context is essential for nuanced decisions"
+      }
+    },
+    {
+      "id": 7,
+      "category": "Security",
+      "stakes": 2,
+      "title": "Fraud Detection - Clear Pattern",
+      "description": "A fraud detection AI has flagged a credit card transaction for review. The transaction occurred at 3 AM in a foreign country while the cardholder is known to be at home.",
+      "aiRecommendation": "Block Transaction - Suspicious activity detected",
+      "aiReasoning": "Transaction at unusual hour, foreign location inconsistent with cardholder location, merchant category rarely used.",
+      "aiConfidence": 94,
+      "aiIsCorrect": true,
+      "aiError": null,
+      "correctAction": "accept",
+      "conceptTaught": "automationBias",
+      "investigationClues": [
+        {
+          "id": "c7_1",
+          "text": "Cardholder's phone location shows they are at home (opted-in location service).",
+          "cost": 1,
+          "reveals": "confirmation"
+        },
+        {
+          "id": "c7_2",
+          "text": "Three other transactions occurred in the same foreign location within 10 minutes.",
+          "cost": 1,
+          "reveals": "fraud"
+        },
+        {
+          "id": "c7_3",
+          "text": "The merchant is a high-risk electronics store known for fraudulent activity.",
+          "cost": 1,
+          "reveals": "fraud"
+        }
+      ],
+      "explanation": "Fraud detection is a strength of AI systems—they can detect patterns across millions of transactions that humans cannot. The multiple red flags here create a clear pattern.",
+      "whyAccept": "Multiple independent risk factors create a clear fraud pattern. This is where AI excels—detecting patterns at scale that humans would miss.",
+      "whyOverride": "While the pattern is strong, there could be legitimate travel—though the location data suggests the cardholder is home.",
+      "consequences": {
+        "acceptCorrect": "✅ The fraudulent transactions were blocked. The cardholder was notified and confirmed they were home asleep. The fraudster was unable to make additional purchases. Total prevented loss: $3,400.",
+        "acceptWrong": "⚠️ You blocked a legitimate transaction. The cardholder was traveling and forgot to notify the bank. They experienced temporary inconvenience but the situation was resolved within an hour.",
+        "overrideCorrect": "ℹ️ You allowed a legitimate transaction. The cardholder confirmed they were traveling. No harm done, but unnecessary risk taken.",
+        "overrideWrong": "❌ The fraudulent transaction went through. By the time the cardholder noticed, $2,800 in fraudulent charges accumulated. They had to cancel their card and dispute the charges."
+      },
+      "frameworks": {
+        "nist": "Appropriate use case - pattern detection at scale",
+        "oecd": "Robustness in well-defined domains",
+        "pedagogicalGoal": "Teach that AI is genuinely powerful for certain tasks—automation bias includes inappropriate skepticism as well as inappropriate trust"
+      }
+    },
+    {
+      "id": 8,
+      "category": "Legal",
+      "stakes": 3,
+      "title": "Sentencing Recommendation",
+      "description": "A risk assessment AI has evaluated a defendant for sentencing after a non-violent property crime.",
+      "aiRecommendation": "Maximum sentence - High recidivism risk (85%)",
+      "aiReasoning": "Age, prior arrests as juvenile, zip code risk factors, unemployment history all predict reoffending.",
+      "aiConfidence": 85,
+      "aiIsCorrect": false,
+      "aiError": "The AI uses zip code as a proxy for race. The defendant has been sober for 3 years, completed vocational training while awaiting trial, and has a guaranteed job offer. These positive factors aren't weighted properly.",
+      "correctAction": "override",
+      "conceptTaught": "proxyVariables",
+      "investigationClues": [
+        {
+          "id": "c8_1",
+          "text": "The defendant's zip code is in a predominantly Black neighborhood.",
+          "cost": 1,
+          "reveals": "proxy"
+        },
+        {
+          "id": "c8_2",
+          "text": "The defendant has been sober for 3 years with documented attendance at treatment programs.",
+          "cost": 1,
+          "reveals": "context"
+        },
+        {
+          "id": "c8_3",
+          "text": "A local employer has provided a letter guaranteeing employment upon release.",
+          "cost": 1,
+          "reveals": "context"
+        }
+      ],
+      "explanation": "Criminal justice risk assessment tools have been shown to exhibit racial bias through proxy variables like zip code. Human judgment is needed to consider rehabilitation progress.",
+      "whyAccept": "The statistical factors are real—people from this background do have higher recidivism rates on average. The AI is doing what it was designed to do.",
+      "whyOverride": "Statistical averages should not override individual circumstances. The defendant has demonstrated rehabilitation, and zip code is a known proxy for race in these systems.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ The defendant served a moderate sentence. Upon release, they faced challenges finding housing due to the record but eventually stabilized. No major incident.",
+        "acceptWrong": "❌ The defendant received maximum sentence based on AI recommendation. They missed their daughter's graduation and mother's funeral. The guaranteed job was given to someone else. Released 18 months later with no support system, they reoffended within 6 months. A life was derailed by a biased algorithm.",
+        "overrideCorrect": "✅ You considered the defendant's rehabilitation. They received a sentence with work-release privileges. They kept their job, maintained sobriety, and reunited with family. Five years later, they're a supervisor at the company and mentor at-risk youth. Your intervention changed a trajectory.",
+        "overrideWrong": "⚠️ The defendant received a lighter sentence but struggled with reintegration. They had one minor violation of parole conditions. Eventually stabilized but the path was rocky."
+      },
+      "frameworks": {
+        "eu": "Diversity & Fairness - Indirect discrimination through proxies",
+        "oecd": "Human-Centred Values - Fairness",
+        "coe": "Human Dimension - Non-discrimination and human rights",
+        "pedagogicalGoal": "Demonstrate how removing explicit race variables doesn't eliminate bias—AI finds proxies that correlate with protected characteristics"
+      }
+    },
+    {
+      "id": 9,
+      "category": "Education",
+      "stakes": 2,
+      "title": "Student Essay Grading",
+      "description": "An AI grading system has evaluated a student's final essay in a literature course. The student is a non-native English speaker.",
+      "aiRecommendation": "Grade: C+ (76/100) - Below class average",
+      "aiReasoning": "Unconventional structure. Several sentences flagged as 'potentially AI-generated.' References sources not in standard curriculum.",
+      "aiConfidence": 68,
+      "aiIsCorrect": false,
+      "aiError": "The student's 'unconventional' structure reflects their unique cultural perspective. The 'AI-generated' flag is a false positive common with non-standard English. The external sources show independent research.",
+      "correctAction": "override",
+      "conceptTaught": "confidenceVsAccuracy",
+      "investigationClues": [
+        {
+          "id": "c9_1",
+          "text": "The student's previous essays show similar structural patterns.",
+          "cost": 1,
+          "reveals": "style"
+        },
+        {
+          "id": "c9_2",
+          "text": "The AI confidence is only 68% - indicating uncertainty.",
+          "cost": 1,
+          "reveals": "uncertainty"
+        },
+        {
+          "id": "c9_3",
+          "text": "The essay includes personal cultural references that an AI would not generate.",
+          "cost": 1,
+          "reveals": "authenticity"
+        }
+      ],
+      "explanation": "AI grading systems often penalize non-native speakers and innovative thinking. They also produce false positives on AI-detection. Low confidence scores should trigger human review.",
+      "whyAccept": "The AI flags are concerning—if the student used AI, that's academic dishonesty. The flags should be taken seriously.",
+      "whyOverride": "The low confidence score (68%) is a signal that human review is needed. The cultural context matters, and AI detection tools are known to have high false positive rates for non-native speakers.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ The grade was fair. The student accepted it and improved in the next assignment.",
+        "acceptWrong": "❌ The student received a C+, significantly below their actual performance. They became discouraged and considered dropping out. Their unique cultural perspective was penalized as 'non-standard.' The false AI-detection flag created suspicion about their integrity. They filed a grade appeal that took 6 weeks to resolve.",
+        "overrideCorrect": "✅ You reviewed the essay personally and recognized its quality. The student received an A- and personalized feedback: 'Your perspective enriched our discussion.' They became more engaged in class, joined the debate team, and later won a writing scholarship. A human review validated their voice.",
+        "overrideWrong": "⚠️ You gave a higher grade but the essay had genuine structural issues. The student didn't get the feedback they needed. They struggled in subsequent assignments."
+      },
+      "frameworks": {
+        "unesco": "Ethics of AI - Fairness in assessment",
+        "dec": "Critical Thinking - Confidence interpretation",
+        "pedagogicalGoal": "Teach that low confidence is a signal for human review, not a reason to blindly accept the AI's assessment"
+      }
+    },
+    {
+      "id": 10,
+      "category": "Transportation",
+      "stakes": 3,
+      "title": "Autonomous Vehicle Decision",
+      "description": "You are monitoring a self-driving taxi. An unexpected situation has occurred ahead on the road.",
+      "aiRecommendation": "Continue at current speed - Clear path detected",
+      "aiReasoning": "Road ahead is clear. Object detection shows no obstacles. Lane is marked as drivable.",
+      "aiConfidence": 91,
+      "aiIsCorrect": false,
+      "aiError": "The AI failed to recognize a construction worker holding a stop sign (unusual posture, partially obscured). The 'clear path' includes fresh wet paint not yet in mapping database.",
+      "correctAction": "override",
+      "conceptTaught": "humanInCommand",
+      "investigationClues": [
+        {
+          "id": "c10_1",
+          "text": "A construction zone sign is visible 100 meters back.",
+          "cost": 1,
+          "reveals": "context"
+        },
+        {
+          "id": "c10_2",
+          "text": "There appears to be a person in an orange vest near the road ahead.",
+          "cost": 1,
+          "reveals": "hazard"
+        },
+        {
+          "id": "c10_3",
+          "text": "The road surface ahead looks different—possibly fresh markings.",
+          "cost": 1,
+          "reveals": "hazard"
+        }
+      ],
+      "explanation": "Autonomous vehicles can fail to recognize unusual situations, temporary changes, or workers in non-standard positions. Human oversight is critical for safety.",
+      "whyAccept": "The AI has sophisticated sensors and 91% confidence—normally reliable for routine driving.",
+      "whyOverride": "Construction zones are known edge cases for autonomous vehicles. The stakes (human life) demand caution when there are any warning signs.",
+      "consequences": {
+        "acceptCorrect": "✅ The drive was uneventful. The passenger arrived safely at their destination. The AI handled routine driving appropriately.",
+        "acceptWrong": "❌ The vehicle continued at speed. The construction worker, trying to redirect traffic, was struck. Emergency services responded. The passenger witnessed the trauma. The incident made headlines: 'Self-Driving Car Injures Worker—Human Monitor Failed to Override.' Trust in autonomous vehicles decreased industry-wide.",
+        "overrideCorrect": "✅ You immediately engaged manual control and stopped the vehicle. The construction worker approached and explained the temporary traffic pattern. They thanked you for paying attention. The passenger said, 'I saw that vest at the last second too—glad you were watching.' Your human oversight prevented injury and potentially saved a life.",
+        "overrideWrong": "ℹ️ You stopped the vehicle unnecessarily. The construction worker waved you through—their sign indicated caution, not stop. The passenger arrived 2 minutes later. Minor inconvenience, no harm done."
+      },
+      "frameworks": {
+        "eu": "Human Agency & Oversight - Safety-critical HITL",
+        "oecd": "Safety - Human oversight in high-risk domains",
+        "coe": "Human Dimension - Life and safety protection",
+        "pedagogicalGoal": "Emphasize that Human-in-Command includes the authority and responsibility to override AI when safety is at stake"
+      }
+    },
+    {
+      "id": 11,
+      "category": "Privacy",
+      "stakes": 2,
+      "title": "Smart Home Data Request",
+      "description": "Your smart home AI assistant has requested access to additional data sources. It wants to integrate your calendar, location history, and purchase records to 'better serve your needs.' The AI promises personalized recommendations and improved automation.",
+      "aiRecommendation": "Grant Full Access - Enable all data connections for optimal personalization",
+      "aiReasoning": "Comprehensive data access enables 43% more accurate predictions and 67% better task completion. Your data is protected by enterprise-grade encryption.",
+      "aiConfidence": 89,
+      "aiIsCorrect": false,
+      "aiError": "The AI doesn't need all this data for basic functions. The company uses aggregated user data for advertising and may sell insights to third parties. Location + purchase history can reveal sensitive information (health conditions, political affiliations, relationships) through inference.",
+      "correctAction": "override",
+      "conceptTaught": "contextualBlindness",
+      "investigationClues": [
+        {
+          "id": "c11_1",
+          "text": "The privacy policy mentions 'data sharing with trusted partners' in section 14.3.",
+          "cost": 1,
+          "reveals": "privacy"
+        },
+        {
+          "id": "c11_2",
+          "text": "Researchers have shown that purchase history + location can infer pregnancy, depression, or political affiliation with 80%+ accuracy.",
+          "cost": 1,
+          "reveals": "inference"
+        },
+        {
+          "id": "c11_3",
+          "text": "The company had a data breach last year affecting 2 million users.",
+          "cost": 1,
+          "reveals": "security"
+        }
+      ],
+      "explanation": "AI systems often request more data than necessary. Even with good security, data can be breached, subpoenaed, or used for purposes beyond original intent. Data minimization is a core privacy principle.",
+      "whyAccept": "The convenience benefits are real—better automation, personalized suggestions, seamless integration.",
+      "whyOverride": "Data minimization limits exposure. The AI works fine without invasive data. Once shared, you can't control how it's used or who eventually sees it.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ The personalization worked well. You received convenient reminders and recommendations. No immediate issues.",
+        "acceptWrong": "❌ Six months later, you started seeing ads related to a health condition you hadn't disclosed to anyone. The company had shared 'anonymized' data that was re-identified. Your insurance premiums increased at renewal. A stalker ex-partner accessed your location history through a data broker.",
+        "overrideCorrect": "✅ You granted minimal permissions. The AI still handled basic tasks. You maintained privacy boundaries. When a data breach affected the service six months later, your exposure was limited. You kept control of your personal information.",
+        "overrideWrong": "⚠️ You missed out on some convenient features. The AI occasionally made less relevant suggestions. Minor inconvenience."
+      },
+      "frameworks": {
+        "eu": "Privacy & Data Governance - Data minimization",
+        "nist": "Govern function - Privacy controls",
+        "pedagogicalGoal": "Teach data minimization and inference risks in AI systems"
+      }
+    },
+    {
+      "id": 12,
+      "category": "Environment",
+      "stakes": 2,
+      "title": "Supply Chain Optimization",
+      "description": "An AI system is optimizing your company's supply chain for a new product launch. The AI has found a way to reduce costs by 23% while maintaining delivery timelines.",
+      "aiRecommendation": "Approve Optimization - Select lowest-cost suppliers",
+      "aiReasoning": "Algorithm analyzed 1,200 suppliers across 15 countries. Selected combination minimizes cost while meeting quality thresholds and delivery windows.",
+      "aiConfidence": 94,
+      "aiIsCorrect": false,
+      "aiError": "The AI optimized for cost and speed but didn't factor in environmental impact. The selected suppliers have poor environmental records, use coal power, and generate 3x the carbon emissions. The 'savings' don't account for carbon costs or reputational risk.",
+      "correctAction": "override",
+      "conceptTaught": "contextualBlindness",
+      "investigationClues": [
+        {
+          "id": "c12_1",
+          "text": "Two of the selected suppliers have been cited for environmental violations in the past 3 years.",
+          "cost": 1,
+          "reveals": "environmental"
+        },
+        {
+          "id": "c12_2",
+          "text": "The carbon footprint of this supply chain would be 340% higher than alternative configurations.",
+          "cost": 1,
+          "reveals": "sustainability"
+        },
+        {
+          "id": "c12_3",
+          "text": "Your company's sustainability pledge requires 'environmentally responsible sourcing.'",
+          "cost": 1,
+          "reveals": "policy"
+        }
+      ],
+      "explanation": "AI systems optimize for what they're told to optimize. If not explicitly programmed with sustainability constraints, they may find 'optimal' solutions that externalize costs to the environment or society.",
+      "whyAccept": "The cost savings are substantial and the AI met all explicitly stated requirements. Shareholders expect cost efficiency.",
+      "whyOverride": "The optimization ignored sustainability commitments and externalized environmental costs. Long-term reputation and planetary impact matter.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ The launch was successful and profitable. Short-term financial goals met.",
+        "acceptWrong": "❌ An investigative journalist traced your supply chain, exposing environmental violations. Social media outrage led to a boycott campaign. Your company's sustainability ratings were downgraded. The CEO had to apologize publicly. You missed climate targets. The 'savings' were wiped out by reputational damage and carbon offset costs.",
+        "overrideCorrect": "✅ You modified the optimization to include sustainability constraints. Costs increased 8% but carbon footprint dropped 60%. The product launch received positive coverage for environmental responsibility. You won a sustainability award. Employee pride increased. Long-term value was protected.",
+        "overrideWrong": "⚠️ You erred on the side of caution but the alternative suppliers also had some issues. Costs were higher without proportional environmental benefit."
+      },
+      "frameworks": {
+        "oecd": "Inclusive Growth, Sustainable Development",
+        "eu": "Societal Well-being - Environmental impact",
+        "pedagogicalGoal": "Demonstrate how AI optimization without proper constraints can externalize environmental costs"
+      }
+    },
+    {
+      "id": 13,
+      "category": "Creative",
+      "stakes": 1,
+      "title": "AI Art Attribution",
+      "description": "An AI image generator created artwork based on your text prompt. The image is striking and you want to use it in a commercial project. The platform's terms state you 'own' the generated image.",
+      "aiRecommendation": "Use Image - Full commercial rights granted",
+      "aiReasoning": "Platform terms of service grant you full ownership and commercial rights to AI-generated content based on your prompts.",
+      "aiConfidence": 95,
+      "aiIsCorrect": false,
+      "aiError": "The AI was trained on millions of copyrighted images without artists' consent. The generated image closely resembles the style of a living artist whose work was in the training data. The 'ownership' claim is legally untested and may not hold up. You could face legal challenges.",
+      "correctAction": "override",
+      "conceptTaught": "trainingDataBias",
+      "investigationClues": [
+        {
+          "id": "c13_1",
+          "text": "The image closely resembles the distinctive style of artist Maya Chen, whose work was likely in the training data.",
+          "cost": 1,
+          "reveals": "style"
+        },
+        {
+          "id": "c13_2",
+          "text": "Multiple artists are currently suing the platform for unauthorized use of their work in training data.",
+          "cost": 1,
+          "reveals": "legal"
+        },
+        {
+          "id": "c13_3",
+          "text": "The platform's 'ownership' terms have not been tested in court for commercial use.",
+          "cost": 1,
+          "reveals": "uncertainty"
+        }
+      ],
+      "explanation": "Generative AI models are trained on vast datasets that often include copyrighted material without consent. The legal and ethical landscape around AI-generated art is unsettled. 'Ownership' claims by platforms may not protect users from liability.",
+      "whyAccept": "The platform explicitly grants commercial rights. This is standard practice. The transformative nature of the output may be fair use.",
+      "whyOverride": "The legal landscape is uncertain. Using the image carries risk. Respecting artists' rights and seeking properly licensed alternatives is safer and more ethical.",
+      "consequences": {
+        "acceptCorrect": "✅ The image was used successfully. No legal challenges. The project launched on schedule.",
+        "acceptWrong": "❌ The artist Maya Chen recognized their style and filed a lawsuit. Your company was named in the suit. The project launch was delayed. Legal costs mounted. Even if you eventually won, the reputational damage of 'stealing from artists' hurt your brand. You had to pull the artwork and commission a replacement.",
+        "overrideCorrect": "✅ You commissioned a human artist with clear contract terms. The artwork was original, legally clean, and supported a working artist. The project launched without issues. You built a relationship with a talented artist for future work.",
+        "overrideWrong": "⚠️ You paid more for human-created art. The project timeline extended by 2 weeks. The alternative image was fine but not as striking."
+      },
+      "frameworks": {
+        "unesco": "Ethics of AI - Intellectual property",
+        "oecd": "Accountability - Legal uncertainty",
+        "pedagogicalGoal": "Explore legal and ethical uncertainties in generative AI art"
+      }
+    },
+    {
+      "id": 14,
+      "category": "Healthcare",
+      "stakes": 3,
+      "title": "Predictive Health Analytics",
+      "description": "A healthcare AI has analyzed your anonymized patient records alongside thousands of others. It predicts you have elevated risk for a serious condition and recommends immediate preventive medication.",
+      "aiRecommendation": "Start Preventive Treatment - 78% risk detected",
+      "aiReasoning": "Pattern matching across 50,000 patient records shows 78% probability of developing condition within 2 years. Early intervention reduces severity by 65%.",
+      "aiConfidence": 78,
+      "aiIsCorrect": false,
+      "aiError": "The AI prediction is based on population statistics, not your individual case. Your recent lifestyle changes (diet, exercise) aren't in the historical data. The medication has significant side effects. A human doctor would consider your complete situation.",
+      "correctAction": "override",
+      "conceptTaught": "contextualBlindness",
+      "investigationClues": [
+        {
+          "id": "c14_1",
+          "text": "The AI training data is from 2015-2020 and doesn't reflect recent medical advances or lifestyle trends.",
+          "cost": 1,
+          "reveals": "dataAge"
+        },
+        {
+          "id": "c14_2",
+          "text": "The medication side effects include fatigue and cognitive impairment in 30% of patients.",
+          "cost": 1,
+          "reveals": "risk"
+        },
+        {
+          "id": "c14_3",
+          "text": "Your recent health screenings show improving markers not reflected in the AI's training data.",
+          "cost": 1,
+          "reveals": "context"
+        }
+      ],
+      "explanation": "Healthcare AI often relies on historical population data that may not reflect individual circumstances or recent changes. Medical decisions require human clinical judgment that considers the whole patient.",
+      "whyAccept": "78% risk is high. Early intervention is generally good. The AI analyzed more data than any human could.",
+      "whyOverride": "Population statistics aren't individual destiny. Your recent improvements aren't in the data. Side effects are serious. Get a human doctor's assessment first.",
+      "consequences": {
+        "acceptCorrect": "✅ The early intervention prevented disease progression. You tolerated the medication well. Regular monitoring caught issues early.",
+        "acceptWrong": "❌ You experienced severe side effects from unnecessary medication. The 'prediction' was based on outdated population data that didn't account for your lifestyle changes. You suffered needlessly for 6 months before a doctor reviewed and discontinued the treatment.",
+        "overrideCorrect": "✅ You requested a human doctor's review. They confirmed the AI didn't account for your recent improvements. You avoided unnecessary medication. A personalized prevention plan was developed. Your health continued to improve naturally.",
+        "overrideWrong": "⚠️ You declined the medication and the condition did develop. However, it was caught early through regular monitoring and was treatable. You still had options."
+      },
+      "frameworks": {
+        "eu": "Human Agency - Medical decision autonomy",
+        "nist": "MAP function - Individual context",
+        "pedagogicalGoal": "Highlight limitations of population-based predictions for individual care"
+      }
+    },
+    {
+      "id": 15,
+      "category": "Education",
+      "stakes": 2,
+      "title": "AI Proctoring Privacy",
+      "description": "Your university is implementing AI proctoring for online exams. The AI monitors students via webcam, microphone, and screen recording to detect cheating. It promises to 'ensure academic integrity.'",
+      "aiRecommendation": "Implement Full Monitoring - All students, all sessions",
+      "aiReasoning": "Comprehensive monitoring reduces academic dishonesty by 85%. Automated detection is more consistent than human proctors. Data is only reviewed if flagged.",
+      "aiConfidence": 91,
+      "aiIsCorrect": false,
+      "aiError": "The AI has high false positive rates for students with disabilities, different cultural mannerisms, or test anxiety. Recordings capture sensitive home environments. Data retention policies are unclear. Creates surveillance culture that harms learning.",
+      "correctAction": "override",
+      "conceptTaught": "proxyVariables",
+      "investigationClues": [
+        {
+          "id": "c15_1",
+          "text": "15% of false positives disproportionately affected students with ADHD and anxiety disorders.",
+          "cost": 1,
+          "reveals": "bias"
+        },
+        {
+          "id": "c15_2",
+          "text": "The system records and stores video of students' homes, including family members and personal spaces.",
+          "cost": 1,
+          "reveals": "privacy"
+        },
+        {
+          "id": "c15_3",
+          "text": "Alternative assessment methods (project-based, open-book) showed similar learning outcomes without surveillance.",
+          "cost": 1,
+          "reveals": "alternatives"
+        }
+      ],
+      "explanation": "AI surveillance systems often exhibit bias against neurodivergent students and those from different cultural backgrounds. They create chilling effects on learning and raise serious privacy concerns. Alternative assessment methods can achieve integrity without surveillance.",
+      "whyAccept": "Academic integrity is important. Cheating undermines education. The AI is more consistent than humans and only reviews flagged sessions.",
+      "whyOverride": "The false positive rate harms innocent students. Privacy invasion is severe. Alternative assessment methods exist. Surveillance culture damages learning environments.",
+      "consequences": {
+        "acceptCorrect": "ℹ️ Cheating incidents decreased. Most students completed exams without issues.",
+        "acceptWrong": "❌ Three students with disabilities were falsely accused of cheating. Their academic records were flagged pending investigation. One student dropped out due to anxiety. A student's home environment was shared inappropriately when a recording was accessed by unauthorized staff. Trust between faculty and students deteriorated.",
+        "overrideCorrect": "✅ You implemented alternative assessments: take-home exams with integrity pledges, project-based evaluations, and oral defenses. Academic integrity was maintained. Students reported less stress. A student with test anxiety who would have been flagged by AI excelled. Privacy was protected.",
+        "overrideWrong": "⚠️ Some students took advantage of reduced surveillance. A few cheating incidents occurred. You had to implement honor code education and random follow-up interviews."
+      },
+      "frameworks": {
+        "eu": "Privacy & Diversity - Surveillance risks",
+        "coe": "Human Dimension - Dignity in education",
+        "pedagogicalGoal": "Demonstrate bias and privacy risks in AI surveillance systems"
+      }
+    }
+  ],
+  "analysis": {
+    "scenarioDistribution": {
+      "aiCorrect": 6,
+      "aiWrong": 7,
+      "grayArea": 2
+    },
+    "stakesDistribution": {
+      "low": 2,
+      "medium": 6,
+      "high": 7
+    },
+    "conceptCoverage": {
+      "appropriateTrust": [1, 7],
+      "trainingDataBias": [2, 13],
+      "contextualRisk": [3],
+      "aiHallucination": [4],
+      "confidenceVsAccuracy": [5, 9],
+      "contextualBlindness": [6, 11, 14],
+      "automationBias": [7],
+      "proxyVariables": [8, 15],
+      "humanInCommand": [10],
+      "privacy": [11, 15],
+      "sustainability": [12],
+      "intellectualProperty": [13]
+    },
+    "frameworkAlignment": {
+      "unesco": ["trainingDataBias", "confidenceVsAccuracy"],
+      "oecd": ["automationBias", "contextualRisk", "trainingDataBias", "proxyVariables", "humanInCommand"],
+      "nist": ["contextualRisk", "trainingDataBias", "aiHallucination", "confidenceVsAccuracy", "automationBias"],
+      "eu": ["trainingDataBias", "proxyVariables", "contextualBlindness", "humanInCommand"],
+      "coe": ["proxyVariables", "contextualBlindness", "humanInCommand"]
+    }
+  }
+}

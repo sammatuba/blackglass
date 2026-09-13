@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>BLACKGLASS — Maya's Story</title>
+    <meta name="description" content="An interactive fiction about navigating AI-powered deception in the Philippines." />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <header class="topbar" id="topbar">
+        <button class="topbar-btn" id="toc-btn" aria-label="Open scene index">
+            <span class="icon-stack"><span></span><span></span><span></span></span>
+        </button>
+        <div class="topbar-center">
+            <div class="topbar-time" id="topbar-time"></div>
+            <div class="topbar-scene" id="topbar-scene"></div>
+        </div>
+        <button class="topbar-btn" id="restart-btn" aria-label="Restart story" title="Restart">
+            <span class="icon-restart">↺</span>
+        </button>
+    </header>
+
+    <main class="story" id="story" aria-live="polite"></main>
+
+    <footer class="status" id="status" hidden>
+        <div class="status-row" id="status-flags"></div>
+    </footer>
+
+    <aside class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawer-backdrop" id="drawer-backdrop"></div>
+        <nav class="drawer-panel">
+            <div class="drawer-head">
+                <h2>Scenes</h2>
+                <button class="drawer-close" id="drawer-close" aria-label="Close">×</button>
+            </div>
+            <ol class="toc" id="toc"></ol>
+            <div class="drawer-foot">
+                <p class="drawer-note">Jumping resets your path.</p>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="splash" id="splash">
+        <div class="splash-inner">
+            <h1 class="splash-title">BLACK<span>GLASS</span></h1>
+            <p class="splash-sub">Maya's Story</p>
+            <p class="splash-meta">An interactive fiction · ~60–90 minutes</p>
+            <p class="splash-question">When does trust become complicity?</p>
+            <button class="splash-btn" id="splash-begin">Begin</button>
+            <p class="splash-warn">Headphones recommended. Read with attention.</p>
+        </div>
+    </div>
+
+    <script src="story.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
