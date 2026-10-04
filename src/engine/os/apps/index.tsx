@@ -259,7 +259,7 @@ function Conversation({
                   <div className="mb-0.5 text-[10px] font-bold text-[var(--os-dim)]">{thread.members[0]}</div>
                 )}
                 {m.kind === 'voice' ? (
-                  <VoiceBubble secs={m.secs ?? 5} onPlay={() => playVoice(m)} note={m.caption} />
+                  <VoiceBubble secs={m.secs ?? 5} onPlay={() => playVoice(m)} note={m.caption} audio={m.audio} />
                 ) : m.kind === 'photo' ? (
                   <button
                     type="button"
@@ -444,16 +444,35 @@ function Conversation({
   )
 }
 
-function VoiceBubble({ secs, onPlay, note }: { secs: number; onPlay: () => void; note?: string }) {
+function VoiceBubble({
+  secs,
+  onPlay,
+  note,
+  audio,
+}: {
+  secs: number
+  onPlay: () => void
+  note?: string
+  /** real audio URL — when present the bubble plays the actual note; otherwise synthesized pacing */
+  audio?: string
+}) {
   const [playing, setPlaying] = useState(false)
   const [progress, setProgress] = useState(0)
   const raf = useRef(0)
   const elapsed = useRef(0)
   const last = useRef(0)
+  const el = useRef<HTMLAudioElement | null>(null)
   const bars = Array.from({ length: 20 }, (_, i) => 20 + Math.round(60 * Math.abs(Math.sin(i * 1.3))))
   const duration = () => Math.min(secs, 5) * 400 // compressed playback for pacing
 
-  useEffect(() => () => cancelAnimationFrame(raf.current), [])
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(raf.current)
+      el.current?.pause()
+      el.current = null
+    },
+    [],
+  )
 
   const tick = () => {
     const now = performance.now()
@@ -468,10 +487,46 @@ function VoiceBubble({ secs, onPlay, note }: { secs: number; onPlay: () => void;
   const toggle = () => {
     if (playing) {
       cancelAnimationFrame(raf.current)
+      el.current?.pause()
       setPlaying(false)
       return
     }
     onPlay()
+    if (audio) {
+      let a = el.current
+      if (!a) {
+        a = new Audio(audio)
+        a.addEventListener('timeupdate', () => {
+          const node = el.current
+          if (!node) return
+          const d = node.duration || secs
+          setProgress(Math.min(1, node.currentTime / d))
+        })
+        a.addEventListener('ended', () => {
+          setPlaying(false)
+          setProgress(1)
+          el.current = null
+        })
+        el.current = a
+      }
+      if (progress >= 1) {
+        a.currentTime = 0
+        setProgress(0)
+      }
+      void a
+        .play()
+        .then(() => setPlaying(true))
+        .catch(() => {
+          // autoplay/format guard — degrade to the synthesized pacing
+          el.current = null
+          startSynthetic()
+        })
+      return
+    }
+    startSynthetic()
+  }
+
+  const startSynthetic = () => {
     if (progress >= 1) {
       elapsed.current = 0
       setProgress(0)

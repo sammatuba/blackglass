@@ -12,8 +12,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
     // Ship the legacy vanilla apps verbatim — the hub embeds them same-origin.
+    // Artifact media is excluded: it lives once in public/artifacts/ and the
+    // legacy iframe reads it via window.ARTIFACT_BASE (dedupe, 2026-10-04).
     viteStaticCopy({
-      targets: [{ src: 'play/**/*', dest: 'legacy' }],
+      targets: [
+        { src: ['play/**/*', '!play/blackglass-phones/assets/*.{png,webm,mp4}'], dest: 'legacy' },
+      ],
     }),
     VitePWA({
       registerType: 'autoUpdate',
@@ -43,7 +47,7 @@ export default defineConfig({
         // the hero chunk (reduced-motion / low-RAM devices get the CSS
         // gradient) and artifact clips (multi-MB; cached by the browser on
         // first play instead of charged to every first visit).
-        globIgnores: ['**/HeroScene-*.js', '**/*.webm', '**/*.mp4'],
+        globIgnores: ['**/HeroScene-*.js', '**/*.webm', '**/*.mp4', '**/artifacts/*.png'],
       },
     }),
   ],

@@ -1,5 +1,6 @@
 /* Dev helper: drive the Scam Radar feed loop end-to-end and screenshot. */
 import { chromium } from 'playwright-core'
+import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -25,6 +26,7 @@ for (let i = 0; i < 10; i++) {
 }
 await page.waitForTimeout(600)
 await page.screenshot({ path: '/tmp/radar-debrief.png' })
+await axeCheck(page, 'radar debrief')
 
 console.log('console errors:', errors.length ? errors : 'none')
 await browser.close()

@@ -1,5 +1,5 @@
 import type { CaseOS, OSPage, OSTell } from '../../../engine/os/types'
-import { artifactUrl, artifactVideo } from '../artifacts'
+import { artifactUrl, artifactVideo, voicenoteUrl } from '../artifacts'
 import type { AnthologyAnchor } from '../types'
 
 /* =====================================================================
@@ -330,7 +330,7 @@ const TITA: CaseOS = {
       set: { tita_confirmed: true },
       push: [
         { threadId: 'joy', msg: { from: 'you', kind: 'voice', secs: 14, at: '5:48 AM' } },
-        { threadId: 'joy', msg: { from: 'them', kind: 'voice', secs: 22, at: '5:51 AM', caption: 'Sigurado yan Tita, hindi naman magsisinungaling si pinsan ko. Nars siya, alam niya ang sinasabi niya.' } },
+        { threadId: 'joy', msg: { from: 'them', kind: 'voice', secs: 22, at: '5:51 AM', audio: voicenoteUrl('joy-note'), caption: 'Sigurado yan Tita, hindi naman magsisinungaling si pinsan ko. Nars siya, alam niya ang sinasabi niya.' } },
         { threadId: 'joy', msg: { from: 'sys', kind: 'narr', text: 'Twenty-two seconds. Joy’s voice, warm and certain — the cousin, the years, the hospital. You ask, and Joy confirms, and confirmation from Joy is the only kind of proof your morning has ever needed.' } },
       ],
     },

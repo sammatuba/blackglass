@@ -1,9 +1,28 @@
 /* Dev helper: drive the BLACKGLASS anthology on glassOS.
    Covers: anchor select, voiceclone (Tita: the cloned-voice call, the
    GCash send, the real-Renz reveal), a full fiveweeks run to the
-   dynamic timeline, and a deepfake spot-check. */
+   dynamic timeline, and a deepfake spot-check.
+   TRANSCRIPT=1 additionally dumps the visible chat bubbles at each beat to
+   <tmpdir>/bg-transcript.json — the E2 playthrough judge's input
+   (docs/game-design-eval.md, facet 2). */
 import { chromium } from 'playwright-core'
+import { writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { gotoWithRetry } from './lib/nav.mjs'
+
+const TRANSCRIPT = !!process.env.TRANSCRIPT
+const transcript = []
+const capture = async (label) => {
+  if (!TRANSCRIPT) return
+  const msgs = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-msg]')].map((el) => ({
+      from: el.dataset.from,
+      text: (el.innerText ?? '').slice(0, 400),
+    })),
+  )
+  transcript.push({ label, url: page.url(), msgs })
+}
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -75,6 +94,7 @@ await tap(/Open Messages/i)
 await tap(/Kuya Renz/i)
 await settle(6500) // the listen chain: play, the transcript aside, it's him
 await shot('/tmp/bg-3-vc-voice.png')
+await capture('voiceclone · the listen chain')
 
 // the choice — and the clone calls live
 await tap(/Ask him where he is/i)
@@ -83,6 +103,7 @@ await shot('/tmp/bg-4-vc-call.png')
 await tap(/Accept/i, 5000)
 await settle(3200) // transcript lines land
 await shot('/tmp/bg-5-vc-live.png')
+await capture('voiceclone · live call transcript')
 await tap(/End call/i, 5000)
 await settle(1500)
 
@@ -92,6 +113,7 @@ await tap(/Open Messages/i)
 await tap(/Send Money/i, 8000)
 await settle(2500)
 await shot('/tmp/bg-6-vc-gcash.png')
+await capture('voiceclone · the send')
 await tap(/Send it — he needs you right now/i)
 await settle(2200) // success + the GC reveal starts landing
 // at fast test pace the case can drain before the script follows it into the
@@ -128,6 +150,7 @@ await settle(2500)
 await tap(/What five weeks did/i, 8000)
 await settle(1200)
 await shot('/tmp/bg-10-5w-timeline.png')
+await capture('fiveweeks · dynamic timeline')
 
 /* ============ ANCHOR III — GUARANTEED (Tita spot-check) ============ */
 await gotoGame()
@@ -149,6 +172,7 @@ await shot('/tmp/bg-12-df-register.png')
 await tap(/Lock the phone/i, 12000) // the "what you do not see" coda
 await settle(500)
 await shot('/tmp/bg-13-df-coda.png')
+await capture('deepfake · the coda')
 await settle(2500)
 
 /* ============ ANCHOR I — THREE PHONES (spot-check) ============ */
@@ -167,5 +191,10 @@ await settle(2500)
 await shot('/tmp/bg-14-kangkong-awake.png')
 
 console.log('console errors:', errors.length ? errors : 'none')
+if (TRANSCRIPT) {
+  const out = join(tmpdir(), 'bg-transcript.json')
+  writeFileSync(out, JSON.stringify(transcript, null, 2))
+  console.log(`transcript: ${transcript.length} beats → ${out}`)
+}
 await browser.close()
 process.exit(errors.length === 0 ? 0 : 2)

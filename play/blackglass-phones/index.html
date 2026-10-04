@@ -24,6 +24,26 @@
 
   <script src="story.js"></script>
   <script src="assets/artifacts.js"></script>
+  <script>
+    /* Artifacts live once, at the platform copy (public/artifacts/ in dist);
+       the legacy mirror reads them via this shim so dist carries no duplicate.
+       Standalone use (opened from play/ or file://) keeps the local assets/.
+       The app.js img tags read art.file unchanged. */
+    (function () {
+      function retarget(base) {
+        Object.keys(window.ARTIFACTS || {}).forEach(function (id) {
+          var a = window.ARTIFACTS[id];
+          if (a && a.file) a.file = base + a.file.replace(/^assets\//, '').replace(/\.png$/, '.webp');
+        });
+      }
+      var probe = window.ARTIFACTS && Object.values(window.ARTIFACTS)[0];
+      if (!probe || !probe.file) return;
+      var name = probe.file.replace(/\.png$/, '.webp');
+      fetch('../../artifacts/' + name, { method: 'HEAD' })
+        .then(function (r) { if (r.ok) retarget('../../artifacts/'); })
+        .catch(function () { /* standalone: keep assets/ */ });
+    })();
+  </script>
   <script src="app.js"></script>
 </body>
 </html>

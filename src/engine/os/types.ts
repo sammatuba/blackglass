@@ -91,6 +91,8 @@ export interface OSMessage {
   kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside'
   text?: string
   secs?: number
+  /** real audio behind a voice note (resolved via voicenoteUrl) — when absent the bubble plays its synthesized pacing */
+  audio?: string
   photoId?: string
   pageId?: string
   at?: string

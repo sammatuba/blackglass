@@ -1,4 +1,5 @@
 import type { CaseOS } from '../../../engine/os/types'
+import { voicenoteUrl } from '../../blackglass/artifacts'
 
 /* CASE 01 — IT'S ME, AGAIN · glassOS edition
    You are the target this time. The phone buzzes at 9:47 PM. */
@@ -35,7 +36,7 @@ export const VOICE_OS: CaseOS = {
 
   opening: [
     { threadId: 'renz', msg: { text: 'Tita, si Renz po ‘to. Nanakaw phone ko kanina, new number muna ito. 🙏', at: '9:46 PM' } },
-    { threadId: 'renz', msg: { kind: 'voice', secs: 7, caption: 'You play it. It IS his voice — slightly flat in places, the way a bad line sounds. Exactly the way a bad line sounds.', at: '9:46 PM' } },
+    { threadId: 'renz', msg: { kind: 'voice', secs: 7, audio: voicenoteUrl('renz-clone'), caption: 'You play it. It IS his voice — slightly flat in places, the way a bad line sounds. Exactly the way a bad line sounds.', at: '9:46 PM' } },
     { threadId: 'renz', msg: { text: 'Naaksidente po ako sa motor. Hindi makapag-drive yung kasama ko, nasa Rizal Med ako ngayon. Kailangan ng ₱18,500 sa cashier bago matapos yung shift — GCash nalang po Tita please. 🙏🙏', at: '9:47 PM' } },
     { threadId: 'renz', msg: { text: 'Huwag mo munang tawagan si Mama please, tulog na po siya at baka atakihin sa pressure. Basta ako ‘to, kilala n’yo po yung boses ko diba?', at: '9:47 PM' } },
     { threadId: 'gc', msg: { text: 'Si Tita Baby lang pala tulog na ba kayo? 😴', at: '8:58 PM' } },

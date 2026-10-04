@@ -90,6 +90,19 @@ export const GAMES: GameEntry[] = [
     route: '/scam-radar',
   },
   {
+    id: 'tell-exam',
+    title: 'Tell Exam',
+    tagline: 'Find the flaw they planted on purpose',
+    description:
+      'The synthetic images the family was fooled by, one at a time — tap where you think the tell is, then reveal. Every flaw was planted on purpose; scoring is the manifest itself. The objective measure of the eye the story trains.',
+    pillar: 'train',
+    topics: ['tells', 'synthetic media', 'second look'],
+    status: 'shipped',
+    meta: 'Trainer · tell exam',
+    icon: 'eye',
+    route: '/tell-exam',
+  },
+  {
     id: 'blackglass',
     title: 'BLACKGLASS',
     tagline: 'Three phones. One morning.',

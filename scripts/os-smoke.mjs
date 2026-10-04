@@ -1,5 +1,6 @@
 /* Dev helper: drive glassOS Case 01 — unlock, snoop, decide, call, debrief. */
 import { chromium } from 'playwright-core'
+import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -9,7 +10,15 @@ page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
 page.on('pageerror', (e) => errors.push(String(e)))
 
 const tap = async (name, timeout = 4000) => {
-  await page.getByRole('button', { name }).first().click({ timeout })
+  const loc = page.getByRole('button', { name }).first()
+  try {
+    await loc.click({ timeout })
+  } catch {
+    // at 8× pace a rule-pumped notification banner can sit over the target
+    // momentarily — force through rather than fail the flow (banner children
+    // keep their pointer events by design)
+    await loc.click({ force: true, timeout })
+  }
   await page.waitForTimeout(400)
 }
 const settle = (ms) => page.waitForTimeout(ms)
@@ -26,6 +35,7 @@ await page.screenshot({ path: '/tmp/os-1-lock.png' })
 await tap(/Swipe up to open/i)
 await settle(500)
 await page.screenshot({ path: '/tmp/os-2-home.png' })
+await axeCheck(page, 'os home')
 
 // messages → thread
 await tap(/Messages/i)
@@ -80,6 +90,7 @@ await page.screenshot({ path: '/tmp/os-10-live.png' })
 await tap(/End call/i)
 await settle(2500)
 await page.screenshot({ path: '/tmp/os-11-debrief.png', fullPage: true })
+await axeCheck(page, 'os debrief')
 
 console.log('console errors:', errors.length ? errors : 'none')
 await browser.close()

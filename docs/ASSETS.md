@@ -30,4 +30,18 @@ Where visual assets come from, what each source is good for, and the rules for u
 
 1. Every third-party asset ships with its license noted in an `ASSETS.md`-style manifest next to the files.
 2. Kitbitz SVGs may be recolored/scaled freely (CC0) — keep the original catalog `assetId` in metadata for provenance.
-3. Diegetic artifacts stay on the AI-generation pipeline (hosted UI/API or open local models — the distinction in `research/ai-visual-workflows-2026.md` is about register, not vendor); scene/decor art stays on Kitbitz/CC0. Never swap them — the distinction *is* the pedagogy.
+3. Diegetic artifacts stay on the open-generation pipeline (hosted UI/API, agy CLI with Google AI Pro OAuth, or open local models — the distinction in `research/ai-visual-workflows-2026.md` is about register, not vendor); scene/decor art stays on Kitbitz/CC0. Never swap them — the distinction *is* the pedagogy.
+4. Every regenerated diegetic artifact records `model` + `seed` on its manifest entry (the 2026-09-06 chat-UI batch is recorded once, in the manifest's top-level `provenance` note — exact per-image model unrecorded).
+5. Tell survival is audited, not assumed: every regen ends with an E1 pass (`docs/tell-survival-baseline.md` method) before `npm run assets:sync`.
+
+## CREDITS — synthetic-media disclosure
+
+**The synthetic media in BLACKGLASS is synthetic, and that is the lesson.** All
+diegetic artifacts (the clickbait thumbnails, the "Dr. Anita" presenter, the accident
+"proof photo", the Tito Mike deepfake, the voice notes) were generated with AI at
+authoring time. Every depicted person, voice, journal, agency, and URL is fictional;
+every artifact carries deliberately planted flaws (`tells[]`) that the games reveal.
+No real person's likeness or voice is used or imitated; cloned voices in the fiction
+are synthesized from synthetic references only. This disclosure ships with the game —
+mirroring the 2026 AI-disclosure norm — because a media-literacy game that hid its own
+synthetic media would fail its own exam.

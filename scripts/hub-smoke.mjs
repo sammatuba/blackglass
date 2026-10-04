@@ -7,6 +7,7 @@
      Live:  SHOT_BASE=https://sammatuba.github.io node scripts/hub-smoke.mjs */
 import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
+import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -21,6 +22,7 @@ await page.waitForTimeout(2500) // idle callback + hero chunk import + first fra
 const canvasCount = await page.locator('canvas').count()
 const heroTitle = await page.getByRole('heading', { name: /see clearly/i }).count()
 await page.screenshot({ path: '/tmp/hub-hero.png' })
+await axeCheck(page, 'hub')
 
 console.log(JSON.stringify({ canvasCount, heroTitle, errors }, null, 2))
 await browser.close()
