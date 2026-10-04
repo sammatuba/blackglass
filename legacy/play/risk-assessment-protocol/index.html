@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="Risk Assessment Protocol - An interactive educational game teaching NIST AI Risk Management Framework and EU AI Act compliance through simulated AI system assessments.">
+    <title>Risk Assessment Protocol - Map, Measure, Manage, Govern</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/card-base.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app" role="main" aria-label="Risk Assessment Protocol Game">
+        <!-- Header -->
+        <header class="game-header" role="banner">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon" aria-hidden="true">📋</span>
+                    <h1>Risk Assessment <span class="highlight">Protocol</span></h1>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="nist-badge" aria-label="Based on NIST AI Risk Management Framework">
+                    <span>NIST AI RMF</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="score-display" role="status" aria-live="polite" aria-label="Current Score">
+                    <span class="score-label">Compliance Score</span>
+                    <span id="score" class="score-value" aria-live="polite">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Phase Indicator -->
+        <nav class="phase-indicator" role="navigation" aria-label="Assessment Phases">
+            <div class="phase active" data-phase="map" aria-current="step">
+                <span class="phase-icon" aria-hidden="true">🗺️</span>
+                <span class="phase-name">MAP</span>
+            </div>
+            <div class="phase-arrow" aria-hidden="true">→</div>
+            <div class="phase" data-phase="measure">
+                <span class="phase-icon" aria-hidden="true">📏</span>
+                <span class="phase-name">MEASURE</span>
+            </div>
+            <div class="phase-arrow" aria-hidden="true">→</div>
+            <div class="phase" data-phase="manage">
+                <span class="phase-icon" aria-hidden="true">🛡️</span>
+                <span class="phase-name">MANAGE</span>
+            </div>
+            <div class="phase-arrow" aria-hidden="true">→</div>
+            <div class="phase" data-phase="govern">
+                <span class="phase-icon" aria-hidden="true">⚖️</span>
+                <span class="phase-name">GOVERN</span>
+            </div>
+        </nav>
+
+        <!-- Main Game Area -->
+        <main id="game-board" role="region" aria-label="Game Board">
+            <!-- Content dynamically rendered -->
+        </main>
+
+        <!-- Controls -->
+        <nav id="controls" class="game-controls" role="toolbar" aria-label="Game Controls">
+            <button id="help-btn" class="btn btn-help" aria-label="Open Help (Press ?)" title="Press ? for help">
+                <span aria-hidden="true">?</span>
+            </button>
+            <div class="system-counter" role="status" aria-live="polite">
+                System <span id="current-system">1</span>/<span id="total-systems">6</span>
+            </div>
+            <button id="next-btn" class="btn btn-primary" disabled aria-label="Continue to next phase">
+                <span>Continue</span>
+                <span class="btn-icon" aria-hidden="true">→</span>
+            </button>
+        </nav>
+
+        <!-- Help Modal -->
+        <div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="help-title" aria-describedby="help-description">
+            <div class="modal-content">
+                <button class="modal-close" aria-label="Close help">&times;</button>
+                <h2 id="help-title">NIST AI Risk Management Framework</h2>
+                <p id="help-description" class="sr-only">Learn about the four phases of AI risk management: MAP, MEASURE, MANAGE, and GOVERN.</p>
+                <div class="help-sections">
+                    <div class="help-section">
+                        <h3><span aria-hidden="true">🗺️</span> MAP - Context & Risks</h3>
+                        <p>Establish context to frame risks related to an AI system. Identify impacts, categories, and stakeholders.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3><span aria-hidden="true">📏</span> MEASURE - Analyze & Track</h3>
+                        <p>Employ tools to analyze, assess, benchmark, and monitor AI risk and related impacts.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3><span aria-hidden="true">🛡️</span> MANAGE - Respond to Risks</h3>
+                        <p>Allocate risk resources to mapped and measured risks on a regular basis and as defined by an organization's risk tolerance.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3><span aria-hidden="true">⚖️</span> GOVERN - Policies & Culture</h3>
+                        <p>Cultivate and implement a culture of risk management within organizations designing, developing, and deploying AI.</p>
+                    </div>
+                    <div class="help-section">
+                        <h3><span aria-hidden="true">🇪🇺</span> EU AI Act Risk Tiers</h3>
+                        <ul>
+                            <li><strong>Unacceptable:</strong> Prohibited (social scoring, manipulation, biometric surveillance)</li>
+                            <li><strong>High:</strong> Strict compliance (hiring, credit, justice, healthcare, education)</li>
+                            <li><strong>Limited:</strong> Transparency required (chatbots, AI-generated content)</li>
+                            <li><strong>Minimal:</strong> Voluntary codes (spam filters, video games)</li>
+                        </ul>
+                    </div>
+                    <div class="help-section">
+                        <h3>Keyboard Shortcuts</h3>
+                        <ul>
+                            <li><kbd>?</kbd> or <kbd>/</kbd> - Toggle help</li>
+                            <li><kbd>Enter</kbd> - Continue/Submit</li>
+                            <li><kbd>Escape</kbd> - Close modal</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen reader only styles -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+        kbd {
+            background: var(--color-surface-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+
+    <script src="../shared/game-utils.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
