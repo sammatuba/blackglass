@@ -38,9 +38,9 @@
       }
       var probe = window.ARTIFACTS && Object.values(window.ARTIFACTS)[0];
       if (!probe || !probe.file) return;
-      var name = probe.file.replace(/\.png$/, '.webp');
-      fetch('../../artifacts/' + name, { method: 'HEAD' })
-        .then(function (r) { if (r.ok) retarget('../../artifacts/'); })
+      var name = probe.file.replace(/^assets\//, '').replace(/\.png$/, '.webp');
+      fetch('../../../artifacts/' + name, { method: 'HEAD' })
+        .then(function (r) { if (r.ok) retarget('../../../artifacts/'); })
         .catch(function () { /* standalone: keep assets/ */ });
     })();
   </script>

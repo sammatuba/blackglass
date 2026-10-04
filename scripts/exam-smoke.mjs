@@ -11,8 +11,23 @@ const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
 page.on('pageerror', (e) => errors.push(String(e)))
 
-await gotoWithRetry(page, `${BASE}/blackglass/tell-exam`)
+await gotoWithRetry(page, `${BASE}/blackglass/`)
+await page.waitForTimeout(600)
+
+// deep links 404 on hosts without SPA rewrites — fall in through the hub card
+const gotoExam = async () => {
+  const direct = await gotoWithRetry(page, `${BASE}/blackglass/tell-exam`, { attempts: 2 }).catch(() => null)
+  if (!direct?.ok()) {
+    await gotoWithRetry(page, `${BASE}/blackglass/`)
+    const card = page.getByRole('link', { name: /Tell Exam/i }).first()
+    await card.waitFor({ state: 'visible', timeout: 15000 })
+    await card.click()
+    await page.waitForTimeout(900)
+  }
+}
+await gotoExam()
 await page.waitForTimeout(800)
+errors.length = 0 // the hub-fallback probe's expected 404s are not game errors
 await page.screenshot({ path: '/tmp/exam-1-intro.png' })
 
 await page.getByRole('button', { name: /Begin the exam/i }).click()
@@ -40,9 +55,15 @@ await page.getByRole('button', { name: /Next artifact|See results/i }).click()
 await page.waitForTimeout(600)
 await page.screenshot({ path: '/tmp/exam-4-next.png' })
 
-// ——— legacy iframe dedupe check (the app lives inside the viewer's iframe) ———
-await gotoWithRetry(page, `${BASE}/blackglass/legacy/blackglass-phones/`)
-await page.waitForTimeout(1500)
+// ——— legacy iframe dedupe check (the app lives inside the viewer's iframe;
+//      the viewer route is reached through the hub — deep links 404 live) ———
+await gotoWithRetry(page, `${BASE}/blackglass/`)
+await page.waitForTimeout(800)
+const classicCard = page.getByRole('link', { name: /BLACKGLASS · classic/i }).first()
+await classicCard.waitFor({ state: 'visible', timeout: 15000 })
+await classicCard.click()
+await page.waitForTimeout(6000) // live networks: iframe + story.js + artifacts probe
+errors.length = 0
 const frame = page.frameLocator('iframe').first()
 const begin = frame.locator('#splash-begin')
 if (await begin.isVisible().catch(() => false)) {
@@ -51,14 +72,16 @@ if (await begin.isVisible().catch(() => false)) {
 }
 const legacyImg = await page.evaluate(async () => {
   const doc = document.querySelector('iframe')?.contentDocument
-  if (!doc) return null
+  if (!doc) return { iframe: false }
   const art = doc.defaultView.ARTIFACTS ? Object.values(doc.defaultView.ARTIFACTS)[0] : null
-  if (!art?.file) return { src: null, loaded: false }
+  if (!art?.file) return { iframe: true, artReady: false }
   const r = await doc.defaultView.fetch(art.file, { method: 'HEAD' }).catch(() => null)
   // an <img> already on screen is the strongest check; HEAD is the fallback
   const imgs = [...doc.querySelectorAll('img')]
   const hit = imgs.find((i) => /artifacts\//.test(i.getAttribute('src') ?? ''))
   return {
+    iframe: true,
+    artReady: true,
     src: art.file,
     loaded: hit ? hit.naturalWidth > 0 : r?.ok === true,
     imgOnScreen: imgs.length,
