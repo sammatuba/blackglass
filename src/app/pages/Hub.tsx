@@ -4,6 +4,9 @@ import { GAMES, PILLAR_META, type GameEntry, type Pillar } from '../registry'
 import { GameCard } from '../../ui/GameCard'
 import { FadeIn } from '../../ui/FadeIn'
 import GlassHero from '../../three/GlassHero'
+import { EXPLORABLES, type ExplorableEntry } from '../../games/glassbox/catalog'
+import { PRESETS, computeScam } from '../../games/glassbox/model'
+import { formatCount, formatNumber, formatPeso } from '../../games/glassbox/format'
 
 const PILLAR_ORDER: Pillar[] = ['play', 'train', 'learn']
 
@@ -47,7 +50,7 @@ export default function Hub() {
           <div className="relative">
             <FadeIn>
               <p className="text-xs font-semibold tracking-[0.3em] text-ink-400 uppercase">
-                A game suite for the age of synthetic media
+                An explorable suite for the age of synthetic media
               </p>
             </FadeIn>
             <FadeIn delay={0.08}>
@@ -60,7 +63,7 @@ export default function Hub() {
             </FadeIn>
             <FadeIn delay={0.16}>
               <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-400 sm:text-lg">
-                Play the story. Train the instincts. Learn the concepts.
+                Live the story. Take the mechanism apart. Practice the reflex.
                 Free, in your browser, no account — progress stays on your device.
               </p>
             </FadeIn>
@@ -77,6 +80,12 @@ export default function Hub() {
                   className="rounded-full border border-ink-600 px-6 py-3 text-sm font-semibold text-ink-100 transition-colors duration-200 hover:border-play hover:text-play"
                 >
                   Play the anthology
+                </Link>
+                <Link
+                  to="/glassbox/one-in-a-thousand"
+                  className="rounded-full border border-learn/60 px-6 py-3 text-sm font-semibold text-learn transition-colors duration-200 hover:bg-learn/10"
+                >
+                  Try Glassbox →
                 </Link>
               </div>
             </FadeIn>
@@ -103,7 +112,14 @@ export default function Hub() {
                 </div>
               </FadeIn>
               {pillar === 'learn' ? (
-                <ReferenceShelf games={games} />
+                <div className="space-y-4">
+                  {EXPLORABLES.map((piece, i) => (
+                    <FadeIn key={piece.id} delay={i * 0.06}>
+                      <GlassboxCard piece={piece} />
+                    </FadeIn>
+                  ))}
+                  <ReferenceShelf games={games} />
+                </div>
               ) : (
                 <div className={`grid gap-4 sm:grid-cols-2 ${games.length > 2 ? 'lg:grid-cols-3' : ''}`}>
                   {games.map((game, i) => (
@@ -133,14 +149,89 @@ export default function Hub() {
   )
 }
 
-/* The LEARN titles stay playable as legacy, but the hub stops presenting
-   their separate card-game visual language as flagship work — one shelf,
-   one note. Ports onto the platform design system are aspirational. */
+/* The explorable is the pillar; the legacy card games remain playable as
+   reference, collapsed so their separate visual language doesn't compete
+   with the flagship work. */
+function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
+  const day = computeScam(PRESETS.ai)
+
+  return (
+    <Link
+      to={piece.route}
+      data-od-id="glassbox-feature"
+      aria-labelledby={`glassbox-${piece.id}-title`}
+      className="group grid gap-5 rounded-card border border-ink-700 bg-ink-800/40 p-5 transition-colors hover:border-learn/60 sm:grid-cols-[1.15fr_0.85fr] sm:items-center sm:p-6"
+    >
+      <div>
+        <p className="text-2xs font-semibold tracking-[0.22em] text-learn uppercase">
+          Glassbox {piece.number} · {piece.minutes} minutes · no score
+        </p>
+        <h3
+          id={`glassbox-${piece.id}-title`}
+          className="font-display mt-2 text-2xl font-semibold text-ink-100 sm:text-3xl"
+        >
+          {piece.title}
+        </h3>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-300">{piece.tagline}</p>
+        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-400">{piece.description}</p>
+        <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-learn">
+          Take it apart
+          <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+            →
+          </span>
+        </span>
+      </div>
+
+      <div aria-hidden="true" className="paper-slip relative">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+            Expected day
+          </p>
+          <span className="paper-stamp">Illustrative</span>
+        </div>
+        <p className="font-display mt-3 text-3xl font-semibold tabular-nums text-[var(--paper-ink)]">
+          {formatPeso(day.profit)}
+        </p>
+        <p className="text-xs text-[var(--paper-dim)]">profit per day at the default line</p>
+        <div className="mt-3 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]">
+          {Array.from({ length: 40 }, (_, i) => (
+            <span
+              key={i}
+              className={`aspect-square ${
+                i === 7
+                  ? 'rounded-[1px] bg-[var(--paper-green)]'
+                  : i === 13 || i === 26 || i === 34
+                    ? 'rounded-full bg-[var(--paper-amber)]'
+                    : 'rounded-full bg-[var(--paper-faint)] opacity-40'
+              }`}
+            />
+          ))}
+        </div>
+        <div className="mt-3 space-y-0.5 border-t border-[var(--paper-line)] pt-2 text-xs text-[var(--paper-dim)]">
+          <p>
+            <span className="text-[var(--paper-ink)]">{formatNumber(PRESETS.ai.reach)}</span> reached ·{' '}
+            <span className="text-[var(--paper-ink)]">{formatCount(day.payments)}</span> paid
+          </p>
+          <p>1 in {formatNumber(day.messagesPerPayment)} messages finds a payer.</p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 function ReferenceShelf({ games }: { games: GameEntry[] }) {
   return (
     <FadeIn>
-      <div className="rounded-2xl border border-ink-700 bg-ink-800/40 p-5 sm:p-6">
-        <ul className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
+      <details
+        data-od-id="learn-reference-shelf"
+        className="group rounded-card border border-ink-700 bg-ink-800/30 px-5 py-4 sm:px-6"
+      >
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink-200 [&::-webkit-details-marker]:hidden">
+          <span>The reference shelf — {games.length} legacy concept games</span>
+          <span className="shrink-0 text-xs font-normal text-ink-400 group-open:hidden">Open ›</span>
+          <span className="hidden shrink-0 text-xs font-normal text-ink-400 group-open:inline">Close ›</span>
+        </summary>
+        <ul className="mt-4 grid grid-cols-1 gap-x-8 gap-y-1 border-t border-ink-700 pt-3 sm:grid-cols-2">
           {games.map((g) => (
             <li key={g.id}>
               <Link
@@ -161,13 +252,12 @@ function ReferenceShelf({ games }: { games: GameEntry[] }) {
             </li>
           ))}
         </ul>
-        <p className="mt-4 border-t border-ink-700 pt-4 text-xs leading-relaxed text-ink-400">
-          The reference games ship as they were built — vanilla, playable, honest about their age.
-          Porting them onto the platform design system is aspirational; for now the design energy
-          goes where the learning is lived, not lectured: <span className="text-ink-300">Play</span> and{' '}
-          <span className="text-ink-300">Train</span>.
+        <p className="mt-3 border-t border-ink-700 pt-3 text-xs leading-relaxed text-ink-400">
+          These card games ship as they were built — vanilla, playable, honest about their age. They
+          remain as reference, not as the pillar&apos;s flagship; the concepts now live inside the
+          explorables above.
         </p>
-      </div>
+      </details>
     </FadeIn>
   )
 }

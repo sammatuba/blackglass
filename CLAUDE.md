@@ -34,6 +34,7 @@ Pipeline flows down: research → world → craft → play. Each layer expands w
 
 **docs/**
 - `VISION.md` — the three-pillar platform vision (PLAY / TRAIN / LEARN)
+- `GLASSBOX.md` — the explorable format (LEARN pillar) and the One in a Thousand design record
 - `GAMES.md` — the canonical game inventory + idea backlog
 - `ASSETS.md` — asset sources (Kitbitz CC0 catalog, Gemini diegetic pipeline) and rules
 
@@ -203,3 +204,14 @@ Template at `craft/maya/_handoff-template.md`. Notes are a contract, not a desig
 
 - Legacy apps: open any `play/*\/index.html` in a browser (still `file://` compatible).
 - Platform: `npm install`, `npm run dev` (dev server), `npm run build` (outputs `dist/`, deploys to GitHub Pages via `bash scripts/deploy.sh`). Actions is manual-only (`.github/workflows/ci.yml`).
+
+<!-- MEOS-REPO:START -->
+## MEOS installed
+
+This is a MEOS repository; `.meos/repo.json` is its indicator. The project
+SessionStart hook in `.claude/settings.json` runs `bash ./meos start --runtime claude`
+and prints the `[MEOS]` brief; if it did not run, run that command yourself from the
+Git root. Then read [MEOS lifecycle](.meos/lifecycle.md) and follow the project's own
+routes and skills (`.claude/skills/meos-*`). Independent review: `./meos review`
+(GPT reviewer through Codex, read-only; never the author).
+<!-- MEOS-REPO:END -->

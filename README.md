@@ -10,7 +10,7 @@ Knowledge alone doesn't survive contact with a confident voice on the phone. Exp
 
 **TRAIN — Skills.** *Scam Radar*, the scam-readiness trainer: judge a live feed of messages (Scam / Legit / Verify first), then investigate narrative case files — inspect artifacts, gather clues, choose responses, live the consequences. Builds the reflexes: pause, verify through official channels, hang up, report, protect your family.
 
-**LEARN — Concepts.** Gamified teaching tools for AI-literacy frameworks:
+**LEARN — Mechanisms.** *Glassbox*, the explorable series: short, tinkerable models behind the stories. **01 · One in a Thousand** puts the scam economy on the table — change reach, cost, and conversion, then find the one lever that changes the business. The four legacy literacy games remain playable on the reference shelf:
 
 - **Human-in-the-Loop** (v1.3) — when should humans override AI decisions?
 - **Bias Bounty** (v1.1) — find hidden unfairness in AI systems
@@ -48,6 +48,7 @@ The built site is a PWA (offline after first visit) and deploys to GitHub Pages 
 ## Docs
 
 - [`docs/VISION.md`](docs/VISION.md) — the three-pillar vision and principles
+- [`docs/GLASSBOX.md`](docs/GLASSBOX.md) — the explorable format and the One in a Thousand design record
 - [`docs/GAMES.md`](docs/GAMES.md) — the full game inventory and idea backlog
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — phases; Phase 4 = glassOS, the found-phone premium pass
 - [`docs/ASSETS.md`](docs/ASSETS.md) — asset sources and rules (Kitbitz CC0 catalog, Gemini diegetic pipeline)

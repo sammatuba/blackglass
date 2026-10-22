@@ -1,0 +1,55 @@
+{
+  "work_id": "glassbox-one-in-a-thousand-scrollytelling",
+  "phase": "wrapup",
+  "status": "complete",
+  "intent": "Turn Glassbox 01 (One in a Thousand) into a scrollable, tinkerable narrative: read + decision beats, pinned paper stages, the existing model, and no fail state. Keep it performant and elegant using current web-platform primitives rather than a scroll library.",
+  "scope": [
+    "src/games/glassbox/scrolly.tsx — pinned-stage scrollytelling primitives",
+    "src/games/glassbox/OneInAThousand.tsx — four-scene narrative",
+    "src/games/glassbox/stages.tsx — ledger, sample, machine, defense sheets",
+    "src/index.css — paper/scrolly styles and responsive height compaction",
+    "scripts/glassbox-smoke.mjs — scroll, geometry, reduced-motion, and responsive checks"
+  ],
+  "constraints": [
+    "README + AGENTS guardrails: depict deception, never enable it; aggregate economics only; fictional figures; no real channels, scripts, targets, or tools.",
+    "No new dependency for scroll behavior; no new external assets.",
+    "Scroll is emphasis, never disclosure: every step remains in the DOM and in reading order.",
+    "Keyboard, screen-reader, and reduced-motion safe; no color-only meaning.",
+    "Model arithmetic and copy unchanged from the reviewed static cut.",
+    "Do not commit, push, or deploy without authorization."
+  ],
+  "acceptance_checks": [
+    "Four scenes (#ledger, #sample, #machine, #defense) each pin a paper stage and activate every step by natural scroll, jump, and scrollbar drag.",
+    "Pinned stage fits at 390px, 320x568, and 1440x900; no horizontal overflow; compact/hide rules below 800px and 720px height; sticky released below 520px height.",
+    "Model outputs unchanged: default profit ₱450,000; human preset ₱500; break-even 98.3%; 100% verification −₱7,875 by slider and by Test animation.",
+    "Dot sample renders 1,000 spans, resolves marked dots at the payment beat, and is decorative; counts remain text.",
+    "Top rail and reveals use native CSS scroll/view timelines behind @supports; no scroll library; no per-frame JS beyond one rAF.",
+    "Reduced motion: no rail/reveals/dimming, all content visible, lever result immediate.",
+    "npm test, npm run build, glassbox smoke, hub smoke, axe — all green with zero console/page errors."
+  ],
+  "blockers": [],
+  "next_action": "User review of the scrollytelling cut on phone and desktop. No commit, push, or deploy has been made. If approved, choose the next Glassbox piece (artifact economics, the Five Weeks reward loop, or the liar's dividend).",
+  "review": {
+    "mode": "self-review by the author; independent ./meos review unavailable (codex CLI not installed)",
+    "verdict": "accept after fixes",
+    "findings": [
+      "medium | src/games/glassbox/scrolly.tsx | IntersectionObserver's thin band missed jump/Page Down/scrollbar landings, leaving the pinned stage on step 0 | replaced with one passive scroll listener coalesced into a single rAF that finds the step under a responsive focus line (48% desktop, 64% mobile); smoke now verifies every step activates in all four scenes at 390, 320, and 1440",
+      "medium | src/index.css defense sheet | stage content clipped on mobile (412px of 371px at 390; 254px of 250px at 320) | height-based compaction (hide stage head, lever hint, then copy and Test) plus non-sticky below 520px; measured 333/371 and 199/250, smoke asserts stageClipping []",
+      "low | scripts/glassbox-smoke.mjs | Test lever assertion read mid-animation and reported −₱3,296 | wait 1.5s for the 1.2s spring; now asserts −₱7,875",
+      "low | src/index.css paper emphasis | opacity dimming weakened contrast and step indices sat on a faint tone | emphasis is now background/inset-marker based, --paper-faint darkened, step index uses ink-400; axe clean",
+      "note | native scroll timelines | scroll()/view() are progressive enhancement; browsers without them show all content and hide the rail, by design | reduced-motion and support-gated paths exercised in the smoke"
+    ]
+  },
+  "verification": [
+    "npm test — 33/33, including 6 Glassbox model tests",
+    "npm run build — tsc clean; PWA 43 precache entries, 1674.02 KiB; no new dependencies",
+    "node scripts/glassbox-smoke.mjs — exit 0: default/human/AI profits; inactiveSteps []; stageClipping []; dots 0/0 at field and 1/1 at payment; break-even 98.3%; slider and Test both −₱7,875; axe 0; zero console/page errors",
+    "responsive — 320x568 compact stage fits and all steps activate; 1440x900 sticky stage at y=72 and all steps activate; horizontal overflow 0 at both",
+    "reduced motion — reveal opacity 1, transform none, rail absent, lever −₱7,875",
+    "hub — feature and reference shelf load, 4 links, Close label, axe clean",
+    "visual review — hero, ledger, sample, machine, defense at 100%, interlude, close, 320px compact defense, desktop layout"
+  ],
+  "artifacts": [
+    "Screenshots reviewed in /tmp: glassbox-1-hero.png, glassbox-2-ledger.png, glassbox-3-sample.png, glassbox-4-machine.png, glassbox-5-defense.png, glassbox-6-close.png, glassbox-7-small.png, glassbox-8-desktop.png"
+  ]
+}

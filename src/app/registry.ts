@@ -59,9 +59,9 @@ export const PILLAR_META: Record<
     iconBg: 'bg-train/15 text-train',
   },
   learn: {
-    name: 'Learn',
+    name: 'Glassbox',
     blurb:
-      'A reference shelf: the conceptual frameworks as companion games — trust calibration, algorithmic bias, verification, and AI-risk governance from NIST, UNESCO, and the EU AI Act.',
+      'Take the mechanism apart. Explorables that put the model in your hands — change the numbers, watch the incentive move, then return to the story knowing why it worked.',
     text: 'text-learn',
     border: 'hover:border-learn/60',
     chipBg: 'bg-learn/12 text-learn',
@@ -75,6 +75,8 @@ export const STATUS_LABEL: Record<GameStatus, string> = {
   shipped: 'NEW',
 }
 
+/** Playable game cards and the legacy shelf. Glassbox explorables are
+    catalogued separately in src/games/glassbox/catalog.ts. */
 export const GAMES: GameEntry[] = [
   {
     id: 'scam-radar',

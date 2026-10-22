@@ -6,6 +6,7 @@ import LegacyViewer from './app/pages/LegacyViewer'
 const ScamRadar = lazy(() => import('./games/scam-radar'))
 const Blackglass = lazy(() => import('./games/blackglass'))
 const TellExam = lazy(() => import('./games/tell-exam'))
+const Glassbox = lazy(() => import('./games/glassbox/OneInAThousand'))
 
 export default function App() {
   return (
@@ -17,6 +18,8 @@ export default function App() {
         <Route path="/scam-radar/*" element={<ScamRadar />} />
         <Route path="/blackglass" element={<Blackglass />} />
         <Route path="/tell-exam" element={<TellExam />} />
+        <Route path="/glassbox" element={<Glassbox />} />
+        <Route path="/glassbox/one-in-a-thousand" element={<Glassbox />} />
         <Route path="/legacy/*" element={<LegacyViewer />} />
         <Route path="*" element={<Hub />} />
       </Routes>

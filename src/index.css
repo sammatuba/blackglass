@@ -516,3 +516,1106 @@ body {
     transform: scaleY(1.1);
   }
 }
+
+/* ---- Glassbox paper register ----
+   The fiction is dark glass; Glassbox is the paper workbench. A warm
+   ledger sheet laid on the desk scene. Vars are scoped to the sheet so
+   the register never leaks into the suite's dark surfaces. */
+.paper-ledger,
+.paper-slip {
+  --paper-bg: #f2ead9;
+  --paper-ink: #241d14;
+  --paper-dim: #6b5d4a;
+  --paper-faint: #6f604c;
+  --paper-line: rgba(36, 29, 20, 0.16);
+  --paper-amber: #b45309;
+  --paper-green: #047857;
+  --paper-red: #b91c1c;
+  --paper-accent: #0f766e;
+  position: relative;
+  color: var(--paper-ink);
+  border-radius: 0.4rem;
+  background-color: var(--paper-bg);
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0 27px, rgba(36, 29, 20, 0.045) 27px 28px),
+    radial-gradient(120% 80% at 12% 0%, #f8f2e4 0%, transparent 55%),
+    linear-gradient(165deg, #f5eedf 0%, #eee3cf 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.55) inset,
+    0 -1px 0 rgba(36, 29, 20, 0.08) inset,
+    0 18px 40px -22px rgba(0, 0, 0, 0.75),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.paper-ledger {
+  --paper-rule-x: 1.35rem;
+  padding: 1.5rem 1.2rem 1.6rem 1.95rem;
+}
+.paper-ledger::before {
+  content: '';
+  position: absolute;
+  top: 0.9rem;
+  bottom: 0.9rem;
+  left: var(--paper-rule-x);
+  width: 1px;
+  background: rgba(185, 28, 28, 0.3);
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .paper-ledger {
+    --paper-rule-x: 2.1rem;
+    padding: 2rem 2.1rem 2.15rem 2.85rem;
+  }
+}
+.paper-slip {
+  padding: 1rem;
+}
+
+.paper-ledger :focus-visible,
+.paper-slip :focus-visible {
+  outline-color: var(--paper-accent);
+  outline-offset: 3px;
+}
+.paper-ledger input[type='range'],
+.paper-slip input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  accent-color: var(--paper-accent);
+}
+.paper-ledger input[type='range']::-webkit-slider-runnable-track,
+.paper-slip input[type='range']::-webkit-slider-runnable-track {
+  height: 6px;
+  border: 1px solid rgba(36, 29, 20, 0.18);
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--paper-accent) 0 var(--range-fill, 0%),
+    rgba(36, 29, 20, 0.13) var(--range-fill, 0%) 100%
+  );
+}
+.paper-ledger input[type='range']::-webkit-slider-thumb,
+.paper-slip input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border: 3px solid var(--paper-bg);
+  border-radius: 999px;
+  background: var(--paper-accent);
+  box-shadow: 0 1px 4px rgba(36, 29, 20, 0.4);
+}
+.paper-ledger input[type='range']::-moz-range-track,
+.paper-slip input[type='range']::-moz-range-track {
+  height: 6px;
+  border: 1px solid rgba(36, 29, 20, 0.18);
+  border-radius: 999px;
+  background: rgba(36, 29, 20, 0.13);
+}
+.paper-ledger input[type='range']::-moz-range-progress,
+.paper-slip input[type='range']::-moz-range-progress {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--paper-accent);
+}
+.paper-ledger input[type='range']::-moz-range-thumb,
+.paper-slip input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--paper-bg);
+  border-radius: 999px;
+  background: var(--paper-accent);
+}
+.paper-ledger ::selection,
+.paper-slip ::selection {
+  background: rgba(15, 118, 110, 0.22);
+}
+
+/* rubber stamp — rotated, inked, multiplied into the paper */
+.paper-stamp {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border: 1.5px solid rgba(180, 83, 9, 0.65);
+  border-radius: 0.15rem;
+  color: #9a3412;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+  opacity: 0.85;
+  mix-blend-mode: multiply;
+}
+.paper-stamp-ok {
+  color: #065f46;
+  border-color: rgba(4, 120, 87, 0.6);
+}
+
+/* =====================================================================
+   GLASSBOX 01 — the scrollytelling dossier
+
+   Native scroll-driven effects where the browser has them
+   (animation-timeline: Chrome/Edge/Opera/Safari 26; not Firefox).
+   Everything degrades to a static, fully readable page. Active-step
+   detection is IntersectionObserver-only — no scroll listeners, no
+   scroll-jacking. Only opacity and transform animate.
+   ===================================================================== */
+
+/* reading progress: a native scroll timeline, hidden without support */
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--color-learn), var(--color-train) 58%, var(--color-play));
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.4);
+}
+@keyframes scroll-rail {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@supports (animation-timeline: scroll()) {
+  .scroll-progress {
+    animation: scroll-rail linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@supports not (animation-timeline: scroll()) {
+  .scroll-progress {
+    display: none;
+  }
+}
+
+/* paper slips rise as they enter the viewport; static without support */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  .scroll-reveal {
+    animation: reveal-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 10% entry 65%;
+  }
+}
+
+/* ---- hero ---- */
+.hero-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.25rem clamp(1.25rem, 5vw, 3rem) 2.25rem;
+}
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 44px;
+}
+.hero-grid {
+  display: grid;
+  flex: 1;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2.5rem 0 1rem;
+}
+@media (min-width: 900px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(2.5rem, 6vw, 5rem);
+    padding: 3rem 0 1.5rem;
+  }
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.9rem, 8.5vw, 6rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  color: var(--color-ink-100);
+  text-wrap: balance;
+}
+.hero-deck {
+  margin-top: 1rem;
+  max-width: 36rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+  line-height: 1.4;
+  color: var(--color-ink-200);
+  text-wrap: balance;
+}
+.hero-copy {
+  margin-top: 0.9rem;
+  max-width: 35rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-ink-400);
+}
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.4rem;
+  padding: 0;
+  list-style: none;
+}
+.hero-chips li {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--color-ink-700);
+  border-radius: 999px;
+  background: rgba(14, 21, 38, 0.55);
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-300);
+}
+.hero-scroll {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+.hero-scroll button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  background: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-ink-300);
+  cursor: pointer;
+}
+.hero-scroll button:hover {
+  color: var(--color-learn);
+}
+.hero-scroll button span {
+  display: inline-block;
+  animation: cue-drop 1.8s var(--ease-glass) infinite;
+}
+@keyframes cue-drop {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
+/* the call slip: the one piece of fiction the ledger explains */
+.hero-slip {
+  width: 100%;
+  max-width: 23rem;
+  justify-self: end;
+  transform: rotate(-1.2deg);
+}
+.hero-slip::after {
+  content: '';
+  position: absolute;
+  top: -0.4rem;
+  left: 50%;
+  width: 6rem;
+  height: 1.25rem;
+  transform: translateX(-50%) rotate(1.5deg);
+  border-left: 1px dashed rgba(120, 80, 20, 0.18);
+  border-right: 1px dashed rgba(120, 80, 20, 0.18);
+  background: linear-gradient(180deg, rgba(214, 178, 116, 0.5), rgba(190, 150, 90, 0.32));
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+@media (max-width: 899px) {
+  .hero-slip {
+    justify-self: start;
+    transform: none;
+  }
+}
+.call-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px dashed var(--paper-line);
+}
+.call-head p {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.voice-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+}
+.waveform {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 2px;
+  height: 38px;
+}
+.wave-bar {
+  flex: 0 0 3px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--paper-amber), rgba(180, 83, 9, 0.4));
+}
+.voice-time {
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  color: var(--paper-faint);
+}
+.call-quote {
+  margin-top: 0.9rem;
+  font-family: var(--font-display);
+  font-size: 1.55rem;
+  line-height: 1.25;
+  color: var(--paper-ink);
+}
+.call-meta {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+.call-meta dt {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+}
+.call-meta dd {
+  margin: 0.1rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--paper-dim);
+}
+.call-note {
+  margin-top: 1rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--paper-line);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #9a3412;
+}
+
+/* ---- scene headers ---- */
+.scene-head {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 9vw, 6.5rem) clamp(1.25rem, 5vw, 3rem) 1.5rem;
+}
+.scene-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--color-learn);
+}
+.scene-kicker span {
+  color: var(--color-ink-400);
+}
+.scene-title {
+  max-width: 44rem;
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-100);
+  text-wrap: balance;
+}
+.scene-intro {
+  max-width: 42rem;
+  margin-top: 0.85rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-ink-400);
+}
+
+/* ---- sticky scrolly layout ---- */
+.scrolly {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.scrolly-stage {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44vh;
+  height: 44dvh;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, #070b14 0%, #080b13 88%, #080b13 100%);
+  box-shadow: 0 24px 36px -28px rgba(0, 0, 0, 0.95);
+}
+.scrolly-stage > * {
+  width: 100%;
+  max-width: 26rem;
+}
+/* soften the edge where the next step slides under the pinned sheet */
+.scrolly-stage::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: 0;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(8, 11, 19, 0.96), rgba(8, 11, 19, 0));
+  pointer-events: none;
+}
+.scrolly-steps {
+  position: relative;
+  z-index: 10;
+  padding: 0 1.25rem 22vh;
+}
+.scrolly-step {
+  display: flex;
+  align-items: flex-start;
+  min-height: 58vh;
+  min-height: 58svh;
+  padding: 2rem 0 1rem;
+  transition:
+    opacity 0.4s var(--ease-glass),
+    transform 0.4s var(--ease-glass);
+}
+.scrolly-step-inner {
+  width: 100%;
+  max-width: 33rem;
+  margin-inline: auto;
+}
+.scrolly-step-index {
+  margin-bottom: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--color-ink-400);
+}
+.scrolly-step.is-active .scrolly-step-index {
+  color: var(--color-learn);
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.2vw, 2.1rem);
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--color-ink-100);
+}
+.step-copy {
+  margin-top: 0.55rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-ink-400);
+}
+.step-aside {
+  margin-top: 0.9rem;
+  padding-left: 0.7rem;
+  border-left: 2px solid rgba(180, 83, 9, 0.65);
+  font-size: 0.8125rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--color-ink-300);
+}
+@media (min-width: 900px) {
+  .scrolly {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    align-items: start;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+    padding: 0 clamp(1.25rem, 5vw, 3rem) clamp(4rem, 10vh, 7rem);
+  }
+  .scrolly-stage {
+    position: sticky;
+    top: 4.5rem;
+    height: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .scrolly-stage > * {
+    max-width: 31rem;
+    margin-inline: auto;
+  }
+  .scrolly-steps {
+    padding: 4.5rem 0 8rem;
+  }
+  .scrolly-step {
+    min-height: 72vh;
+    align-items: center;
+    padding: 1.5rem 0;
+  }
+  .scrolly-stage::after {
+    display: none;
+  }
+  /* emphasis, never disclosure: inactive copy stays readable */
+  .scrolly[data-ready='true'] .scrolly-step:not(.is-active) {
+    opacity: 0.8;
+    transform: translateY(8px);
+  }
+}
+
+/* ---- machine controls on paper ---- */
+.control-card {
+  margin-top: 1.15rem;
+  padding: 0.9rem 1rem;
+}
+.preset-card {
+  margin-top: 0.75rem;
+  padding: 0.9rem 1rem;
+}
+.preset-label {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.preset-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+.preset-note {
+  margin-top: 0.65rem;
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+  color: var(--paper-dim);
+}
+
+/* ---- ledger sheet stages ---- */
+.stage-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid var(--paper-line);
+}
+.stage-head p {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.stage-profit {
+  margin-bottom: 0.7rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.28);
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease;
+}
+.stage-profit.is-lit {
+  border-color: rgba(15, 118, 110, 0.32);
+  background: rgba(15, 118, 110, 0.07);
+}
+.stage-profit-label {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.stage-profit-value {
+  margin-top: 0.15rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 4.4vw, 2.65rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: #065f46;
+}
+.stage-profit-value.is-negative {
+  color: var(--paper-red);
+}
+.ledger-rows {
+  margin: 0;
+}
+.ledger-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-inline: -0.35rem;
+  padding: 0.3rem 0.35rem;
+  border-bottom: 1px dashed var(--paper-line);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+.ledger-row:last-child {
+  border-bottom: 0;
+}
+.ledger-row.is-lit {
+  background: rgba(15, 118, 110, 0.07);
+  box-shadow: inset 2px 0 0 var(--paper-accent);
+}
+.ledger-row dt {
+  font-size: 0.8125rem;
+  color: var(--paper-dim);
+}
+.ledger-row dd {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+.stage-line {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--paper-line);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--paper-dim);
+  transition: color 0.3s ease;
+}
+.stage-line.is-lit {
+  color: var(--paper-ink);
+}
+.stage-status {
+  margin-bottom: 0.55rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.25;
+  color: var(--paper-ink);
+}
+
+/* ---- the 1,000-dot sample ---- */
+.dot-field {
+  margin: 0;
+}
+.dot-grid {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+}
+.dot {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: rgba(36, 29, 20, 0.16);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease;
+  transition-delay: calc(var(--dot-order, 0) * 16ms);
+}
+.dot-empty {
+  background: transparent;
+}
+.dot-reached {
+  background: rgba(36, 29, 20, 0.2);
+}
+.dot-replied {
+  background: var(--paper-amber);
+}
+.dot-paid {
+  border-radius: 1px;
+  background: var(--paper-green);
+}
+.dot-field[data-reveal='0'] .dot-replied,
+.dot-field[data-reveal='0'] .dot-paid,
+.dot-field[data-reveal='1'] .dot-paid {
+  opacity: 0;
+  transform: scale(0.2);
+}
+.dot-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.8rem;
+  margin-top: 0.6rem;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--paper-dim);
+}
+.dot-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.dot-swatch {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+}
+.dot-swatch-replied {
+  background: var(--paper-amber);
+}
+.dot-swatch-paid {
+  border-radius: 1px;
+  background: var(--paper-green);
+}
+.dot-note {
+  margin-top: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--paper-ink);
+}
+.stage-sample .dot-field {
+  max-width: 24rem;
+  margin-inline: auto;
+}
+
+/* ---- the defense lever ---- */
+.defense-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.7rem;
+}
+.defense-stats > div {
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.28);
+}
+.defense-stats span {
+  display: block;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.defense-stats strong {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+.defense-lever {
+  margin-top: 0.2rem;
+}
+.lever-labels {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.lever-labels label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--paper-ink);
+}
+.lever-labels output {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-accent);
+}
+.lever-track {
+  position: relative;
+  margin-top: 0.15rem;
+}
+.lever-track input[type='range'] {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  cursor: pointer;
+}
+.lever-break-even {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  width: 2px;
+  height: 24px;
+  transform: translate(-50%, -50%);
+  background: var(--paper-red);
+  box-shadow:
+    0 0 0 1px rgba(242, 234, 217, 0.7),
+    0 0 8px rgba(185, 28, 28, 0.4);
+  pointer-events: none;
+}
+.lever-hint {
+  margin-top: 0.1rem;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--paper-dim);
+}
+.lever-test {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--paper-bg);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease;
+}
+.lever-test:hover {
+  background: #3d3224;
+}
+.lever-test:active {
+  transform: scale(0.985);
+}
+.defense-copy {
+  margin-top: 0.65rem;
+  padding-left: 0.65rem;
+  border-left: 2px solid rgba(180, 83, 9, 0.65);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--paper-dim);
+}
+
+/* ---- interlude: the denominator ---- */
+.interlude {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(4.5rem, 12vw, 8rem) clamp(1.25rem, 5vw, 3rem);
+}
+.interlude-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(143, 160, 189, 0.22) 1px, transparent 1.4px);
+  background-size: 18px 18px;
+  background-position: center;
+  -webkit-mask-image: radial-gradient(58% 58% at 50% 50%, #000 10%, transparent 72%);
+  mask-image: radial-gradient(58% 58% at 50% 50%, #000 10%, transparent 72%);
+  opacity: 0.6;
+}
+.interlude-paid {
+  position: absolute;
+  top: 44%;
+  left: 63%;
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--color-ok);
+  box-shadow: 0 0 14px rgba(52, 211, 153, 0.7);
+}
+.interlude-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 46rem;
+  text-align: center;
+}
+.interlude .scene-kicker {
+  justify-content: center;
+}
+.interlude-title {
+  margin-top: 0.65rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--color-ink-100);
+  text-wrap: balance;
+}
+.interlude-copy {
+  max-width: 38rem;
+  margin: 1rem auto 0;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--color-ink-400);
+}
+.interlude-copy-short {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-ink-200);
+}
+
+/* ---- close ---- */
+.close-shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(3.5rem, 9vw, 6rem) clamp(1.25rem, 5vw, 3rem) 3rem;
+}
+
+/* ---- compact the pinned sheet for small / short viewports ---- */
+@media (max-width: 899px) {
+  .scrolly-stage .paper-ledger {
+    --paper-rule-x: 1rem;
+    padding: 0.6rem 0.85rem 0.7rem 1.3rem;
+  }
+  .scrolly-stage .stage-head {
+    margin-bottom: 0.45rem;
+    padding-bottom: 0.3rem;
+  }
+  .scrolly-stage .stage-profit {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+    padding: 0.4rem 0.55rem;
+  }
+  .scrolly-stage .stage-profit-label {
+    max-width: 45%;
+  }
+  .scrolly-stage .stage-profit-value {
+    font-size: clamp(1.5rem, 7vw, 1.9rem);
+  }
+  .scrolly-stage .ledger-row {
+    padding: 0.16rem 0;
+  }
+  .scrolly-stage .ledger-row dt,
+  .scrolly-stage .ledger-row dd {
+    font-size: 0.75rem;
+  }
+  .scrolly-stage .stage-line {
+    margin-top: 0.45rem;
+    padding-top: 0.35rem;
+    font-size: var(--text-2xs);
+  }
+  .scrolly-stage .stage-status {
+    margin-bottom: 0.4rem;
+    font-size: 0.95rem;
+  }
+  .scrolly-stage .dot-field {
+    max-width: 17rem;
+  }
+  .scrolly-stage .dot-caption {
+    gap: 0.2rem 0.6rem;
+  }
+  .scrolly-stage .dot-note {
+    font-size: 0.75rem;
+  }
+  .scrolly-stage .defense-stats {
+    margin-bottom: 0.4rem;
+  }
+  .scrolly-stage .defense-stats > div {
+    padding: 0.3rem 0.45rem;
+  }
+  /* the step copy already explains the red line; the live sentence stays */
+  .scrolly-stage .lever-hint {
+    display: none;
+  }
+  .scrolly-stage .stage-defense .stage-head {
+    display: none;
+  }
+  .scrolly-stage .defense-copy {
+    margin-top: 0.45rem;
+    padding-left: 0.55rem;
+    font-size: 0.75rem;
+  }
+}
+/* tall enough for the lever, not for both the lever and its explanation */
+@media (max-width: 899px) and (max-height: 800px) {
+  .scrolly-stage .defense-copy {
+    display: none;
+  }
+}
+/* short phones: keep only what the step cannot say for itself */
+@media (max-width: 899px) and (max-height: 720px) {
+  .scrolly-stage .stage-head,
+  .scrolly-stage .stage-line,
+  .scrolly-stage .dot-caption,
+  .scrolly-stage .lever-hint,
+  .scrolly-stage .defense-copy {
+    display: none;
+  }
+  .scrolly-stage .stage-profit {
+    margin-bottom: 0.3rem;
+  }
+  .scrolly-stage .stage-defense {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  .scrolly-stage .defense-stats > div {
+    padding: 0.25rem 0.45rem;
+  }
+  /* the lever is the interaction; the shortcut button yields to fit */
+  .scrolly-stage .lever-test {
+    display: none;
+  }
+}
+/* landscape phones: a pinned stage would eat the reading line */
+@media (max-width: 899px) and (max-height: 520px) {
+  .scrolly-stage {
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 0;
+  }
+  .scrolly-step {
+    min-height: 0;
+    padding: 1.5rem 0;
+  }
+}
+
+/* reduced motion: static, fully readable, no rail */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress,
+  .scroll-reveal,
+  .hero-scroll button span {
+    animation: none !important;
+  }
+  .scroll-progress {
+    display: none;
+  }
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .scrolly[data-ready='true'] .scrolly-step:not(.is-active) {
+    opacity: 1;
+    transform: none;
+  }
+  .dot,
+  .dot-field[data-reveal='0'] .dot-replied,
+  .dot-field[data-reveal='0'] .dot-paid,
+  .dot-field[data-reveal='1'] .dot-paid {
+    transition-delay: 0ms;
+  }
+}

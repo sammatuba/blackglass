@@ -59,6 +59,48 @@ Accents appear as icon wells, chips, borders, and hover text — never as large 
 - Focus: :focus-visible → 2px solid var(--color-play), 2px offset, 4px radius — everywhere, no exceptions.
 - Motion: 150–250ms ease transitions; hover lifts and arrow slides; always gated by prefers-reduced-motion (animation crushed to 0.01ms).
 
+## Paper register — Glassbox
+
+Glassbox is the one intentional light surface inside the dark suite: the fiction is dark glass, the explorable is the paper workbench. `.paper-ledger` (full sheet) and `.paper-slip` (compact hub teaser) carry scoped tokens:
+
+| Token | Value | Role |
+| --- | --- | --- |
+| --paper-bg | #f2ead9 | sheet |
+| --paper-ink | #241d14 | primary text |
+| --paper-dim | #6b5d4a | secondary text |
+| --paper-faint | #9a8b74 | sample dots / non-text |
+| --paper-line | rgba(36,29,20,.16) | rules and dividers |
+| --paper-amber | #b45309 | replies |
+| --paper-green | #047857 | paid |
+| --paper-red | #b91c1c | loss / break-even marker |
+| --paper-accent | #0f766e | slider fill and paper focus ring |
+
+Rules:
+
+- Warm paper is the only large light field. Never use it for chrome outside Glassbox.
+- The ruled sheet and red margin rule are CSS-only (layered gradients + `::before`); no raster texture.
+- Focus inside paper re-colors to `--paper-accent`; the global play-indigo ring lacks contrast on cream.
+- Sliders keep native keyboard behavior and a 44px hit area; the visible 6px track is drawn with `--range-fill` so the filled share is readable. Thumb and fill are teal, not a second pillar accent.
+- Meaning is never color-only: a paid dot is a square (and labeled), a loss reads “the line goes dead,” and the break-even marker is described in text.
+
+### Scroll choreography — Glassbox scrollytelling
+
+- A scene pins one paper sheet; steps scroll past it. Scroll changes **emphasis only** —
+  every step stays in the DOM and reads in order without JavaScript.
+- Use native CSS where it exists: `animation-timeline: scroll(root block)` for the top
+  reading rail and `view()` for step reveals, always inside `@supports`. No scroll
+  library and no per-frame JS.
+- Active-step state comes from one passive scroll listener coalesced into one rAF. It
+  reads the step rects and updates state only when the active step changes. The reading
+  line is 48% of the viewport on desktop and 64% on mobile (the sheet owns the top 44dvh).
+- Only `opacity` and `transform` animate. The 1,000-dot sample is memoized DOM, not
+  canvas; only the marked dots carry an order variable.
+- The stage stays inside 44dvh on phones and compacts by height: hide stage captions
+  and the lever hint, then the Test button, and finally release sticky altogether below
+  520px height. Never let the pinned sheet starve the reading column.
+- `prefers-reduced-motion`: delete the rail, reveals, scroll cue, and step dimming;
+  render all content at rest and make the lever jump instantly.
+
 ## UI as character — the os-skin contract
 
 Phone screens are themed by CSS variable sets on `.os-skin` / `.theme-<character>`:
