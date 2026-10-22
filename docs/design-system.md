@@ -101,6 +101,19 @@ Rules:
 - `prefers-reduced-motion`: delete the rail, reveals, scroll cue, and step dimming;
   render all content at rest and make the lever jump instantly.
 
+### Feed instruments — Glassbox 02
+
+- The feed mix is a stacked bar with a text legend; the 35-day chart is 35 DOM spans,
+  not canvas. The focused week is opaque, the rest recede by opacity; the chart is
+  `aria-hidden` and a screen-reader sentence carries the same trend.
+- The cap marker reuses the red break-even treatment. The context-payment toggle is a
+  44px pressed button whose state is carried by text and `aria-pressed`, not colour alone.
+- On short phones the lineup compacts post padding and body type, and the stage drops
+  its head, control hint, cap copy, and footer before it drops a post. The four posts,
+  the three stats, the lever, and the toggle always survive.
+- Meta rows use a single non-wrapping likes/category label and an ellipsised handle on
+  narrow screens; category meaning also appears in the step copy and the legend.
+
 ## UI as character — the os-skin contract
 
 Phone screens are themed by CSS variable sets on `.os-skin` / `.theme-<character>`:

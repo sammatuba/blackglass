@@ -657,8 +657,9 @@ body {
    Native scroll-driven effects where the browser has them
    (animation-timeline: Chrome/Edge/Opera/Safari 26; not Firefox).
    Everything degrades to a static, fully readable page. Active-step
-   detection is IntersectionObserver-only — no scroll listeners, no
-   scroll-jacking. Only opacity and transform animate.
+   detection is one passive scroll listener coalesced into a single
+   requestAnimationFrame; no scroll-jacking. Only opacity and transform
+   animate, and emphasis never hides copy.
    ===================================================================== */
 
 /* reading progress: a native scroll timeline, hidden without support */
@@ -1405,13 +1406,386 @@ body {
 .lever-test:active {
   transform: scale(0.985);
 }
-.defense-copy {
+.defense-copy,
+.feed-cap-copy {
   margin-top: 0.65rem;
   padding-left: 0.65rem;
   border-left: 2px solid rgba(180, 83, 9, 0.65);
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--paper-dim);
+}
+
+/* =====================================================================
+   GLASSBOX 02 — the feed dial
+
+   The same paper register with three new instruments: a stacked feed
+   mix, a five-week supply chart, and a cap lever. Categories always
+   carry a text label; colour is never the only meaning. State changes
+   emphasise the live rows without hiding the rest of the sheet.
+   ===================================================================== */
+.seg-outrage {
+  background-color: var(--paper-red);
+}
+.seg-novelty {
+  background-color: var(--paper-amber);
+}
+.seg-grounding {
+  background-color: var(--paper-accent);
+}
+
+/* the hero payout slip */
+.feed-slip-label {
+  margin-top: 0.85rem;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.feed-slip-rows {
+  margin-top: 0.35rem;
+}
+.feed-slip-rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px dashed var(--paper-line);
+}
+.feed-slip-rows > div:last-child {
+  border-bottom: 0;
+}
+.feed-slip-rows dt {
+  font-size: 0.8125rem;
+  color: var(--paper-dim);
+}
+.feed-slip-rows dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+.feed-slip .call-quote {
+  margin-top: 0.65rem;
+  font-size: 1.35rem;
+}
+
+/* the four-post lineup */
+.feed-posts {
+  display: grid;
+  gap: 0.4rem;
+}
+.feed-post {
+  --feed-kind: rgba(36, 29, 20, 0.24);
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--paper-line);
+  border-left: 3px solid var(--feed-kind);
+  border-radius: 0.25rem;
+  background: rgba(255, 255, 255, 0.26);
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.feed-post.is-grounding {
+  --feed-kind: var(--paper-accent);
+}
+.feed-post.is-outrage {
+  --feed-kind: var(--paper-red);
+}
+.feed-post.is-novelty {
+  --feed-kind: var(--paper-amber);
+}
+.feed-post.is-lit {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: inset 0 0 0 1px var(--feed-kind);
+}
+.feed-post-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.1rem 0.5rem;
+  font-size: var(--text-2xs);
+  line-height: 1.3;
+  color: var(--paper-dim);
+}
+.feed-post-meta > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.feed-post-meta > span:last-child {
+  flex-shrink: 0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.feed-post-body {
+  margin-top: 0.15rem;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--paper-ink);
+}
+.feed-foot {
+  margin-top: 0.5rem;
+  font-size: var(--text-2xs);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--paper-ink);
+}
+
+/* the mix bar and weight controls */
+.feed-mix {
+  margin-bottom: 0.55rem;
+}
+.feed-mix-bar {
+  display: flex;
+  height: 0.65rem;
+  overflow: hidden;
+  border: 1px solid rgba(36, 29, 20, 0.22);
+  border-radius: 0.2rem;
+  background: rgba(36, 29, 20, 0.08);
+}
+.feed-mix-seg {
+  display: block;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.feed-mix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.7rem;
+  margin-top: 0.3rem;
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  color: var(--paper-dim);
+}
+.feed-mix-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.feed-swatch {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 0.1rem;
+}
+.feed-mix-mode {
+  margin-left: auto;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-faint);
+}
+.feed-control {
+  margin-top: 0.25rem;
+}
+.feed-control input[type='range'] {
+  display: block;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  cursor: pointer;
+}
+.feed-control-hint {
+  margin-top: 0.1rem;
+  font-size: var(--text-2xs);
+  line-height: 1.45;
+  color: var(--paper-dim);
+}
+.feed-stage-note {
+  margin-top: 0.45rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed var(--paper-line);
+  font-size: var(--text-2xs);
+  line-height: 1.45;
+  color: var(--paper-dim);
+}
+.feed-dial-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.2rem 0.75rem;
+  padding: 0.45rem 0.55rem;
+  border: 1px dashed var(--paper-line);
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+
+/* the thirty-five-day chart */
+.feed-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: clamp(5rem, 15vh, 7.5rem);
+  height: clamp(5rem, 15dvh, 7.5rem);
+  padding-top: 0.3rem;
+  border-bottom: 1px solid var(--paper-line);
+}
+.feed-chart-day {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column-reverse;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 1px 1px 0 0;
+  opacity: 0.45;
+  transition: opacity 0.25s ease;
+}
+.feed-chart-day > span {
+  display: block;
+  width: 100%;
+}
+.feed-chart-day.is-focused {
+  opacity: 1;
+  outline: 1px solid rgba(36, 29, 20, 0.28);
+  outline-offset: 1px;
+}
+.feed-chart-weeks {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-top: 0.25rem;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.12em;
+  color: var(--paper-faint);
+}
+.feed-chart-weeks span {
+  text-align: center;
+}
+.feed-chart-weeks .is-focused {
+  font-weight: 700;
+  color: var(--paper-ink);
+}
+.feed-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  margin-top: 0.4rem;
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  color: var(--paper-dim);
+}
+.feed-chart-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.feed-week-line {
+  margin-top: 0.4rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--paper-dim);
+  font-variant-numeric: tabular-nums;
+}
+.feed-week-line strong {
+  color: var(--paper-ink);
+}
+
+/* the cap lever and the context payment */
+.feed-cap-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+.feed-cap-stats > div {
+  min-width: 0;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--paper-line);
+  border-radius: 0.3rem;
+  background: rgba(255, 255, 255, 0.28);
+}
+.feed-cap-stats span {
+  display: block;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.feed-cap-stats strong {
+  display: block;
+  margin-top: 0.1rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper-ink);
+}
+.feed-cap-lever {
+  margin-top: 0.15rem;
+}
+.feed-context-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 0.55rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px dashed rgba(15, 118, 110, 0.55);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--paper-ink);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.feed-context-toggle span {
+  font-size: var(--text-2xs);
+  letter-spacing: 0.08em;
+  color: var(--paper-accent);
+}
+.feed-context-toggle.is-on {
+  border-color: var(--paper-accent);
+  background: var(--paper-accent);
+  color: var(--paper-bg);
+}
+.feed-context-toggle.is-on span {
+  color: var(--paper-bg);
+}
+
+/* hub preview: five weekly snapshots of the default drift */
+.feed-preview-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 2.9rem;
+}
+.feed-preview-day {
+  display: flex;
+  flex: 1;
+  flex-direction: column-reverse;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 1px;
+}
+.feed-preview-day > span {
+  display: block;
+  width: 100%;
+}
+.feed-preview-weeks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  color: var(--paper-faint);
 }
 
 /* ---- interlude: the denominator ---- */
@@ -1562,8 +1936,33 @@ body {
   .scrolly-stage .stage-line,
   .scrolly-stage .dot-caption,
   .scrolly-stage .lever-hint,
-  .scrolly-stage .defense-copy {
+  .scrolly-stage .defense-copy,
+  .scrolly-stage .feed-cap-copy,
+  .scrolly-stage .feed-control-hint,
+  .scrolly-stage .feed-foot {
     display: none;
+  }
+  .scrolly-stage .feed-posts {
+    gap: 0.25rem;
+  }
+  .scrolly-stage .feed-post {
+    padding: 0.15rem 0.45rem;
+  }
+  .scrolly-stage .feed-post-meta {
+    line-height: 1.2;
+  }
+  .scrolly-stage .feed-post-body {
+    font-size: 0.71875rem;
+    line-height: 1.3;
+  }
+  .scrolly-stage .feed-chart {
+    height: 4.5rem;
+  }
+  .scrolly-stage .feed-cap-stats > div {
+    padding: 0.3rem 0.4rem;
+  }
+  .scrolly-stage .feed-context-toggle {
+    margin-top: 0.4rem;
   }
   .scrolly-stage .stage-profit {
     margin-bottom: 0.3rem;
@@ -1617,5 +2016,11 @@ body {
   .dot-field[data-reveal='0'] .dot-paid,
   .dot-field[data-reveal='1'] .dot-paid {
     transition-delay: 0ms;
+  }
+  .feed-post,
+  .feed-mix-seg,
+  .feed-chart-day,
+  .feed-context-toggle {
+    transition: none;
   }
 }

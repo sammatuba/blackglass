@@ -61,7 +61,7 @@ const opacity = (target, selector) =>
 // ——— hub integration ———
 await gotoWithRetry(page, `${ROOT}/`)
 await page.waitForTimeout(1000)
-const feature = page.locator('[data-od-id="glassbox-feature"]')
+const feature = page.locator('[data-od-id="glassbox-feature"]').first()
 const featureVisible = await feature.isVisible()
 const shelf = page.locator('[data-od-id="learn-reference-shelf"]')
 const shelfOpen = await shelf.evaluate((el) => el.open)

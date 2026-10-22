@@ -46,7 +46,8 @@ The complete path: hub → four anchors (10 phones) → **THE CONVERGENCE**. Out
 
 1. **Glassbox format + LEARN identity** ✅ — LEARN becomes Glassbox (take it apart). The pillar feature card leads; the four legacy literacy games move to a collapsed reference shelf. Format principles, guardrails, and material unknowns in `docs/GLASSBOX.md`.
 2. **Glassbox 01 · One in a Thousand** ✅ — the scam-economy ledger anchored to the voice-clone call: reach, cost, reply rate, average payment, then the verification lever. Break-even at ~98% for the AI line vs ~14% for a human crew. Paper register on dark glass; mobile-first; axe-clean; `src/games/glassbox/model.test.ts` + `scripts/glassbox-smoke.mjs`.
-3. **Next pieces** — candidates: the cost of a usable fake (artifact-generation economics), the reward loop behind Five Weeks (attention markets), and the liar's dividend (why synthetic evidence poisons real evidence). One per fiction anchor, 5–8 minutes each, same format rules.
+3. **Glassbox 02 · The Feed Dial** ✅ — the reward loop behind Five Weeks: three ranking weights, 35 days of supply adaptation, then a cap on conflict plus a context payment. The default feed drifts 44→67% conflict; capping makes room for novelty, and only payment makes context lead — at a cost in clicks. Same scrollytelling form; `src/games/glassbox/feed-model.test.ts` + `scripts/feed-dial-smoke.mjs`.
+4. **Next pieces** — candidates: the cost of a usable fake (artifact-generation economics), Tell Decay (what survives re-compression), and the liar's dividend (why synthetic evidence poisons real evidence). One per fiction anchor, 5–8 minutes each, same format rules.
 
 ## Standing constraints (unchanged)
 

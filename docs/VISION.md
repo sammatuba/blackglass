@@ -15,7 +15,7 @@ The **BLACKGLASS phone-anthology**: Rashomon-structured interactive fiction wher
 **Scam Radar**: a scam-readiness trainer. Where the story makes you the observer, the trainer makes you the target — in a safe sandbox. Rapid-fire feed triage (judge Scam / Legit / Verify first), then narrative case files where you inspect artifacts, gather clues, and choose responses with consequences. Builds the reflexes: pause, verify through official channels, hang up, report, protect your family.
 
 ### 3. LEARN — Mechanisms (tinkerable model)
-**Glassbox**: short explorables where one mechanism from the fiction becomes a model you can change. *One in a Thousand* turns the voice-clone call into a ledger — reach, cost per attempt, reply rate, average payment — so the reader discovers why AI-scale deception survives a thousand refusals, and where a verification norm actually bites. The four legacy literacy games (trust calibration, bias patterns, verification, NIST/EU governance) remain playable on the reference shelf.
+**Glassbox**: short explorables where one mechanism from the fiction becomes a model you can change. *One in a Thousand* turns the voice-clone call into a ledger — reach, cost per attempt, reply rate, average payment — so the reader discovers why AI-scale deception survives a thousand refusals, and where a verification norm actually bites. *The Feed Dial* turns Bea's five-week drift into a recommender you can tune: conflict, novelty, and context compete for the feed; a cap makes room, but only paying for context changes what fills it — and the scoreboard pays for the wrong thing. The four legacy literacy games (trust calibration, bias patterns, verification, NIST/EU governance) remain playable on the reference shelf.
 
 ## Principles
 

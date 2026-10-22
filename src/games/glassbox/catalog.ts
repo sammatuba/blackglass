@@ -8,6 +8,7 @@ export interface ExplorableEntry {
   minutes: number
   status: 'shipped' | 'building'
   topics: string[]
+  preview: 'ledger' | 'feed'
 }
 
 export const EXPLORABLES: ExplorableEntry[] = [
@@ -22,5 +23,19 @@ export const EXPLORABLES: ExplorableEntry[] = [
     minutes: 5,
     status: 'shipped',
     topics: ['scam economics', 'AI scale', 'verification'],
+    preview: 'ledger',
+  },
+  {
+    id: 'the-feed-dial',
+    number: '02',
+    title: 'The Feed Dial',
+    tagline: 'Five weeks. One feed. No lie.',
+    description:
+      'Set the ranking weights behind Bea’s feed and watch what creators make. Then find the lever that changes what the feed is paid for — and what it costs.',
+    route: '/glassbox/the-feed-dial',
+    minutes: 6,
+    status: 'shipped',
+    topics: ['attention', 'recommendation', 'algorithmic capture'],
+    preview: 'feed',
   },
 ]

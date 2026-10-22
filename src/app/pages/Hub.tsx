@@ -6,7 +6,8 @@ import { FadeIn } from '../../ui/FadeIn'
 import GlassHero from '../../three/GlassHero'
 import { EXPLORABLES, type ExplorableEntry } from '../../games/glassbox/catalog'
 import { PRESETS, computeScam } from '../../games/glassbox/model'
-import { formatCount, formatNumber, formatPeso } from '../../games/glassbox/format'
+import { DEFAULT_DIAL, simulateFeed } from '../../games/glassbox/feed-model'
+import { formatCount, formatNumber, formatPercent, formatPeso } from '../../games/glassbox/format'
 
 const PILLAR_ORDER: Pillar[] = ['play', 'train', 'learn']
 
@@ -153,8 +154,6 @@ export default function Hub() {
    reference, collapsed so their separate visual language doesn't compete
    with the flagship work. */
 function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
-  const day = computeScam(PRESETS.ai)
-
   return (
     <Link
       to={piece.route}
@@ -183,39 +182,92 @@ function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
       </div>
 
       <div aria-hidden="true" className="paper-slip relative">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--paper-dim)] uppercase">
-            Expected day
-          </p>
-          <span className="paper-stamp">Illustrative</span>
-        </div>
-        <p className="font-display mt-3 text-3xl font-semibold tabular-nums text-[var(--paper-ink)]">
-          {formatPeso(day.profit)}
-        </p>
-        <p className="text-xs text-[var(--paper-dim)]">profit per day at the default line</p>
-        <div className="mt-3 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]">
-          {Array.from({ length: 40 }, (_, i) => (
-            <span
-              key={i}
-              className={`aspect-square ${
-                i === 7
-                  ? 'rounded-[1px] bg-[var(--paper-green)]'
-                  : i === 13 || i === 26 || i === 34
-                    ? 'rounded-full bg-[var(--paper-amber)]'
-                    : 'rounded-full bg-[var(--paper-faint)] opacity-40'
-              }`}
-            />
-          ))}
-        </div>
-        <div className="mt-3 space-y-0.5 border-t border-[var(--paper-line)] pt-2 text-xs text-[var(--paper-dim)]">
-          <p>
-            <span className="text-[var(--paper-ink)]">{formatNumber(PRESETS.ai.reach)}</span> reached ·{' '}
-            <span className="text-[var(--paper-ink)]">{formatCount(day.payments)}</span> paid
-          </p>
-          <p>1 in {formatNumber(day.messagesPerPayment)} messages finds a payer.</p>
-        </div>
+        {piece.preview === 'feed' ? <FeedPreview /> : <LedgerPreview />}
       </div>
     </Link>
+  )
+}
+
+function LedgerPreview() {
+  const day = computeScam(PRESETS.ai)
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+          Expected day
+        </p>
+        <span className="paper-stamp">Illustrative</span>
+      </div>
+      <p className="font-display mt-3 text-3xl font-semibold tabular-nums text-[var(--paper-ink)]">
+        {formatPeso(day.profit)}
+      </p>
+      <p className="text-xs text-[var(--paper-dim)]">profit per day at the default line</p>
+      <div className="mt-3 grid grid-cols-[repeat(20,minmax(0,1fr))] gap-[3px]">
+        {Array.from({ length: 40 }, (_, i) => (
+          <span
+            key={i}
+            className={`aspect-square ${
+              i === 7
+                ? 'rounded-[1px] bg-[var(--paper-green)]'
+                : i === 13 || i === 26 || i === 34
+                  ? 'rounded-full bg-[var(--paper-amber)]'
+                  : 'rounded-full bg-[var(--paper-faint)] opacity-40'
+            }`}
+          />
+        ))}
+      </div>
+      <div className="mt-3 space-y-0.5 border-t border-[var(--paper-line)] pt-2 text-xs text-[var(--paper-dim)]">
+        <p>
+          <span className="text-[var(--paper-ink)]">{formatNumber(PRESETS.ai.reach)}</span> reached ·{' '}
+          <span className="text-[var(--paper-ink)]">{formatCount(day.payments)}</span> paid
+        </p>
+        <p>1 in {formatNumber(day.messagesPerPayment)} messages finds a payer.</p>
+      </div>
+    </>
+  )
+}
+
+const FEED_PREVIEW = simulateFeed(DEFAULT_DIAL)
+const FEED_PREVIEW_WEEKS = [6, 13, 20, 27, 34].map((index) => FEED_PREVIEW.days[index])
+
+function FeedPreview() {
+  const week = FEED_PREVIEW.weekFive
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-2xs font-semibold tracking-[0.18em] text-[var(--paper-dim)] uppercase">
+          Week five
+        </p>
+        <span className="paper-stamp">Illustrative</span>
+      </div>
+      <p className="font-display mt-3 text-3xl font-semibold tabular-nums text-[var(--paper-ink)]">
+        {formatPercent(week.shares.outrage, 0)}
+      </p>
+      <p className="text-xs text-[var(--paper-dim)]">of Bea&apos;s feed is conflict</p>
+      <div className="feed-preview-chart mt-3">
+        {FEED_PREVIEW_WEEKS.map((day, index) => (
+          <div key={index} className="feed-preview-day">
+            <span className="seg-outrage" style={{ height: `${day.shares.outrage * 100}%` }} />
+            <span className="seg-novelty" style={{ height: `${day.shares.novelty * 100}%` }} />
+            <span className="seg-grounding" style={{ height: `${day.shares.grounding * 100}%` }} />
+          </div>
+        ))}
+      </div>
+      <div className="feed-preview-weeks">
+        <span>W1</span>
+        <span>W5</span>
+      </div>
+      <div className="mt-3 space-y-0.5 border-t border-[var(--paper-line)] pt-2 text-xs text-[var(--paper-dim)]">
+        <p>
+          <span className="text-[var(--paper-ink)]">{formatPercent(week.shares.grounding, 0)}</span>{' '}
+          context ·{' '}
+          <span className="text-[var(--paper-ink)]">{formatCount(week.clicks)}</span> clicks/day
+        </p>
+        <p>35 days at the default dial. No post has to be false.</p>
+      </div>
+    </>
   )
 }
 

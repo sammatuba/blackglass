@@ -2,8 +2,9 @@
 
 *Direction recorded 2026-10-22. First piece: ONE IN A THOUSAND.*
 
-**Status 2026-10-22:** shipped — `/glassbox/one-in-a-thousand` as a scrollytelling explorable:
-pinned paper stages, four scroll-linked scenes, hub feature card; model tests, build, and smoke green.
+**Status 2026-10-22:** 01 shipped; 02 complete in the working tree, pending review —
+`/glassbox/one-in-a-thousand` and `/glassbox/the-feed-dial` as scrollytelling explorables:
+pinned paper stages, hub feature cards, model tests, builds, and smoke green.
 
 ## The decision
 
@@ -122,6 +123,41 @@ The paper stage is deliberately art-directed, not templated: ruled sheet, red ma
 rule, stamps, teal controls, and a red break-even marker. Meaning never depends on
 color alone: paid dots are squares, and the break-even state is stated in text.
 
+## Piece 02 — The Feed Dial
+
+**Question:** Why does a feed drift without anyone telling a lie?
+
+**Anchor:** Bea's five weeks (`FIVE WEEKS / One Feed`). The anthology shows the drift;
+this piece shows the incentive that produces it.
+
+**Model (supply adaptation, not a forecast):**
+
+```
+payoff(genre)    = click rate × ranking weight   (conflict also × (1 − cap))
+creators' target = softmax(4 × payoff)
+each day         = shares move 12% toward target; 35 days, 60 slots/day
+clicks/day       = 60 × Σ (share × base click rate)
+```
+
+- Base click rates are round, illustrative figures: conflict 22%, new 13%, context 6%.
+- Initial supply is a third each. Week one and week five are seven-day averages.
+
+**Controls:** three ranking weights (0–3×), a cap on conflict reach (0–100%), and a
+context payment preset that lifts context to 2.5×.
+
+**Outputs:** week-five mix, clicks/day, a 35-day supply chart, and the cap at which
+conflict falls to half its uncapped share (81% at the default dial; 75% with context
+paid).
+
+**The discovery:** at the default dial, week one is 44% conflict and week five is 67%;
+context falls 27→13% while clicks rise 9→11/day. Capping conflict at 100% alone makes
+novelty the largest genre (44%), not context (29%). Add the context payment and context
+leads (40% vs 22% conflict), but clicks fall to 7.3/day. The feed can get better for Bea
+and worse for the number the platform reports. The cap makes room; only payment changes
+what fills it.
+
+**Link back:** `/blackglass` (FIVE WEEKS) and `/glassbox/one-in-a-thousand`.
+
 ## Guardrails
 
 - Aggregate economics only. No real channels, scripts, targets, tools, or working
@@ -140,8 +176,8 @@ color alone: paid dots are squares, and the break-even state is stated in text.
   framing and can A/B it later.
 - Real-world base rates for AI-era scam economics. This piece deliberately uses
   illustrative rates; a sourced version would need research and a different tone.
-- Whether the next piece should be **The Feed Dial** (emergent recommender drift) or
-  **Tell Decay** (what survives re-compression). Both are queued; neither is scheduled.
+- Which piece follows 02: **Tell Decay** (what survives re-compression) and **the liar's
+  dividend** (why synthetic evidence poisons real evidence) are queued; neither is scheduled.
 - Whether the Glassbox shelf eventually becomes its own top-level pillar. For now it
   is the LEARN identity, not a fourth pillar.
 
@@ -174,6 +210,16 @@ color alone: paid dots are squares, and the break-even state is stated in text.
 5. Manual read on a phone — the ledger, the dot sample, the controls, and the defense
    are usable with one thumb; the dot sample is decorative and the counts are text;
    the pinned stage never eats more than the top 44dvh of a short phone.
+6. Feed model unit tests — 35 days of normalized supply, the default drift toward
+   conflict and away from context, caps that make room for novelty, the context payment,
+   a zero-weight edge case, and the cap that halves conflict.
+7. `node scripts/feed-dial-smoke.mjs` against `npm run preview` — hub card, direct route,
+   all four sections and every step, 35 chart bars, weight projection, cap alone, cap plus
+   context payment, the cap marker moving left, 320×568 and 1440×900 fit, reduced motion,
+   zero console errors, axe clean, no overflow.
+8. Copy check — no post is labeled false; the discovery names the trade (a better feed can
+   be a worse scoreboard); the model disclosure names softmax, adaptation, cap, and the
+   context payment; fictional people and sources are explicit.
 
 **Executed 2026-10-22:** `npm test` 33/33 (6 Glassbox model tests); `npm run build`
 (tsc clean; Glassbox route chunk, PWA precache 1.67 MiB); `scripts/glassbox-smoke.mjs`
@@ -184,3 +230,15 @@ activate; 1440×900 sticky stage and all steps activate; reduced-motion load has
 visible reveals, no rail, and the lever at −₱7,875. Screenshots for hero, each scene,
 close, 320px, and desktop reviewed. Open reference shelf 4 links / 0 overflow; hub
 smoke re-run (canvas + axe clean).
+
+**Executed 2026-10-22 (Glassbox 02):** `npm test` 41/41 (6 files; 8 feed-model tests);
+`npm run build` (tsc clean; The Feed Dial chunk 24.80 kB / 7.02 kB gzip; PWA 44 precache
+entries, 1.67 MiB); `node scripts/feed-dial-smoke.mjs` exit 0 — hub card 67% conflict,
+every step active in all four sections, mobile stage fits at 390 and 320, projection
+67→82→27→67%, 35 chart bars, default 67% conflict / 13% context / 11 clicks, cap 100%
+alone 27/29/8 with novelty leading, cap + context 22/40/7.3 with context leading and
+the marker moving 81→75%, payment alone at cap 0 leaves conflict at 62%, axe 0, zero
+console/page errors, overflow 0, reduced motion shows all content with no rail.
+Screenshots reviewed: hub, hero, lineup, dial, weeks, cap, cap with context paid,
+close, 320×568, desktop. Glassbox 01 smoke re-run after the shared scrolly/hub changes:
+exit 0, all checks unchanged.

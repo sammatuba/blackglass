@@ -1,55 +1,70 @@
 {
-  "work_id": "glassbox-one-in-a-thousand-scrollytelling",
+  "work_id": "glassbox-the-feed-dial",
   "phase": "wrapup",
   "status": "complete",
-  "intent": "Turn Glassbox 01 (One in a Thousand) into a scrollable, tinkerable narrative: read + decision beats, pinned paper stages, the existing model, and no fail state. Keep it performant and elegant using current web-platform primitives rather than a scroll library.",
+  "intent": "Build Glassbox 02 - The Feed Dial as a six-minute scrollytelling explorable in the LEARN pillar: tune the ranking weights behind Bea's feed, watch 35 days of supply drift, then discover that capping conflict makes room while paying for context changes what fills it. Point back to the Five Weeks anchor.",
   "scope": [
-    "src/games/glassbox/scrolly.tsx — pinned-stage scrollytelling primitives",
-    "src/games/glassbox/OneInAThousand.tsx — four-scene narrative",
-    "src/games/glassbox/stages.tsx — ledger, sample, machine, defense sheets",
-    "src/index.css — paper/scrolly styles and responsive height compaction",
-    "scripts/glassbox-smoke.mjs — scroll, geometry, reduced-motion, and responsive checks"
+    "src/games/glassbox/feed-model.ts - three-genre supply adaptation, cap, context payment, cap-to-halve calculation",
+    "src/games/glassbox/feed-model.test.ts - eight model and edge-case tests",
+    "src/games/glassbox/feed-stages.tsx - lineup, dial, 35-day chart, and cap sheets",
+    "src/games/glassbox/TheFeedDial.tsx - four-section scrollytelling narrative and model disclosure",
+    "src/games/glassbox/scrolly.tsx - shared primitives reused; stale comments corrected",
+    "src/games/glassbox/stages.tsx - StageHead exported for reuse",
+    "src/games/glassbox/catalog.ts - Glassbox 02 entry with feed preview",
+    "src/app/pages/Hub.tsx - feed preview on the 02 feature card",
+    "src/App.tsx - lazy route /glassbox/the-feed-dial",
+    "src/index.css - paper feed instruments, responsive compaction, reduced-motion rules",
+    "scripts/feed-dial-smoke.mjs - hub, scroll, model, responsive, a11y, and layout checks",
+    "scripts/glassbox-smoke.mjs - hub locator updated for two Glassbox cards",
+    "docs/GLASSBOX.md, docs/GAMES.md, docs/design-system.md, docs/ROADMAP.md, docs/VISION.md - design and status records"
   ],
   "constraints": [
-    "README + AGENTS guardrails: depict deception, never enable it; aggregate economics only; fictional figures; no real channels, scripts, targets, or tools.",
-    "No new dependency for scroll behavior; no new external assets.",
-    "Scroll is emphasis, never disclosure: every step remains in the DOM and in reading order.",
-    "Keyboard, screen-reader, and reduced-motion safe; no color-only meaning.",
-    "Model arithmetic and copy unchanged from the reviewed static cut.",
-    "Do not commit, push, or deploy without authorization."
+    "Depict deception, never enable it: no real targets, channels, scripts, tools, platforms, or live scam templates.",
+    "Fictional people, sources, handles, and figures; all rates are labeled illustrative and the piece is explicitly not a forecast.",
+    "No new dependency and no new external asset.",
+    "Scroll is emphasis, never disclosure: every step stays in the DOM in reading order.",
+    "Mobile-first, keyboard-playable, screen-reader labeled, reduced-motion safe, no color-only meaning, 11px minimum text, 44px controls.",
+    "Local-first: no accounts, no tracking, no server data.",
+    "Do not commit, push, or deploy without explicit authorization."
   ],
   "acceptance_checks": [
-    "Four scenes (#ledger, #sample, #machine, #defense) each pin a paper stage and activate every step by natural scroll, jump, and scrollbar drag.",
-    "Pinned stage fits at 390px, 320x568, and 1440x900; no horizontal overflow; compact/hide rules below 800px and 720px height; sticky released below 520px height.",
-    "Model outputs unchanged: default profit ₱450,000; human preset ₱500; break-even 98.3%; 100% verification −₱7,875 by slider and by Test animation.",
-    "Dot sample renders 1,000 spans, resolves marked dots at the payment beat, and is decorative; counts remain text.",
-    "Top rail and reveals use native CSS scroll/view timelines behind @supports; no scroll library; no per-frame JS beyond one rAF.",
-    "Reduced motion: no rail/reveals/dimming, all content visible, lever result immediate.",
-    "npm test, npm run build, glassbox smoke, hub smoke, axe — all green with zero console/page errors."
+    "Hub shows a The Feed Dial card with a week-five conflict preview; direct route and hub fallback both work.",
+    "Sections #feed, #dial, #weeks, and #cap each pin a paper stage and activate all four steps at 390px, 320x568, and 1440x900.",
+    "Default week one is 44% conflict; week five is 67% conflict, 13% context, 11 clicks/day; the chart has 35 bars.",
+    "Changing the conflict weight moves the week-five projection (82% at 3x, 27% at 0x) and restoring 2x returns 67%.",
+    "Cap at 100% alone yields 27% conflict / 29% context / 8 clicks with novelty leading; adding context payment yields 22% conflict / 40% context / 7.3 clicks with context leading; the cap marker moves left (81% -> 75%).",
+    "Payment alone at cap 0 leaves conflict at 62% vs 20% context, demonstrating that making room and paying for context are separate levers.",
+    "No horizontal overflow at 390, 320x568, or 1440; pinned sheets fit at both mobile sizes and the desktop stage sticks at y=72.",
+    "Reduced motion: rail absent, reveals at opacity 1 and transform none, all interactions still work.",
+    "Zero console/page errors; axe 0 serious/critical on hub and piece.",
+    "npm test, npm run build, feed-dial smoke, and the Glassbox 01 smoke all pass."
   ],
   "blockers": [],
-  "next_action": "User review of the scrollytelling cut on phone and desktop. No commit, push, or deploy has been made. If approved, choose the next Glassbox piece (artifact economics, the Five Weeks reward loop, or the liar's dividend).",
+  "next_action": "User review of The Feed Dial on phone and desktop. No commit, push, or deploy has been made. On approval, choose the next Glassbox piece (Tell Decay, artifact-generation economics, or the liar's dividend).",
   "review": {
     "mode": "self-review by the author; independent ./meos review unavailable (codex CLI not installed)",
     "verdict": "accept after fixes",
     "findings": [
-      "medium | src/games/glassbox/scrolly.tsx | IntersectionObserver's thin band missed jump/Page Down/scrollbar landings, leaving the pinned stage on step 0 | replaced with one passive scroll listener coalesced into a single rAF that finds the step under a responsive focus line (48% desktop, 64% mobile); smoke now verifies every step activates in all four scenes at 390, 320, and 1440",
-      "medium | src/index.css defense sheet | stage content clipped on mobile (412px of 371px at 390; 254px of 250px at 320) | height-based compaction (hide stage head, lever hint, then copy and Test) plus non-sticky below 520px; measured 333/371 and 199/250, smoke asserts stageClipping []",
-      "low | scripts/glassbox-smoke.mjs | Test lever assertion read mid-animation and reported −₱3,296 | wait 1.5s for the 1.2s spring; now asserts −₱7,875",
-      "low | src/index.css paper emphasis | opacity dimming weakened contrast and step indices sat on a faint tone | emphasis is now background/inset-marker based, --paper-faint darkened, step index uses ink-400; axe clean",
-      "note | native scroll timelines | scroll()/view() are progressive enhancement; browsers without them show all content and hide the rail, by design | reduced-motion and support-gated paths exercised in the smoke"
+      "important | src/index.css .feed-post | at 320px the grid item's automatic minimum width followed the meta row's nowrap text, making the paper 308px wide and the document 343px (23px overflow) | min-width:0 on the grid item lets the handle ellipsis and the card shrink; feed-dial smoke now reports smallOverflow 0",
+      "important | scripts/feed-dial-smoke.mjs | restoring the weight slider by writing el.value directly bypassed React's value tracker, leaving conflict at 0x, which made capToHalveConflict null and hid the cap marker | range changes are now keyboard-driven in the smoke; the production control was correct and now asserts projection 67 -> 82 -> 27 -> 67% and marker 81 -> 75%",
+      "minor | src/games/glassbox/scrolly.tsx | comments still described IntersectionObserver and a 72% mobile focus line | corrected to one passive scroll listener plus rAF and the implemented 64% line",
+      "minor | src/games/glassbox/TheFeedDial.tsx model disclosure | copy said creators move toward 'the genre the ranking pays best', but the model adapts toward a softmax mix across genres | disclosure now names payoff, the 4x softmax, and 12% daily adaptation",
+      "minor | src/games/glassbox/feed-stages.tsx cap copy | fixed copy claimed conflict still led the week, which could be false under custom weights | copy now reads the simulated shares: it states the actual conflict percentage at cap 0 and names whether novelty or conflict leads once context rises",
+      "note | model behavior | the smoke disproved the initial assumption that paying for context alone would unseat conflict; at cap 0 the mix is 62% conflict / 20% context. The UI already framed the cap and payment as two levers, and the smoke now locks that behavior in",
+      "note | short phones | below 720px height the stage hides its header, control hint, cap copy, and lineup footer; the four posts, three stats, lever, and toggle remain, and the step copy carries the explanation",
+      "note | hub markers | both Glassbox cards share data-od-id=glassbox-feature; both smoke drivers now select .first(), and the 02 card has its own href-based locator"
     ]
   },
   "verification": [
-    "npm test — 33/33, including 6 Glassbox model tests",
-    "npm run build — tsc clean; PWA 43 precache entries, 1674.02 KiB; no new dependencies",
-    "node scripts/glassbox-smoke.mjs — exit 0: default/human/AI profits; inactiveSteps []; stageClipping []; dots 0/0 at field and 1/1 at payment; break-even 98.3%; slider and Test both −₱7,875; axe 0; zero console/page errors",
-    "responsive — 320x568 compact stage fits and all steps activate; 1440x900 sticky stage at y=72 and all steps activate; horizontal overflow 0 at both",
-    "reduced motion — reveal opacity 1, transform none, rail absent, lever −₱7,875",
-    "hub — feature and reference shelf load, 4 links, Close label, axe clean",
-    "visual review — hero, ledger, sample, machine, defense at 100%, interlude, close, 320px compact defense, desktop layout"
+    "npm test - 41/41 passing across 6 files, including 8 feed-model tests",
+    "npm run build - tsc clean; The Feed Dial lazy chunk 24.80 kB (7.02 kB gzip); PWA 44 precache entries, 1708.77 KiB",
+    "node scripts/feed-dial-smoke.mjs - exit 0: hub card at 67%, every step active in all four sections, stageClipping [], projection 67/82/27/67%, 35 bars, default 67/13/11, cap-only 27/29/8, cap+payment 22/40/7.3, marker 81 -> 75%, payment-only 62/20, axe 0, zero console/page errors",
+    "responsive - 390x844 and 320x568 pinned sheets fit with all steps active; 1440x900 sticky stage at y=72; horizontal overflow 0 at all three sizes",
+    "reduced motion - reveal opacity 1, transform none, rail display none, cap and payment still interactive (22% conflict / 40% context), overflow 0",
+    "node scripts/glassbox-smoke.mjs - exit 0 after shared scrolly and hub changes: all 01 arithmetic, scene, responsive, reduced-motion, axe, and shelf checks unchanged",
+    "visual review - hub card, hero, lineup, dial, weeks, cap, cap with context paid, close, 320px stage set, and desktop layout"
   ],
   "artifacts": [
-    "Screenshots reviewed in /tmp: glassbox-1-hero.png, glassbox-2-ledger.png, glassbox-3-sample.png, glassbox-4-machine.png, glassbox-5-defense.png, glassbox-6-close.png, glassbox-7-small.png, glassbox-8-desktop.png"
+    "Screenshots reviewed in /tmp: feed-dial-0-hub.png, feed-dial-1-hero.png, feed-dial-2-feed.png, feed-dial-3-dial.png, feed-dial-4-weeks.png, feed-dial-5-cap.png, feed-dial-6-cap-paid.png, feed-dial-7-close.png, feed-dial-8-small.png, feed-dial-9-desktop.png, feed-dial-small-feed.png, feed-dial-small-dial.png, feed-dial-small-weeks.png"
   ]
 }

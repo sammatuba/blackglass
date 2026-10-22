@@ -32,7 +32,7 @@ function LedgerRow({ label, value, lit }: { label: string; value: string; lit: b
   )
 }
 
-function StageHead({ label, stamp, stampOk }: { label: string; stamp: string; stampOk?: boolean }) {
+export function StageHead({ label, stamp, stampOk }: { label: string; stamp: string; stampOk?: boolean }) {
   return (
     <div className="stage-head">
       <p>{label}</p>

@@ -13,8 +13,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
    ===================================================================== */
 
 /* Desktop reads at the middle of the viewport. On mobile the pinned
-   sheet owns the top 44dvh, so the reading line sits at the centre of
-   what is left below it: 72%. */
+   sheet owns the top 44dvh, so the reading line sits at 64%, inside
+   the narrative steps below it. */
 const FOCUS_DESKTOP = 0.48
 const FOCUS_MOBILE = 0.64
 
