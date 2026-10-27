@@ -13,7 +13,7 @@
 1. **Way in:** hub Play CTA now opens the flagship `/blackglass` route instead of `/legacy/blackglass-phones/`; cinematic anchor cold open presents a visible "Pick up the phone" control.
 2. **Way through:** nine authored opening moments carry `openThread` and their buttons actually open the intended chat across all four anchors; no premature story flags.
 3. **Way back:** Messages has an in-app conversations back control and search over **delivered** messages only, with hit-to-thread navigation and emphasis. Cross-app links and images return to their originating conversation via the OS header.
-4. **Inspectable media:** photo bubbles now open their actual Gallery artifact (zoom/compare/tell layer) rather than merely recording evidence; fullscreen gallery handles light-themed phones with a legible dark viewer.
+4. **Inspectable media:** photo bubbles now open their actual Gallery artifact (zoom/compare/tell layer) rather than merely recording evidence; fullscreen gallery handles light-themed phones with a legible dark viewer. Saved Notes can reopen previously discovered photos and browser pages; app back-navigation returns to Notes or the originating conversation.
 5. **Diegesis and legibility:** Notes no longer displays `caseDef.blurb` or the educational lesson inside the fictional phone; saved details are presented as on-device data. Outside-the-phone clue tutorial removed. Notification banners inherit each phone's actual theme; mobile header wraps instead of hiding plot context. Exit copy accurately reflects local save/resume for anthology runs.
 
 The base game remains ten phones, four anchors, Rashomon sequencing, recorded decisions, resumable local-only runs, case evidence, artifact analysis, and Convergence.
@@ -40,7 +40,7 @@ Preserve the principle **complicity before clarity** from `world/guardrails.md`.
 
 ### P1 — Finish phone-native affordances
 
-- Make saved Notes details link back to their original artifact, where possible, without exposing future story content.
+- Extend saved-item deep links to contacts and recordings when their own interfaces can open the specific original; photos and pages already reopen.
 - Audit the viewer's Gallery, Browser, Contacts and Phone transitions: a meaningful back button should not erase the chat context.
 - Audit accessibility of all overlays and Escape behavior; ensure overlays never trap focus irrecoverably.
 - Restore scroll position appropriately when returning to a long thread after inspecting an artifact.
@@ -56,7 +56,7 @@ An additional anchor (`THE ASSISTANT`) has a brief in `craft/maya/_meta/anchor-v
 
 ## Evidence and safety
 
-- Verification available: Cloudflare Workers deployment/build results per GitHub commit; independent **pre-change** Browser Use audits of both public reference and existing anthology; existing automated unit/smoke scripts in `scripts/`.
+- Verification available: Cloudflare Workers deployment/build results per GitHub commit; independent **pre-change** Browser Use audits of both public reference and existing anthology; existing automated unit/smoke scripts in `scripts/`. Cloudflare build configuration now runs `npm test && npm run build` (production and previews); test evidence must be checked on a build started after that change.
 - Do not claim that post-change end-to-end playtests or screenshots have been completed without actually running them.
 - Respect `world/guardrails.md`, `docs/design-system.md`, local-first `cgAI_` persistence, original media, and accessibility.
 - Legacy `play/` experiences remain unchanged. Current live target is [Blackglass Workers](https://blackglass.jansammat26.workers.dev/) connected to GitHub `main`.
