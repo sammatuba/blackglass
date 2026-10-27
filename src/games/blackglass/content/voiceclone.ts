@@ -67,6 +67,7 @@ const TITA_VC: CaseOS = {
     {
       id: 'vc-tita-kitchen',
       label: 'Open Viber',
+      openThread: 'renz',
       text: [
         'The dishes are done. Papa is in the living room with the late news, the volume two notches too high. You haven’t sat down yet — your hands have been wiping the same counter twice because your mind is two suburbs away, with Renz, who texted this morning that his boss is being masama again. You have carried that quietly all day, the way you carry all of them.',
         'The phone chimes on the counter. Not the message sound — the rounder one. A voice message.',
@@ -232,6 +233,7 @@ const MAYA_VC: CaseOS = {
     {
       id: 'vc-maya-wake',
       label: 'Open the family GC',
+      openThread: 'gc',
       text: [
         'Your phone is face-down on the table where you left it after work — a small act of wanting to be done with screens. It did not work. The table is making a sound like bees trapped in glass.',
         'You flip it. Eighteen messages in nine minutes is not normal. Eighteen messages in nine minutes is someone dying, or someone about to ask for money, or Tita Merly believing it’s both.',
@@ -390,6 +392,7 @@ const BEA_VC: CaseOS = {
     {
       id: 'vc-bea-couch',
       label: 'Open Maya',
+      openThread: 'maya4ever',
       text: [
         'You’re on the couch. Laptop open, three tabs, a playlist you’re not really hearing. The council is mid-thread — Janine dropped a link, you’ve screenshotted it, you’re waiting for someone to confirm what you already suspect. This is Tuesday evening: low-urgency everything, pleasant and a little numb.',
         'A Canva tab has been open since the weekend: “Voice Cloning 101,” the webinar you gave four months ago. Slide 12 is still unfinished — “What to do if you receive a cloned call.”',
