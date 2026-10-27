@@ -369,8 +369,6 @@ export function GlassOS({
 
   /* ---------- derived ---------- */
 
-  const evidenceCount = os.evidence.length
-
   const device = useMemo(
     () => (
       <DeviceFrame
@@ -440,43 +438,35 @@ export function GlassOS({
         pulse={pulse}
         ringing={ringing}
         header={
-          <div className="relative z-10 flex w-full items-center justify-between gap-3 pt-4">
+          <div className="relative z-10 flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3 sm:flex-nowrap sm:pt-4">
             <button
               type="button"
               onClick={() => setConfirmExit(true)}
-              className="shrink-0 text-sm text-ink-400 transition-colors hover:text-ink-100"
+              aria-label="Put the phone down"
+              className="order-1 inline-flex min-h-11 shrink-0 items-center gap-1.5 text-sm text-ink-300 transition-colors hover:text-ink-100 sm:order-none"
             >
-              ‹ Put the phone down
+              <span aria-hidden="true">‹</span><span className="sm:hidden">Put down</span><span className="hidden sm:inline">Put the phone down</span>
             </button>
-            <span className="truncate text-[11px] tracking-wide text-ink-400 uppercase">
+            <span className="order-3 w-full text-center text-[11px] leading-relaxed tracking-wide text-ink-300 uppercase sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:truncate">
               {caseDef.level} · {caseDef.tagline}
             </span>
-            <FullscreenToggle />
+            <div className="order-2 shrink-0 sm:order-none"><FullscreenToggle /></div>
           </div>
         }
-        footer={
-          <div className="min-h-10 pt-3">
-            {evidenceCount > 0 && app === null && !locked && (
-              <p className="text-center text-xs text-ink-400" aria-live="polite">
-                🧩 clues found this case: <span className="font-semibold text-ink-300">{evidenceCount}</span> — they’re in
-                Notes
-              </p>
-            )}
-          </div>
-        }
+        footer={<div className="min-h-5" aria-hidden="true" />}
       >
         <div className="relative w-full">
           {device}
           {/* notification banners ride with the device; tap to open the thread.
               They sit below the app header so nav controls stay reachable. */}
-          <div className="pointer-events-none absolute left-1/2 top-18 z-50 w-[88%] -translate-x-1/2 space-y-2">
+          <div className={`os-skin ${caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''} pointer-events-none absolute left-1/2 top-18 z-50 w-[88%] -translate-x-1/2 space-y-2`}>
             {banners.map((b) => (
               <button
                 key={b.id}
                 type="button"
                 data-banner
                 onClick={() => openApp('messages', { threadId: b.threadId })}
-                className="animate-banner pointer-events-auto block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/95 px-4 py-3 text-left shadow-2xl backdrop-blur-md"
+                className="animate-banner pointer-events-auto block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left text-[var(--os-ink)] shadow-2xl backdrop-blur-md"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-2xs font-bold tracking-wide text-[var(--os-dim)] uppercase">
@@ -889,7 +879,7 @@ function HomeScreen({
 
       <div className="mt-auto">
         <div className="mx-auto mb-4 w-max rounded-full bg-[var(--os-chip)] px-4 py-1 text-2xs text-[var(--os-dim)]">
-          {os.evidence.length > 0 ? `🧩 ${os.evidence.length} clue${os.evidence.length > 1 ? 's' : ''} in Notes` : 'glassOS 4.0'}
+          {os.evidence.length > 0 ? `${os.evidence.length} saved in Notes` : 'glassOS 4.0'}
         </div>
         <div className="flex items-center justify-around rounded-3xl bg-[var(--os-chip)] px-4 py-3 backdrop-blur-md">
           {dockApps.map(({ id, badge }) => {
