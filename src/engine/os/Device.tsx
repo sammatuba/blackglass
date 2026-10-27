@@ -53,6 +53,7 @@ export function GlassOS({
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
   const [galleryPhotoId, setGalleryPhotoId] = useState<string | null>(null)
+  const [returnTo, setReturnTo] = useState<{ app: AppId; threadId: string | null; browserPage: string | null } | null>(null)
   const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
@@ -69,8 +70,8 @@ export function GlassOS({
   const completedRef = useRef(false)
   const lockedRef = useRef(locked)
   lockedRef.current = locked
-  const viewRef = useRef<{ app: AppId | null; threadId: string | null }>({ app: null, threadId: null })
-  viewRef.current = { app, threadId }
+  const viewRef = useRef<{ app: AppId | null; threadId: string | null; browserPage: string | null }>({ app: null, threadId: null, browserPage: null })
+  viewRef.current = { app, threadId, browserPage }
   const bannerId = useRef(0)
   const changeRef = useRef(onStateChange)
   changeRef.current = onStateChange
@@ -251,6 +252,12 @@ export function GlassOS({
   const openApp = useCallback((id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => {
     sfx.open()
     vibrate(8)
+    const from = viewRef.current
+    // An attachment or link crosses apps, but the way back should lead to
+    // the conversation you were reading, not to an unrelated home screen.
+    if (from.app !== id) {
+      setReturnTo(from.app ? { app: from.app, threadId: from.threadId, browserPage: from.browserPage } : null)
+    }
     setApp(id)
     setGalleryPhotoId(id === 'gallery' ? opts?.photoId ?? null : null)
     if (opts?.threadId) setThreadId(opts.threadId)
@@ -262,8 +269,19 @@ export function GlassOS({
     setApp(null)
     setThreadId(null)
     setGalleryPhotoId(null)
+    setReturnTo(null)
     setShadeOpen(false)
   }, [])
+
+  const goBack = useCallback(() => {
+    if (!returnTo) { goHome(); return }
+    sfx.open()
+    setApp(returnTo.app)
+    setThreadId(returnTo.threadId)
+    setBrowserPage(returnTo.browserPage)
+    setGalleryPhotoId(null)
+    setReturnTo(null)
+  }, [returnTo, goHome])
 
   /** pull down the notification shade; clears the unread count */
   const openShade = useCallback(() => {
@@ -384,6 +402,8 @@ export function GlassOS({
         threadId={threadId}
         browserPage={browserPage}
         galleryPhotoId={galleryPhotoId}
+        backApp={returnTo?.app ?? null}
+        onGoBack={goBack}
         os={os}
         typingIn={typingIn}
         onOpenApp={openApp}
@@ -429,7 +449,7 @@ export function GlassOS({
         onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, returnTo, goBack, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -538,6 +558,8 @@ function DeviceFrame(props: {
   threadId: string | null
   browserPage: string | null
   galleryPhotoId: string | null
+  backApp: AppId | null
+  onGoBack: () => void
   os: OSState
   typingIn: string | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
@@ -918,6 +940,8 @@ function AppSurface(props: {
   threadId: string | null
   browserPage: string | null
   galleryPhotoId: string | null
+  backApp: AppId | null
+  onGoBack: () => void
   os: OSState
   typingIn: string | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
@@ -956,8 +980,8 @@ function AppSurface(props: {
       <div className="mt-9 flex items-center gap-2 px-4 pb-2">
         <button
           type="button"
-          onClick={props.onGoHome}
-          aria-label="Back to home"
+          onClick={props.onGoBack}
+          aria-label={props.backApp ? `Back to ${APP_META[props.backApp].name}` : 'Back to home'}
           className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-sm text-[var(--os-ink)] transition-colors hover:bg-[var(--os-hover)] before:absolute before:-inset-2 before:content-['']"
         >
           ‹
