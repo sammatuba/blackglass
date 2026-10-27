@@ -52,6 +52,7 @@ export function GlassOS({
   const [app, setApp] = useState<AppId | null>(null)
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
+  const [galleryPhotoId, setGalleryPhotoId] = useState<string | null>(null)
   const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
@@ -247,10 +248,11 @@ export function GlassOS({
 
   /* ---------- navigation ---------- */
 
-  const openApp = useCallback((id: AppId, opts?: { threadId?: string; pageId?: string }) => {
+  const openApp = useCallback((id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => {
     sfx.open()
     vibrate(8)
     setApp(id)
+    setGalleryPhotoId(id === 'gallery' ? opts?.photoId ?? null : null)
     if (opts?.threadId) setThreadId(opts.threadId)
     if (opts?.pageId) setBrowserPage(opts.pageId)
   }, [])
@@ -259,6 +261,7 @@ export function GlassOS({
     sfx.open()
     setApp(null)
     setThreadId(null)
+    setGalleryPhotoId(null)
     setShadeOpen(false)
   }, [])
 
@@ -380,6 +383,7 @@ export function GlassOS({
         app={app}
         threadId={threadId}
         browserPage={browserPage}
+        galleryPhotoId={galleryPhotoId}
         os={os}
         typingIn={typingIn}
         onOpenApp={openApp}
@@ -425,7 +429,7 @@ export function GlassOS({
         onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -533,9 +537,10 @@ function DeviceFrame(props: {
   app: AppId | null
   threadId: string | null
   browserPage: string | null
+  galleryPhotoId: string | null
   os: OSState
   typingIn: string | null
-  onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string }) => void
+  onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void
   onOpenPage: (id: string) => void
@@ -912,9 +917,10 @@ function AppSurface(props: {
   app: AppId
   threadId: string | null
   browserPage: string | null
+  galleryPhotoId: string | null
   os: OSState
   typingIn: string | null
-  onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string }) => void
+  onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void
   onOpenPage: (id: string) => void
@@ -929,9 +935,9 @@ function AppSurface(props: {
   const inner = (() => {
     switch (app) {
       case 'messages':
-        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onForward={props.onForward} />
+        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onOpenPhoto={(id) => props.onOpenApp('gallery', { photoId: id })} onForward={props.onForward} />
       case 'gallery':
-        return <GalleryApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
+        return <GalleryApp caseDef={props.caseDef} os={props.os} initialPhotoId={props.galleryPhotoId} onInspect={props.onInspect} />
       case 'phone':
         return <PhoneApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
       case 'browser':
