@@ -972,7 +972,12 @@ function AppSurface(props: {
       case 'contacts':
         return <ContactsApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
       case 'notes':
-        return <NotesApp caseDef={props.caseDef} os={props.os} />
+        return <NotesApp caseDef={props.caseDef} os={props.os} onOpenSource={(evidenceId) => {
+          const photo = props.caseDef.photos.find((p) => p.evidence === evidenceId)
+          if (photo) { props.onOpenApp('gallery', { photoId: photo.id }); return }
+          const page = props.caseDef.pages.find((p) => p.evidence === evidenceId)
+          if (page) props.onOpenApp('browser', { pageId: page.id })
+        }} />
       case 'settings':
         return <SettingsApp caseDef={props.caseDef} os={props.os} onBrightness={props.onBrightness} />
     }
