@@ -28,7 +28,7 @@ export function MessagesApp({
   onCloseThread,
   onSendReply,
   onOpenPage,
-  onInspect,
+  onOpenPhoto,
   onForward,
 }: {
   caseDef: CaseOS
@@ -39,7 +39,7 @@ export function MessagesApp({
   onCloseThread: () => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
-  onInspect: (id: string, evidence?: string) => void
+  onOpenPhoto: (id: string) => void
   onForward: (msg: OSMessage, toThreadId: string) => void
 }) {
   const caseOver = !!os.flags[caseDef.endFlag]
@@ -63,7 +63,7 @@ export function MessagesApp({
       caseOver={caseOver}
       onSendReply={onSendReply}
       onOpenPage={onOpenPage}
-      onInspect={onInspect}
+      onOpenPhoto={onOpenPhoto}
       onForward={onForward}
     />
   )
@@ -211,7 +211,7 @@ function Conversation({
   caseOver,
   onSendReply,
   onOpenPage,
-  onInspect,
+  onOpenPhoto,
   onForward,
 }: {
   caseDef: CaseOS
@@ -223,7 +223,7 @@ function Conversation({
   caseOver: boolean
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
-  onInspect: (id: string, evidence?: string) => void
+  onOpenPhoto: (id: string) => void
   onForward: (msg: OSMessage, toThreadId: string) => void
 }) {
   const msgs = visibleMessages(os, thread.id)
@@ -347,7 +347,7 @@ function Conversation({
                     type="button"
                     onClick={() => {
                       sfx.open()
-                      if (m.photoId) onInspect(m.photoId, caseDef.photos.find((p) => p.id === m.photoId)?.evidence)
+                      if (m.photoId) onOpenPhoto(m.photoId)
                     }}
                     className="block w-full text-left"
                   >
@@ -654,13 +654,15 @@ function VoiceBubble({
 export function GalleryApp({
   caseDef,
   os,
+  initialPhotoId,
   onInspect,
 }: {
   caseDef: CaseOS
   os: OSState
+  initialPhotoId?: string | null
   onInspect: (id: string, evidence?: string) => void
 }) {
-  const [openId, setOpenId] = useState<string | null>(null)
+  const [openId, setOpenId] = useState<string | null>(initialPhotoId ?? null)
   const [zoom, setZoom] = useState(false)
   const [compareWith, setCompareWith] = useState<string | null>(null)
   const [picking, setPicking] = useState(false)
