@@ -77,7 +77,7 @@ export default function Hub() {
                   Start scam training →
                 </Link>
                 <Link
-                  to="/legacy/blackglass-phones/"
+                  to="/blackglass"
                   className="rounded-full border border-ink-600 px-6 py-3 text-sm font-semibold text-ink-100 transition-colors duration-200 hover:border-play hover:text-play"
                 >
                   Play the anthology
