@@ -154,9 +154,9 @@ function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index:
         <button
           type="button"
           onClick={finish}
-          className="text-[12px] font-semibold tracking-[0.2em] text-ink-100 uppercase"
+          className="inline-flex min-h-12 items-center gap-3 rounded-full border border-play/40 bg-play/10 px-5 py-3 text-[12px] font-semibold tracking-[0.15em] text-ink-100 uppercase transition-colors hover:border-play/75 hover:bg-play/15"
         >
-          tap to begin
+          Pick up the phone <span aria-hidden="true" className="text-play">›</span>
         </button>
       </div>
       <div className={`${line(5)} mt-6 h-px w-56 max-w-full overflow-hidden bg-ink-800`} aria-hidden="true">
