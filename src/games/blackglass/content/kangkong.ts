@@ -141,6 +141,7 @@ const MAYA: CaseOS = {
     {
       id: 'maya-wake',
       label: 'Open the family GC',
+      openThread: 'gc',
       text: [
         'Your hand finds it before your eyes do.',
         'This is not a thing you do. This is a thing that happens — wrist rotating, fingers crossing the sheet, thumb arriving at glass like it has been called home. You are still inside the blurred edge of a dream about nothing. The muscle is already deciding.',
@@ -467,6 +468,7 @@ const BEA: CaseOS = {
     {
       id: 'bea-awake',
       label: 'Open Maya first',
+      openThread: 'maya4ever',
       text: [
         'You’ve been awake since six. Insomnia, the usual cocktail — cortisol and scrolling, neither one helping the other. A full loop through TikTok, three Reddit threads, the wordle, twenty minutes of a documentary you’ve seen before. Your back hurts. You did not get up to stretch. You are horizontal and in a rich information environment and this is fine.',
         'Your phone registers seven new notifications in the last four minutes. You count them the way other people count sheep.',
