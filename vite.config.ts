@@ -4,7 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { VitePWA } from 'vite-plugin-pwa'
 
-const BASE = '/blackglass/'
+// GitHub Pages uses a subpath; Cloudflare Pages serves the site at the root.
+const BASE = process.env.CF_PAGES ? '/' : '/blackglass/'
 
 export default defineConfig({
   base: BASE,
@@ -41,7 +42,7 @@ export default defineConfig({
       workbox: {
         navigateFallback: BASE,
         // iframe navigations into legacy apps must load their own HTML
-        navigateFallbackDenylist: [/^\/blackglass\/legacy\//],
+        navigateFallbackDenylist: [/^\/(?:blackglass\/)?legacy\//],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         // Capability-gated/runtime-loaded media stays out of the precache:
         // the hero chunk (reduced-motion / low-RAM devices get the CSS
