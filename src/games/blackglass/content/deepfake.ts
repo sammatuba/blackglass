@@ -99,6 +99,7 @@ const TITA_DF: CaseOS = {
     {
       id: 'df-tita-sunday',
       label: 'Open Viber',
+      openThread: 'linda',
       text: [
         'Sunday afternoon. The kitchen is clean, Papa is napping, the TV is still on Channel 2 out of thirty years of habit. The afternoon stretches the gentle way Sundays do — mass done, lunch settled, the fan turning.',
         'The phone chimes. Not the short ping — the rounder Viber sound.',
@@ -238,6 +239,7 @@ const MAYA_DF: CaseOS = {
     {
       id: 'df-maya-couch',
       label: 'Open the GC',
+      openThread: 'gc',
       text: [
         'The couch has that Sunday-afternoon gravity. You’ve been pretending to read a design article for forty minutes. Your phone is in your hand the way a rosary is in a lola’s.',
         'It buzzes. The family GC, awake.',
@@ -356,6 +358,7 @@ const BEA_DF: CaseOS = {
     {
       id: 'df-bea-doc',
       label: 'Open Maya',
+      openThread: 'maya4ever',
       text: [
         'The good kind of focus — Notion, Canva, the debunk doc. You opened that doc at 2:47 when Janine dropped the link in the council GC with “THIS ONE’S BIG.” You are very good at this.',
       ],
