@@ -4,10 +4,10 @@ import tailwindcss from '@tailwindcss/vite'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// GitHub Pages uses a subpath; Cloudflare Pages serves the site at the root.
-// Cloudflare injects CF_PAGES during builds; this config is typechecked without Node types.
-declare const process: { env: { CF_PAGES?: string } }
-const BASE = process.env.CF_PAGES ? '/' : '/blackglass/'
+// GitHub Pages uses /blackglass/; Cloudflare Pages and Workers host at /.
+// CF_PAGES and WORKERS_CI are supplied by Cloudflare's respective build systems.
+declare const process: { env: { CF_PAGES?: string; WORKERS_CI?: string } }
+const BASE = process.env.CF_PAGES || process.env.WORKERS_CI ? '/' : '/blackglass/'
 
 export default defineConfig({
   base: BASE,
