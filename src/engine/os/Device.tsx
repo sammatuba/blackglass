@@ -354,11 +354,18 @@ export function GlassOS({
   )
 
   const dismissMoment = useCallback(() => {
+    const momentId = osRef.current.moment
+    const destination = caseDef.moments?.find((m) => m.id === momentId)?.openThread
     const s = closeMoment(osRef.current)
     osRef.current = s
     setOS(s)
+    // The button says "Open the family GC" — it must really take the player
+    // into that conversation, not make them hunt through a launcher first.
+    if (destination && caseDef.threads.some((t) => t.id === destination)) {
+      openApp('messages', { threadId: destination })
+    }
     bump()
-  }, [bump])
+  }, [bump, caseDef, openApp])
 
   /* ---------- derived ---------- */
 
