@@ -321,12 +321,15 @@ export function GlassOS({
       if (e.key === 'Enter' && locked) unlock()
       if (e.key === 'Escape' && !locked) {
         if (os.call && os.call.phase === 'incoming') return // must answer
-        if (app) goHome()
+        // Let a photo viewer, forward sheet or prose moment handle Escape
+        // without accidentally leaving the whole app behind it.
+        if (document.querySelector('.device-frame [role="dialog"]')) return
+        if (app) goBack()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [locked, unlock, goHome, app, os.call, confirmExit, shadeOpen])
+  }, [locked, unlock, goBack, app, os.call, confirmExit, shadeOpen])
 
   /* ---------- call sound loop ---------- */
   useEffect(() => {
