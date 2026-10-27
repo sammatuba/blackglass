@@ -52,6 +52,7 @@ const BEA_5W: CaseOS = {
     {
       id: 'w1-open',
       label: 'Open the feed',
+      openThread: 'feed',
       text: [
         '9:14 PM, a Tuesday. Laptop glow to your left, council GC to your right — but you’re here, on the feed, scrolling the way you always do after a long document review. Muscle memory for something easier than thinking.',
         'You posted something this afternoon. Between meetings, the kind of thing you’d normally just think and let dissolve. You typed it instead:',
