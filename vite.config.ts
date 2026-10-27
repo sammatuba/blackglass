@@ -5,6 +5,8 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // GitHub Pages uses a subpath; Cloudflare Pages serves the site at the root.
+// Cloudflare injects CF_PAGES during builds; this config is typechecked without Node types.
+declare const process: { env: { CF_PAGES?: string } }
 const BASE = process.env.CF_PAGES ? '/' : '/blackglass/'
 
 export default defineConfig({
