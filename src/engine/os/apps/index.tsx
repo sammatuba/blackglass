@@ -25,6 +25,7 @@ export function MessagesApp({
   typingIn,
   activeThreadId,
   onOpenThread,
+  onCloseThread,
   onSendReply,
   onOpenPage,
   onInspect,
@@ -35,14 +36,19 @@ export function MessagesApp({
   typingIn: string | null
   activeThreadId: string | null
   onOpenThread: (id: string) => void
+  onCloseThread: () => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onOpenPage: (id: string) => void
   onInspect: (id: string, evidence?: string) => void
   onForward: (msg: OSMessage, toThreadId: string) => void
 }) {
   const caseOver = !!os.flags[caseDef.endFlag]
+  const [query, setQuery] = useState('')
+  const [focusMessageId, setFocusMessageId] = useState<string | null>(null)
   if (!activeThreadId) {
-    return <ThreadList caseDef={caseDef} os={os} onOpenThread={onOpenThread} />
+    return <ThreadList caseDef={caseDef} os={os} query={query} onQuery={setQuery}
+      onOpenThread={(id) => { setFocusMessageId(null); onOpenThread(id) }}
+      onOpenMessage={(id, messageId) => { setFocusMessageId(messageId); onOpenThread(id) }} />
   }
   const thread = caseDef.threads.find((t) => t.id === activeThreadId)
   if (!thread) return <EmptyState icon="💬" title="Conversation not found" />
@@ -51,6 +57,8 @@ export function MessagesApp({
       caseDef={caseDef}
       os={os}
       thread={thread}
+      focusMessageId={focusMessageId}
+      onBack={() => { setFocusMessageId(null); onCloseThread() }}
       typing={typingIn === thread.id}
       caseOver={caseOver}
       onSendReply={onSendReply}
@@ -64,12 +72,19 @@ export function MessagesApp({
 function ThreadList({
   caseDef,
   os,
+  query,
+  onQuery,
   onOpenThread,
+  onOpenMessage,
 }: {
   caseDef: CaseOS
   os: OSState
+  query: string
+  onQuery: (value: string) => void
   onOpenThread: (id: string) => void
+  onOpenMessage: (threadId: string, messageId: string) => void
 }) {
+  const q = query.trim().toLocaleLowerCase()
   const rows = caseDef.threads.map((t) => {
     const msgs = visibleMessages(os, t.id)
     const last = msgs[msgs.length - 1]
@@ -82,43 +97,101 @@ function ThreadList({
     )
     return { t, last, offered, count: msgs.length }
   })
+  // Search only messages that have actually arrived. Never index future story
+  // beats: finding a message should be discovery, not a way to skip a reveal.
+  const results = q
+    ? caseDef.threads.flatMap((thread) =>
+        visibleMessages(os, thread.id).flatMap((message) => {
+          const page = caseDef.pages.find((p) => p.id === message.pageId)
+          const photo = caseDef.photos.find((p) => p.id === message.photoId)
+          const preview = message.text || message.caption || page?.title || photo?.title ||
+            (message.kind === 'voice' ? 'Voice message' : '')
+          const haystack = [message.text, message.caption, page?.title, page?.url, photo?.title, message.at]
+            .filter(Boolean).join(' ').toLocaleLowerCase()
+          return haystack.includes(q) ? [{ thread, message, preview }] : []
+        }),
+      ).reverse().slice(0, 60)
+    : []
+
   return (
     <div className="h-full overflow-y-auto pb-6">
-      {rows.map(({ t, last, offered, count }) =>
-        count === 0 && !offered ? null : (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => onOpenThread(t.id)}
-            className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--os-hover)]"
-          >
-            <Avatar name={t.name} hue={t.hue} />
-            <span className="min-w-0 flex-1">
-              <span className="flex items-baseline gap-2">
-                <span className="truncate text-[14px] font-bold text-[var(--os-ink)]">{t.name}</span>
-                {last?.at && <span className="ml-auto shrink-0 text-2xs text-[var(--os-faint)]">{last.at}</span>}
+      <div className="sticky top-0 z-10 border-b border-[var(--os-hairline)] bg-[var(--os-bg)]/95 px-3 pb-3 pt-1 backdrop-blur-lg">
+        <label htmlFor="messages-search" className="sr-only">Search message history</label>
+        <input
+          id="messages-search"
+          type="search"
+          value={query}
+          onChange={(e) => onQuery(e.target.value)}
+          placeholder="Search messages…"
+          className="min-h-11 w-full rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5 text-[13px] text-[var(--os-ink)] placeholder:text-[var(--os-faint)]"
+        />
+      </div>
+      {q ? (
+        <div>
+          <p className="px-4 py-3 text-[11px] text-[var(--os-dim)]" role="status">
+            {results.length === 60 ? '60+' : results.length} {results.length === 1 ? 'message' : 'messages'} found
+          </p>
+          {results.length === 0 && (
+            <p className="px-4 py-8 text-center text-[12px] text-[var(--os-faint)]">
+              Nothing in your conversations matches “{query.trim()}”.
+            </p>
+          )}
+          {results.map(({ thread, message, preview }) => (
+            <button
+              key={thread.id + ':' + message.id}
+              type="button"
+              onClick={() => onOpenMessage(thread.id, message.id)}
+              aria-label={`Open message from ${thread.name}: ${preview}`}
+              className="flex min-h-16 w-full items-start gap-3 border-b border-[var(--os-hairline)] px-4 py-3 text-left transition-colors hover:bg-[var(--os-hover)]"
+            >
+              <Avatar name={thread.name} hue={thread.hue} size="sm" />
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline gap-2">
+                  <span className="truncate text-[13px] font-semibold text-[var(--os-ink)]">{thread.name}</span>
+                  <span className="ml-auto shrink-0 text-2xs text-[var(--os-faint)]">{message.at ?? ''}</span>
+                </span>
+                <span className="mt-1 line-clamp-2 block text-[12px] leading-snug text-[var(--os-dim)]">
+                  {message.from === 'you' ? 'You: ' : ''}{preview}
+                </span>
               </span>
-              <span className={`mt-0.5 line-clamp-1 block text-[12.5px] ${offered ? 'font-semibold text-[var(--os-ink)]' : 'text-[var(--os-dim)]'}`}>
-                {typingHint(t.id, caseDef, os) ? (
-                  <span className="italic text-[var(--os-accent)]">typing…</span>
-                ) : last ? (
-                  `${last.from === 'you' ? 'You: ' : ''}${
-                    last.kind === 'voice'
-                      ? '🎙️ Voice message'
-                      : last.kind === 'photo'
-                        ? '📷 Photo'
-                        : last.kind === 'link'
-                          ? '🔗 ' + (caseDef.pages.find((p) => p.id === last.pageId)?.url ?? 'Link')
-                          : last.text
-                  }`
-                ) : (
-                  ' '
-                )}
+            </button>
+          ))}
+        </div>
+      ) : (
+        rows.map(({ t, last, offered, count }) =>
+          count === 0 && !offered ? null : (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => onOpenThread(t.id)}
+              className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--os-hover)]"
+            >
+              <Avatar name={t.name} hue={t.hue} />
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline gap-2">
+                  <span className="truncate text-[14px] font-bold text-[var(--os-ink)]">{t.name}</span>
+                  {last?.at && <span className="ml-auto shrink-0 text-2xs text-[var(--os-faint)]">{last.at}</span>}
+                </span>
+                <span className={`mt-0.5 line-clamp-1 block text-[12.5px] ${offered ? 'font-semibold text-[var(--os-ink)]' : 'text-[var(--os-dim)]'}`}>
+                  {typingHint(t.id, caseDef, os) ? (
+                    <span className="italic text-[var(--os-accent)]">typing…</span>
+                  ) : last ? (
+                    `${last.from === 'you' ? 'You: ' : ''}${
+                      last.kind === 'voice'
+                        ? '🎙️ Voice message'
+                        : last.kind === 'photo'
+                          ? '📷 Photo'
+                          : last.kind === 'link'
+                            ? '🔗 ' + (caseDef.pages.find((p) => p.id === last.pageId)?.url ?? 'Link')
+                            : last.text
+                    }`
+                  ) : (' ')}
+                </span>
               </span>
-            </span>
-            {offered && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--os-accent)]" aria-label="Your reply is being asked for" />}
-          </button>
-        ),
+              {offered && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--os-accent)]" aria-label="Your reply is being asked for" />}
+            </button>
+          ),
+        )
       )}
     </div>
   )
@@ -132,6 +205,8 @@ function Conversation({
   caseDef,
   os,
   thread,
+  focusMessageId,
+  onBack,
   typing,
   caseOver,
   onSendReply,
@@ -142,6 +217,8 @@ function Conversation({
   caseDef: CaseOS
   os: OSState
   thread: CaseOS['threads'][number]
+  focusMessageId: string | null
+  onBack: () => void
   typing: boolean
   caseOver: boolean
   onSendReply: (reply: CaseOS['replies'][number]) => void
@@ -198,8 +275,11 @@ function Conversation({
   }
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
-  }, [msgs.length, typing, offered.length])
+    // Search hits open on the exact message, not on the newest reply.
+    const found = focusMessageId && document.querySelector(`[data-msg="${focusMessageId}"]`)
+    if (found) found.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    else endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [msgs.length, typing, offered.length, focusMessageId])
 
   const playVoice = (m: OSMessage) => {
     playedVoice.current.add(m.id)
@@ -209,7 +289,9 @@ function Conversation({
   return (
     <div className="relative flex h-full flex-col">
       {/* header */}
-      <div className="flex items-center gap-2.5 border-b border-[var(--os-hairline)] px-4 py-2.5">
+      <div className="flex items-center gap-2.5 border-b border-[var(--os-hairline)] px-3 py-2.5">
+        <button type="button" onClick={onBack} aria-label="Back to conversations"
+          className="grid h-10 w-7 shrink-0 place-items-center rounded-full text-xl text-[var(--os-accent)]">‹</button>
         <Avatar name={thread.name} hue={thread.hue} size="sm" />
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13.5px] font-bold text-[var(--os-ink)]">{thread.name}</div>
@@ -245,7 +327,7 @@ function Conversation({
           }
           const out = m.from === 'you'
           return (
-            <div key={m.id} data-msg={m.id} data-from={m.from} className={`flex ${out ? 'justify-end' : 'justify-start'}`}>
+            <div key={m.id} data-msg={m.id} data-from={m.from} className={`flex ${out ? 'justify-end' : 'justify-start'} ${focusMessageId === m.id ? 'rounded-xl ring-2 ring-[var(--os-accent)] ring-offset-2 ring-offset-[var(--os-bg)]' : ''}`}>
               <div
                 className={`max-w-[82%] ${
                   m.kind === 'callcard'
