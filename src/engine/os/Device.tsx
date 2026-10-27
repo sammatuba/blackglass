@@ -379,6 +379,7 @@ export function GlassOS({
         typingIn={typingIn}
         onOpenApp={openApp}
         onOpenThread={(tid) => openApp('messages', { threadId: tid })}
+        onCloseThread={() => setThreadId(null)}
         onOpenPage={(pid) => openApp('browser', { pageId: pid })}
         onGoHome={goHome}
         onInspect={(id, evidence) => {
@@ -494,7 +495,9 @@ export function GlassOS({
           <div className="w-full max-w-xs rounded-2xl border border-ink-700 bg-ink-800/95 p-5 shadow-2xl">
             <h2 className="font-display text-lg font-semibold text-ink-100">Put the phone down?</h2>
             <p className="mt-1.5 text-[13px] leading-relaxed text-ink-400">
-              The case resets when you return — evidence and all.
+              {onStateChange
+                ? 'Your messages, decisions, and discoveries are saved on this device. Pick it up again whenever you like.'
+                : 'Your progress in this case will reset when you leave.'}
             </p>
             <div className="mt-4 flex gap-2">
               <button
@@ -537,6 +540,7 @@ function DeviceFrame(props: {
   typingIn: string | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string }) => void
   onOpenThread: (id: string) => void
+  onCloseThread: () => void
   onOpenPage: (id: string) => void
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
@@ -915,6 +919,7 @@ function AppSurface(props: {
   typingIn: string | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string }) => void
   onOpenThread: (id: string) => void
+  onCloseThread: () => void
   onOpenPage: (id: string) => void
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
@@ -927,7 +932,7 @@ function AppSurface(props: {
   const inner = (() => {
     switch (app) {
       case 'messages':
-        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onForward={props.onForward} />
+        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onForward={props.onForward} />
       case 'gallery':
         return <GalleryApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
       case 'phone':
