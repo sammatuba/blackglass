@@ -1188,11 +1188,15 @@ export function ContactsApp({
    NOTES
    ===================================================================== */
 
-export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
+export function NotesApp({ caseDef, os, onOpenSource }: { caseDef: CaseOS; os: OSState; onOpenSource: (evidenceId: string) => void }) {
   const [query, setQuery] = useState('')
   const q = query.trim().toLowerCase()
   const evidence = os.evidence
-    .map((id) => ({ id, label: caseDef.evidenceLabels?.[id] ?? id }))
+    .map((id) => ({
+      id,
+      label: caseDef.evidenceLabels?.[id] ?? id,
+      hasSource: caseDef.photos.some((p) => p.evidence === id) || caseDef.pages.some((p) => p.evidence === id),
+    }))
     .filter((e) => !q || e.label.toLowerCase().includes(q) || e.id.toLowerCase().includes(q))
   const notes = caseDef.notes.filter((n) => !q || n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q))
   const searchable = os.evidence.length + caseDef.notes.length
@@ -1242,8 +1246,16 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
       ) : (
         <ul className="mt-2 space-y-1.5">
           {evidence.map((e) => (
-            <li key={e.id} className="flex gap-2 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-2 text-[12.5px] leading-relaxed text-[var(--os-ink)]">
-              <span className="text-[var(--os-accent)]" aria-hidden="true">⌑</span> {e.label}
+            <li key={e.id} className="flex min-h-12 items-center gap-2 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-1.5 text-[12.5px] leading-relaxed text-[var(--os-ink)]">
+              <span className="shrink-0 text-[var(--os-accent)]" aria-hidden="true">⌑</span>
+              <span className="min-w-0 flex-1">{e.label}</span>
+              {e.hasSource && (
+                <button type="button" onClick={() => onOpenSource(e.id)}
+                  aria-label={`Open original: ${e.label}`}
+                  className="min-h-11 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-[var(--os-accent)] transition-colors hover:bg-[var(--os-hover)]">
+                  Open ↗
+                </button>
+              )}
             </li>
           ))}
         </ul>
