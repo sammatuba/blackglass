@@ -1196,21 +1196,21 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
   const searchable = os.evidence.length + caseDef.notes.length
   return (
     <div className="h-full overflow-y-auto px-4 pb-8">
-      <div className="mt-1 rounded-2xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] p-4">
-        <div className="text-2xs font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Case notes</div>
-        <p className="mt-1 text-[12.5px] leading-relaxed text-[var(--os-ink)]">{caseDef.blurb}</p>
+      <div className="mt-1 flex items-center justify-between gap-3 border-b border-[var(--os-hairline)] py-2.5">
+        <span className="text-[12px] font-semibold text-[var(--os-ink)]">On my phone</span>
+        <span className="text-2xs tabular-nums text-[var(--os-faint)]">{caseDef.notes.length} {caseDef.notes.length === 1 ? 'note' : 'notes'}</span>
       </div>
 
       <div className="relative mt-4">
         <label htmlFor="notes-search" className="sr-only">
-          Search notes and evidence
+          Search notes and saved details
         </label>
         <input
           id="notes-search"
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search notes & evidence…"
+          placeholder="Search notes…"
           className="w-full rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5 text-[12.5px] text-[var(--os-ink)] placeholder:text-[var(--os-faint)]"
         />
         {query && (
@@ -1230,18 +1230,18 @@ export function NotesApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
         </p>
       )}
 
-      <h3 className="mt-5 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Evidence collected · {evidence.length}</h3>
+      <h3 className="mt-5 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Saved details · {evidence.length}</h3>
       {evidence.length === 0 ? (
         <p className="mt-2 text-xs leading-relaxed text-[var(--os-faint)]">
           {q
-            ? 'No evidence matches.'
-            : 'Nothing yet. Evidence appears here when you inspect photos, numbers, and pages — the way you would on a real phone.'}
+            ? 'No saved details match.'
+            : 'Nothing saved yet.'}
         </p>
       ) : (
         <ul className="mt-2 space-y-1.5">
           {evidence.map((e) => (
             <li key={e.id} className="flex gap-2 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-2 text-[12.5px] leading-relaxed text-[var(--os-ink)]">
-              <span className="text-[var(--os-accent)]" aria-hidden="true">✓</span> {e.label}
+              <span className="text-[var(--os-accent)]" aria-hidden="true">⌑</span> {e.label}
             </li>
           ))}
         </ul>
