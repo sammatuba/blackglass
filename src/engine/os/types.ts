@@ -181,6 +181,9 @@ export interface OSMoment {
   text: string[]
   /** continue-button label; defaults to "Continue" */
   label?: string
+  /** the real conversation to open when the interstitial button names one.
+      Optional so reflective/end moments still return to the current app. */
+  openThread?: string
 }
 
 export interface OSNote {
