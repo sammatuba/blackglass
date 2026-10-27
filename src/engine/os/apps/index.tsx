@@ -730,7 +730,7 @@ export function GalleryApp({
       )}
 
       {open && (
-        <div className="absolute inset-0 z-50 flex animate-fadein flex-col bg-[#05070d] p-4 pt-10" role="dialog" aria-label={`Photo: ${open.title}`}>
+        <div className="os-skin absolute inset-0 z-50 flex animate-fadein flex-col bg-[#05070d] p-4 pt-10" role="dialog" aria-label={`Photo: ${open.title}`}>
           <div className="flex items-center justify-between gap-2">
             <button
               type="button"
