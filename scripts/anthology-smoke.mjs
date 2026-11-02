@@ -67,7 +67,7 @@ const gotoGame = async () => {
   // wait for networkidle on it — a 404 document can leave the request hung
   const direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
   if (!direct?.ok()) {
-    await gotoWithRetry(page, `${BASE}/`)
+    await gotoWithRetry(page, `${BASE}/blackglass/`)
     const card = page.getByRole('link', { name: /Three phones\. One morning/i }).first()
     await card.waitFor({ state: 'visible', timeout: 15000 })
     await card.click()
