@@ -2,6 +2,7 @@ import type { AppId } from '../types'
 
 export const APP_META: Record<AppId, { name: string; icon: string; tile: string }> = {
   messages: { name: 'Messages', icon: '💬', tile: 'bg-gradient-to-b from-emerald-400/90 to-emerald-600/90' },
+  assistant: { name: 'Ask', icon: '✦', tile: 'bg-gradient-to-b from-violet-400/90 to-indigo-600/90' },
   gallery: { name: 'Gallery', icon: '🌸', tile: 'bg-gradient-to-b from-fuchsia-400/90 to-purple-600/90' },
   phone: { name: 'Phone', icon: '📞', tile: 'bg-gradient-to-b from-emerald-500/90 to-teal-700/90' },
   browser: { name: 'Browser', icon: '🌐', tile: 'bg-gradient-to-b from-sky-400/90 to-blue-700/90' },

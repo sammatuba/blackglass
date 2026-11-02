@@ -95,6 +95,12 @@ export const sfx = {
     tone(1244, 0.06, { type: 'sine', gain: 0.03 })
     tone(933, 0.09, { type: 'sine', gain: 0.026, delay: 0.05 })
   },
+  aiAnswer() {
+    // the assistant's answer lands: two glassy ascending notes — helpful,
+    // composed, a little too smooth. Distinct from a human message.
+    tone(1046, 0.12, { type: 'sine', gain: 0.04 })
+    tone(1318, 0.16, { type: 'sine', gain: 0.034, delay: 0.1 })
+  },
 }
 
 export function vibrate(pattern: number | number[]): void {

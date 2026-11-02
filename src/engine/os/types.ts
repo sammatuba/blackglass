@@ -5,6 +5,7 @@
 
 export type AppId =
   | 'messages'
+  | 'assistant'
   | 'gallery'
   | 'phone'
   | 'browser'
@@ -28,6 +29,27 @@ export interface OSTell {
   detail: string
   /** timestamp in the artifact where the tell shows (e.g. "0:06") — video artifacts */
   at?: string
+}
+
+/** a citation chip on an assistant answer — the tells of Anchor V live here */
+export interface OSSource {
+  id: string
+  /** the citation as rendered, e.g. "Dela Cruz et al., 2024 · J. of Digital Trust Metrics" */
+  ref: string
+  /** what checking it reveals (the drawer body) */
+  detail: string
+  /** the shape of the failure — colors the chip */
+  verdict: 'missing' | 'unrelated' | 'dead' | 'misread' | 'synthetic' | 'real'
+  /** optional page opened in Browser when the chip is tapped (the 404 layer) */
+  pageId?: string
+  evidence?: string
+}
+
+/** regenerate / thumbs-up alternates for an assistant answer. Regenerating
+    never fixes the citation; a thumbs-up comes back MORE confident. */
+export interface OSAnswerVariants {
+  regen?: { text: string; sources?: OSSource[] }[]
+  thumbs?: { text: string; sources?: OSSource[] }
 }
 
 export interface OSPhoto {
@@ -88,7 +110,7 @@ export interface OSVoicemail {
 export interface OSMessage {
   id: string
   from: 'them' | 'you' | 'sys'
-  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside'
+  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside' | 'ai'
   text?: string
   secs?: number
   /** real audio behind a voice note (resolved via voicenoteUrl) — when absent the bubble plays its synthesized pacing */
@@ -99,11 +121,15 @@ export interface OSMessage {
   caption?: string
   /** forwarded by the player — the bubble carries a Forwarded mark */
   forwarded?: boolean
+  /** citation chips under a kind:'ai' answer */
+  sources?: OSSource[]
+  /** regenerate / thumbs-up alternates (kind:'ai') */
+  variants?: OSAnswerVariants
 }
 
 export interface OSThread {
   id: string
-  service: 'sms' | 'viber' | 'messenger' | 'tiktok' | 'threads' | 'gcash'
+  service: 'sms' | 'viber' | 'messenger' | 'tiktok' | 'threads' | 'gcash' | 'assistant'
   name: string
   number?: string
   /** true = shows as a saved contact in the thread header */
@@ -251,6 +277,8 @@ export interface OSState {
   sentReplies: string[]
   inspected: string[]
   evidence: string[]
+  /** assistant answer variants applied: msgId -> chosen regen index / thumbs state */
+  ai: Record<string, { regen?: number; thumbs?: boolean }>
   call: null | {
     callId: string
     from: string

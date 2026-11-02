@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import type { CaseOS, OSMessage, OSState } from '../types'
-import { visibleMessages } from '../runtime'
+import type { CaseOS, OSMessage, OSState, OSSource } from '../types'
+import { currentAnswer, visibleMessages } from '../runtime'
 import { isMuted, setMuted, sfx } from '../sound'
 import { paceSpeed, setPaceSpeed } from '../pacing'
 import { Avatar, EmptyState } from './shared'
@@ -13,6 +13,7 @@ export const SERVICE_LABEL: Record<string, string> = {
   tiktok: 'TikTok',
   threads: 'Threads',
   gcash: 'GCash',
+  assistant: 'Ask',
 }
 
 /* =====================================================================
@@ -85,7 +86,9 @@ function ThreadList({
   onOpenMessage: (threadId: string, messageId: string) => void
 }) {
   const q = query.trim().toLocaleLowerCase()
-  const rows = caseDef.threads.map((t) => {
+  const rows = caseDef.threads
+    .filter((t) => t.service !== 'assistant') // the assistant lives in its own app
+    .map((t) => {
     const msgs = visibleMessages(os, t.id)
     const last = msgs[msgs.length - 1]
     const offered = caseDef.replies.some(
@@ -642,6 +645,314 @@ function VoiceBubble({
       </button>
       {note && progress >= 1 && (
         <p className="mt-1.5 border-t border-[var(--os-hairline)] pt-1.5 text-[11px] italic leading-snug opacity-75">{note}</p>
+      )}
+    </div>
+  )
+}
+
+/* =====================================================================
+   ASK — the assistant app (Anchor V). The interface is the antagonist:
+   the first surface where the thing answering is not a person at all.
+   Same engine — threads, rules, typing beats — wearing machine chrome:
+   citation chips, a sources drawer, and a regenerate/thumbs loop that
+   never fixes the citation, only the confidence.
+   ===================================================================== */
+
+const VERDICT_META: Record<OSSource['verdict'], { dot: string; label: string }> = {
+  missing: { dot: 'bg-red-400', label: 'no record found' },
+  unrelated: { dot: 'bg-amber-400', label: 'real paper, different claim' },
+  dead: { dot: 'bg-red-400', label: 'link does not resolve' },
+  misread: { dot: 'bg-amber-400', label: 'says less than claimed' },
+  synthetic: { dot: 'bg-red-400', label: 'fabricated citation' },
+  real: { dot: 'bg-emerald-400', label: 'checks out' },
+}
+
+export function AssistantApp({
+  caseDef,
+  os,
+  typingIn,
+  onSendReply,
+  onOpenPage,
+  onInspect,
+  onAiAction,
+}: {
+  caseDef: CaseOS
+  os: OSState
+  typingIn: string | null
+  onSendReply: (reply: CaseOS['replies'][number]) => void
+  onOpenPage: (id: string) => void
+  onInspect: (id: string, evidence?: string) => void
+  onAiAction: (msgId: string, action: 'regen' | 'thumbs') => void
+}) {
+  const thread = caseDef.threads.find((t) => t.service === 'assistant')
+  if (!thread) return <EmptyState icon="✦" title="Assistant not installed" sub="This phone gets by without one." />
+  const msgs = visibleMessages(os, thread.id)
+  const caseOver = !!os.flags[caseDef.endFlag]
+  const offered = caseOver
+    ? []
+    : caseDef.replies.filter(
+        (r) =>
+          r.threadId === thread.id &&
+          !os.sentReplies.includes(r.id) &&
+          (!r.requires || os.flags[r.requires]) &&
+          !(r.hideWhen && os.flags[r.hideWhen]),
+      )
+  const lastAiId = [...msgs].reverse().find((m) => m.kind === 'ai')?.id
+  const endRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [msgs.length, typingIn, offered.length])
+
+  return (
+    <div className="relative flex h-full flex-col">
+      {/* header — the product, not a person */}
+      <div className="flex items-center gap-2.5 border-b border-[var(--os-hairline)] px-4 py-2.5">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-b from-violet-400/90 to-indigo-600/90 text-[15px] text-white shadow" aria-hidden="true">
+          ✦
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[13.5px] font-bold text-[var(--os-ink)]">Ask</div>
+          <div className="truncate text-[10.5px] text-[var(--os-dim)]">Ask 4 · answers anything, instantly</div>
+        </div>
+      </div>
+
+      {/* conversation */}
+      <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-3 py-4" aria-live="polite">
+        {msgs.length === 0 && (
+          <p className="pt-8 text-center text-xs text-[var(--os-faint)]">Ask anything.</p>
+        )}
+        {msgs.map((m) => {
+          if (m.kind === 'narr' || m.kind === 'aside') {
+            return (
+              <div key={m.id} data-msg={m.id} data-from={m.from ?? 'sys'} className={m.kind === 'narr' ? 'os-narr' : 'os-aside'}>
+                {m.text}
+              </div>
+            )
+          }
+          if (m.from === 'sys' && !m.kind) {
+            return (
+              <p key={m.id} data-msg={m.id} data-from="sys" className="mx-8 rounded-full bg-[var(--os-chip)] px-3 py-1 text-center text-[10.5px] text-[var(--os-dim)]">
+                {m.text}
+              </p>
+            )
+          }
+          if (m.kind === 'ai') {
+            return (
+              <AiBubble
+                key={m.id}
+                msg={m}
+                applied={os.ai[m.id]}
+                streaming={m.id === lastAiId}
+                onRegen={() => onAiAction(m.id, 'regen')}
+                onThumbs={() => onAiAction(m.id, 'thumbs')}
+                onOpenPage={onOpenPage}
+                onInspect={onInspect}
+              />
+            )
+          }
+          const out = m.from === 'you'
+          return (
+            <div key={m.id} data-msg={m.id} data-from={m.from} className={`flex ${out ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[82%] rounded-2xl px-3.5 py-2 text-[13.5px] leading-relaxed ${out ? 'rounded-br-md bg-[var(--os-bub-out)] text-[var(--os-bub-out-ink)]' : 'rounded-bl-md bg-[var(--os-bub-in)] text-[var(--os-ink)]'}`}>
+                {m.text}
+                {m.at && <div className="mt-0.5 text-right text-2xs text-[var(--os-faint)]">{m.at}</div>}
+              </div>
+            </div>
+          )
+        })}
+        {typingIn === thread.id && (
+          <div className="flex justify-start" aria-label="Ask is composing">
+            <div className="flex items-center gap-2 rounded-2xl rounded-bl-md bg-[var(--os-bub-in)] px-4 py-3">
+              <span className="text-[11px] text-[var(--os-dim)]">✦</span>
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="h-1.5 w-1.5 rounded-full bg-[var(--os-dim)]"
+                  style={{ animation: `typing-dot 1.1s ease-in-out ${i * 0.18}s infinite` }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        <div ref={endRef} />
+      </div>
+
+      {/* prompts — what you can ask next */}
+      <div className="border-t border-[var(--os-hairline)] px-3 pb-5 pt-2.5">
+        {caseOver ? (
+          <div className="rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-center text-[12px] font-semibold text-[var(--os-ink)]">
+            ⌖ Case complete — the debrief is loading…
+          </div>
+        ) : offered.length > 0 ? (
+          <div className="space-y-2" role="group" aria-label="What you can ask">
+            {offered.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => onSendReply(r)}
+                className="block w-full rounded-2xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-left transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+              >
+                <span className="block text-[13.5px] font-semibold text-[var(--os-ink)]">{r.label}</span>
+                {r.sub && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-dim)]">{r.sub}</span>}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-4 py-2.5 text-[12.5px] text-[var(--os-faint)]">
+            <span aria-hidden="true">✦</span> Ask anything…
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* one assistant answer: composes in, citations fade in after, and the
+   regen/thumbs loop invites you to make it worse */
+function AiBubble({
+  msg,
+  applied,
+  streaming,
+  onRegen,
+  onThumbs,
+  onOpenPage,
+  onInspect,
+}: {
+  msg: OSMessage
+  applied?: { regen?: number; thumbs?: boolean }
+  streaming: boolean
+  onRegen: () => void
+  onThumbs: () => void
+  onOpenPage: (id: string) => void
+  onInspect: (id: string, evidence?: string) => void
+}) {
+  const answer = currentAnswer(msg, applied)
+  const [drawer, setDrawer] = useState<OSSource[] | null>(null)
+  const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const full = answer.text
+  const [shown, setShown] = useState(reduce || !streaming ? full.length : 0)
+  const doneTyping = shown >= full.length
+
+  /* reveal runs per answer: a regenerated variant composes in fresh too */
+  useEffect(() => {
+    if (reduce || !streaming) {
+      setShown(full.length)
+      return
+    }
+    setShown(0)
+    const t = setInterval(() => {
+      setShown((s) => {
+        const n = Math.min(full.length, s + 2 + Math.floor(Math.random() * 3))
+        if (n >= full.length) clearInterval(t)
+        return n
+      })
+    }, 24)
+    return () => clearInterval(t)
+  }, [full, streaming, reduce])
+
+  const sources = doneTyping ? (answer.sources ?? []) : []
+  const openDrawer = (list: OSSource[]) => {
+    sfx.open()
+    setDrawer(list)
+    for (const s of list) if (s.evidence) onInspect(s.id, s.evidence)
+  }
+
+  return (
+    <div data-msg={msg.id} data-from="them" data-via={answer.via} className="flex justify-start">
+      <div className="max-w-[88%] w-full rounded-2xl rounded-bl-md border border-[var(--os-hairline)] bg-[var(--os-panel)] px-3.5 py-2.5">
+        <div className="mb-1 flex items-center gap-1.5 text-[10px] font-bold tracking-wide text-[var(--os-dim)]">
+          <span aria-hidden="true">✦</span> Ask
+          {answer.via === 'regen' && <span className="rounded border border-[var(--os-hairline)] px-1 font-normal text-[var(--os-faint)]">regenerated</span>}
+          {answer.via === 'thumbs' && <span className="rounded border border-[var(--os-hairline)] px-1 font-normal text-[var(--os-faint)]">you marked this helpful</span>}
+        </div>
+        <p className="text-[13.5px] leading-relaxed whitespace-pre-wrap text-[var(--os-ink)]">
+          {full.slice(0, shown)}
+          {!doneTyping && <span className="animate-pulse" aria-hidden="true">▍</span>}
+        </p>
+        {sources.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1.5 animate-fadein" aria-label="Sources">
+            {sources.map((s, i) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => openDrawer([s])}
+                className={`rounded-full border px-2 py-0.5 text-[10.5px] font-semibold text-[var(--os-ink)] ${
+                  s.verdict === 'real' ? 'border-emerald-400/40' : 'border-[var(--os-hairline)]'
+                } bg-[var(--os-chip)] transition-colors hover:bg-[var(--os-hover)]`}
+              >
+                <span className="opacity-60">[{i + 1}]</span> {s.ref}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => openDrawer(answer.sources ?? [])}
+              className="rounded-full px-2 py-0.5 text-[10.5px] font-semibold text-[var(--os-accent)]"
+            >
+              all sources
+            </button>
+          </div>
+        )}
+        {doneTyping && (msg.variants?.regen?.length || msg.variants?.thumbs) && (
+          <div className="mt-2 flex items-center gap-2 border-t border-[var(--os-hairline)] pt-1.5">
+            {msg.variants?.regen?.length ? (
+              <button type="button" onClick={onRegen} className="text-[11px] font-semibold text-[var(--os-dim)] transition-colors hover:text-[var(--os-ink)]">
+                ↻ Regenerate
+              </button>
+            ) : null}
+            {msg.variants?.thumbs && !applied?.thumbs ? (
+              <button type="button" onClick={onThumbs} className="text-[11px] font-semibold text-[var(--os-dim)] transition-colors hover:text-[var(--os-ink)]">
+                👍 Helpful
+              </button>
+            ) : null}
+          </div>
+        )}
+      </div>
+
+      {drawer && (
+        <div className="absolute inset-0 z-40 flex items-end bg-black/60 p-3" role="dialog" aria-modal="true" aria-label="Sources">
+          <div className="max-h-[70%] w-full overflow-y-auto rounded-3xl border border-[var(--os-hairline)] bg-[var(--os-panel)] p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Sources · checked</span>
+              <button
+                type="button"
+                onClick={() => setDrawer(null)}
+                aria-label="Close sources"
+                className="rounded-full bg-[var(--os-chip)] px-3 py-1 text-[11px] font-semibold text-[var(--os-ink)]"
+              >
+                Done
+              </button>
+            </div>
+            <div className="mt-3 space-y-2.5">
+              {drawer.map((s, i) => (
+                <div key={s.id} className="rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 shrink-0 rounded-full ${VERDICT_META[s.verdict].dot}`} aria-hidden="true" />
+                    <span className="min-w-0 flex-1 truncate text-[12px] font-bold text-[var(--os-ink)]">
+                      [{i + 1}] {s.ref}
+                    </span>
+                  </div>
+                  <div className="mt-0.5 pl-4 text-[10px] font-bold tracking-wide uppercase" style={{ color: s.verdict === 'real' ? '#34d399' : s.verdict === 'unrelated' || s.verdict === 'misread' ? '#fbbf24' : '#f87171' }}>
+                    {VERDICT_META[s.verdict].label}
+                  </div>
+                  <p className="mt-1.5 text-[12px] leading-relaxed text-[var(--os-dim)]">{s.detail}</p>
+                  {s.pageId && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDrawer(null)
+                        sfx.open()
+                        onOpenPage(s.pageId!)
+                      }}
+                      className="mt-2 rounded-full border border-[var(--os-hairline)] px-3 py-1 text-[11px] font-semibold text-[var(--os-ink)]"
+                    >
+                      🔗 Try the link in Browser
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -1367,6 +1678,19 @@ export function SettingsApp({
           ))}
         </div>
       </div>
+
+      {caseDef.threads.some((t) => t.service === 'assistant') && (
+        <>
+          <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Assistant</h3>
+          <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4">
+            <p className="text-[12.5px] font-semibold text-[var(--os-ink)]">Ask 4 · sandbox</p>
+            <p className="mt-1 text-[11.5px] leading-snug text-[var(--os-dim)]">
+              Ask can be wrong — especially about the things it says most confidently. Check anything that matters.
+            </p>
+            <p className="mt-1.5 text-2xs text-[var(--os-faint)]">Model card · it ships on every phone. Nobody reads it.</p>
+          </div>
+        </>
+      )}
 
       <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">About this phone</h3>
       <div className="mt-2 space-y-1 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4 text-[12px] text-[var(--os-dim)]">

@@ -24,7 +24,7 @@ export const CONVERGENCE: ConvergenceContent = {
   title: 'THE CONVERGENCE',
   subtitle: 'One Family. One Season.',
   intro: [
-    'You have held every phone in the family. Maya’s at 6:47 on a Saturday morning. Tita Merly’s at 5:41. Bea’s at 7:14. Tita’s again on a Tuesday night, then the whole house on a Sunday afternoon, then Bea alone for five weeks after.',
+    'You have held every phone in the family. Maya’s at 6:47 on a Saturday morning. Tita Merly’s at 5:41. Bea’s at 7:14. Tita’s again on a Tuesday night, then the whole house on a Sunday afternoon, then Bea alone for five weeks after — and on one more Tuesday, all of them at once, asking the same machine.',
     'Each of them saw one screen’s worth of the truth. This is the version none of them could stand outside of — assembled from what you actually did in their hands.',
   ],
   chapters: [
@@ -284,19 +284,83 @@ export const CONVERGENCE: ConvergenceContent = {
         },
       ],
     },
+    {
+      kicker: 'A TUESDAY NIGHT, LATER',
+      title: 'The answer',
+      events: [
+        {
+          time: '9:12',
+          who: 'tita',
+          label: 'The dosage',
+          dynamic: {
+            key: 'av_tita',
+            fallback:
+              'Papa’s meds ran out and the clinic was closed, so she asked the little star. It answered in the register of a doctor because she asked it like one.',
+            map: {
+              asked: 'She asked the machine, then almost handed Papa a number no doctor had written. His half-asleep question — “anong sabi ng doctor?” — was the check the whole night was built to skip.',
+            },
+          },
+          text: 'The pill tray was empty and the machine was awake, so she asked it like a nurse. It heard the need and matched the register.',
+        },
+        {
+          time: '11:52',
+          who: 'tita',
+          label: 'The eleven minutes',
+          text: 'Joy — the actual nurse — answered at midnight and undid the number without giving one, because dosing is a person, not a paragraph. The fluent answer had given numbers. That was the tell.',
+        },
+        {
+          time: '11:40',
+          who: 'maya',
+          label: 'The proposal',
+          dynamic: {
+            key: 'avm_act',
+            fallback: 'Ask drafted her methodology beautifully and cited a study she could not find. What she did next was priced against the deadline.',
+            map: {
+              fix: 'She asked the machine to fix its citation. It apologized and invented a better one — open-access, peer-reviewed, even more quotable. It shipped under her name.',
+              ship: 'She shipped knowing. The deadline priced the noticing, and the noticing lost.',
+              rewrite: 'She rebuilt the section on what she actually did. Less dramatic. Defensible every word.',
+            },
+          },
+          text: 'The citation was fluent, detailed, and had no address.',
+        },
+        {
+          time: '1:05',
+          who: 'bea',
+          label: 'The fact-check',
+          dynamic: {
+            key: 'avb_act',
+            fallback: 'Ask checked her thread twice and agreed both times, in two registers, with sources that laundered the agreement.',
+            map: {
+              post: 'It cleared the thread, so she posted it. The first reply asked for a source the mirror never had.',
+              quote: 'She cited Ask 4 as her fact-check. The council renamed the badge on the spot: a vibe with a footnote.',
+              counter: 'She asked it to argue the opposite. It won both sides. There was never anything underneath to be honest with.',
+              human: 'She sent the draft to Maya instead. Eleven minutes, one disagreement, back to work. That was the check.',
+            },
+          },
+          text: 'The mirror came back holding her thesis, with a badge on it.',
+        },
+        {
+          time: '8:00',
+          who: 'tita',
+          label: 'The morning, wearing the same font',
+          text: 'In the family GC: the dosage answer and Joy’s correction. On the client slide: the citation with no address. Same confident font on all of it. Nobody was scammed. Everyone was certain.',
+        },
+      ],
+    },
   ],
   throughline: {
     title: 'The one timeline none of them could see',
     paragraphs: [
       'Every defense became the next surface. The debunk taught Bea to share faster, and the share put a synthetic face inside a family’s trust. The cloned voice taught them that a voice is not proof — so when a face arrived with the family’s whole future in its mouth, they had already stopped trusting voices and started trusting numbers.',
       'The deepfake taught them that seeing is not believing. The feed taught them that certainty is rewarded. Put together, they made a family that trusted less and shared more — the exact habitat the next deception needed.',
+      'The next deception never arrived. That was the twist none of the defenses were built for: a Tuesday night with no scammer, no clone, no fake face — just a fluent machine that does not know it is wrong, answering a nurse’s register, a client deadline, and an expert’s doubt, instantly and beautifully and wrong. Nobody was scammed. Everyone was certain.',
       'Nobody in this season was foolish. Tita Merly verified through the people she loves, which is how trust has always worked. Maya knew and could not stop. Bea was right about everything and still made it travel. Kuya Renz was face-down in a badminton bag, twelve metres from his own ringing phone.',
       'The glass was never in the screens. It was in each of them — shaped, precisely, to the size of the thing they needed to believe.',
     ],
   },
   close: [
     'You held every phone. You are the only one who got to stand in all of them.',
-    'The season did not end because anyone learned a lesson. It ended because the money ran out and the feed moved on. The next one is already in a group chat somewhere, wearing a face you trust.',
-    'Verification is a practice, not a verdict. The pause is the point.',
+    'The season did not end because anyone learned a lesson. It ended because the money ran out and the feed moved on. The next one is already in a group chat somewhere, wearing a face you trust — or answering in the voice of one.',
+    'Verification is a practice, not a verdict. The pause is the point. The question is the work.',
   ],
 }

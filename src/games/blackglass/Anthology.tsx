@@ -623,6 +623,11 @@ function PhoneRun({
     for (const other of anchor.order) {
       if (other !== phoneId && completed[other]) initialFlags[`done_${other}`] = true
     }
+    /* cross-anchor recognition: any other anchor with a lived phone seeds
+       done_<anchorId> (read imperatively — mid-run saves must not recompute) */
+    for (const [aid, prog] of Object.entries(useBlackglass.getState().anchors)) {
+      if (aid !== anchor.id && Object.keys(prog?.completed ?? {}).length > 0) initialFlags[`done_${aid}`] = true
+    }
     const mayaChoice = findChoice(runs, 'maya_choice')
     if (mayaChoice !== undefined) initialFlags.maya_choice = mayaChoice
     return { ...base, initialFlags }

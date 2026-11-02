@@ -190,6 +190,45 @@ await tap(/Lock the phone/i, 10000)
 await settle(2500)
 await shot('/tmp/bg-14-kangkong-awake.png')
 
+/* ============ ANCHOR V — CERTAIN (Ask spot-check: Tita's dosage) ============ */
+await gotoGame()
+await tap(/CERTAIN/i)
+await settle(400)
+await tap(/pick up/i)
+await settle(3000)
+await tap(/Swipe up to open/i)
+await tap(/Tap the star/i, 12000) // the "pinned first tile" moment
+await settle(400)
+await shot('/tmp/bg-15-av-home.png')
+await tap(/Open Ask/i, 8000) // the dock icon
+await settle(600)
+await shot('/tmp/bg-16-av-ask.png')
+await tap(/Papa’s maintenance/i) // the first prompt
+await settle(9000) // compose beat + streaming answer
+await shot('/tmp/bg-17-av-answer.png')
+await capture('assistant · the dosage answer')
+await tap(/all sources/i, 8000) // the drawer of checked citations
+await settle(500)
+await shot('/tmp/bg-18-av-sources.png')
+await tap(/Close sources/i)
+await tap(/↻ Regenerate/i, 4000)
+await settle(5000) // the regen composes in fresh
+await shot('/tmp/bg-19-av-regen.png')
+await capture('assistant · regenerated')
+await tap(/So I give him the 10 tonight/i, 8000) // the follow prompt
+await settle(4500)
+// beat the coda out the door: watch Joy's correction land in the GC if the
+// pump is still draining; the moment overlay wins otherwise (tolerant taps)
+await tryTap(/Home/i)
+await tryTap(/Open Messages/i)
+await tryTap(/Santos Family GC/i)
+await settle(9000)
+await shot('/tmp/bg-20-av-correction.png')
+await capture('assistant · the correction')
+await tap(/Lock the phone/i, 15000) // the coda moment (up or rising)
+await settle(500)
+await shot('/tmp/bg-21-av-coda.png')
+
 console.log('console errors:', errors.length ? errors : 'none')
 if (TRANSCRIPT) {
   const out = join(tmpdir(), 'bg-transcript.json')

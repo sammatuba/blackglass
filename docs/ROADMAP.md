@@ -37,7 +37,7 @@ The complete path: hub → four anchors (10 phones) → **THE CONVERGENCE**. Out
 3. **THE CONVERGENCE** ✅ — global finale unlocked by living all 10 phones; the season assembled from recorded choices, with the through-line and discovery totals (`scripts/finale-smoke.mjs`).
 4. **Presentation polish** ✅ — screen transitions, the glassOS notification center, human chat cadence, the deeper stage (time-of-day desk light + tilt-driven glass sheen), and the pace-aware anchor cold open shipped (M4 complete).
 5. **Interaction depth** ✅ — gallery zoom, voice-note play/pause, Notes search, link forward/share, and side-by-side artifact compare (the healthtruthph batch in Bea's gallery) shipped; “recovered messages” reserves for a future anchor (M5).
-6. **Content breadth** ◐ — Anchor V brief ready: **THE ASSISTANT** (verb ASK) in `craft/maya/_meta/anchor-v-brief.md`; needs a writing session (M6).
+6. **Content breadth** ✅ — Anchor V **THE ASSISTANT** ("CERTAIN", verb ASK) shipped 2026-11-03: three phones (the dosage, the proposal, the fact-check) on a new Ask surface (`kind:'ai'` answers with citation chips, a sources drawer that checks the citations, regen/thumbs mechanics where regenerating never fixes the citation and a thumbs-up buys more confidence), cross-anchor recognition beats seeded from global progress (`done_<anchorId>`), Papa as the silent witness, Convergence chapter 5. E2 judgment: `docs/av-playthrough-judgment.md` (PASS, 4/4). Canon decisions in `craft/maya/_meta/anchor-v-brief.md` §8 (user-overridable).
 7. **External assets** — Tito Mike clip, voice audio, new diegetic stills, localization. Placeholder register in `docs/GAME-PLAN.md` §7 (M7).
 
 ## Phase 6 — Explorable explanation (current)

@@ -14,9 +14,10 @@ import {
 } from './runtime'
 import { sfx, vibrate } from './sound'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
-import { MessagesApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
+import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
+import { aiRegen, aiThumbs } from './runtime'
 
 /* glassOS Device — the found-phone shell. Lock → home → apps, with a
    rule-processing engine pacing messages, calls, and evidence. */
@@ -31,6 +32,8 @@ export interface Banner {
   text: string
   /** where the message landed — tapping the banner opens the thread */
   threadId: string
+  /** assistant arrival — taps open the Ask app, not Messages */
+  ai?: boolean
 }
 
 export function GlassOS({
@@ -94,11 +97,13 @@ export function GlassOS({
       if (lockedRef.current) return // the lock screen already previews arrivals
       const t = caseDef.threads.find((x) => x.id === threadId)
       if (!t) return
-      const inView = viewRef.current.app === 'messages' && viewRef.current.threadId === threadId
+      const inView =
+        (t.service === 'assistant' && viewRef.current.app === 'assistant') ||
+        (t.service !== 'assistant' && viewRef.current.app === 'messages' && viewRef.current.threadId === threadId)
       if (inView) return
-      const meta = APP_META.messages
+      const meta = t.service === 'assistant' ? APP_META.assistant : APP_META.messages
       const id = ++bannerId.current
-      const banner: Banner = { id, app: t.service, icon: meta.icon, title: t.name, text, threadId }
+      const banner: Banner = { id, app: t.service === 'assistant' ? 'ask' : t.service, icon: meta.icon, title: t.name, text, threadId, ai: t.service === 'assistant' }
       setBanners((b) => [...b.slice(-2), banner])
       setBannerLog((log) => [...log.slice(-19), banner])
       setUnread((n) => Math.min(99, n + 1))
@@ -184,7 +189,8 @@ export function GlassOS({
                 osRef.current = s
                 setOS(s)
                 if (!silent && p.msg.from !== 'you') {
-                  sfx.receive()
+                  if (p.msg.kind === 'ai') sfx.aiAnswer()
+                  else sfx.receive()
                   vibrate(18)
                   setPulse((n) => n + 1)
                 }
@@ -433,6 +439,16 @@ export function GlassOS({
           setOS(ns)
           bump()
         }}
+        onAiAction={(msgId, action) => {
+          // regen / thumbs-up on an assistant answer: pure state moves,
+          // plus the ai_thumbs flag content can hear
+          if (action === 'regen') sfx.open()
+          else sfx.send()
+          const ns = action === 'regen' ? aiRegen(osRef.current, msgId) : aiThumbs(osRef.current, msgId)
+          osRef.current = ns
+          setOS(ns)
+          bump()
+        }}
         onForward={(m, to) => {
           // pure expression: the copy lands in the thread, no flags move
           sfx.send()
@@ -492,7 +508,7 @@ export function GlassOS({
                 key={b.id}
                 type="button"
                 data-banner
-                onClick={() => openApp('messages', { threadId: b.threadId })}
+                onClick={() => openApp(b.ai ? 'assistant' : 'messages', b.ai ? undefined : { threadId: b.threadId })}
                 className="animate-banner pointer-events-auto block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left text-[var(--os-ink)] shadow-2xl backdrop-blur-md"
               >
                 <span className="flex items-center gap-2">
@@ -572,6 +588,7 @@ function DeviceFrame(props: {
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
+  onAiAction: (msgId: string, action: 'regen' | 'thumbs') => void
   onForward: (msg: OSMessage, toThreadId: string) => void
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
@@ -609,7 +626,6 @@ function DeviceFrame(props: {
           ) : (
             <HomeScreen caseDef={caseDef} os={os} onOpenApp={props.onOpenApp} />
           )}
-
           {/* incoming / live call overlay */}
           {os.call && (
             <CallOverlay
@@ -664,7 +680,8 @@ function DeviceFrame(props: {
                       key={b.id}
                       type="button"
                       onClick={() => {
-                        props.onOpenThread(b.threadId)
+                        if (b.ai) props.onOpenApp('assistant')
+                        else props.onOpenThread(b.threadId)
                         props.onCloseShade()
                       }}
                       className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left"
@@ -870,8 +887,10 @@ function HomeScreen({
     { id: 'contacts' },
     { id: 'notes', badge: os.evidence.length || undefined },
   ]
+  const hasAsk = caseDef.threads.some((t) => t.service === 'assistant')
   const dockApps: { id: AppId; badge?: number }[] = [
     { id: 'messages', badge: newReplies > 0 ? newReplies : undefined },
+    ...(hasAsk ? [{ id: 'assistant' as AppId }] : []),
     { id: 'browser' },
     { id: 'settings' },
   ]
@@ -954,6 +973,7 @@ function AppSurface(props: {
   onGoHome: () => void
   onInspect: (id: string, evidence?: string) => void
   onSendReply: (reply: CaseOS['replies'][number]) => void
+  onAiAction: (msgId: string, action: 'regen' | 'thumbs') => void
   onForward: (msg: OSMessage, toThreadId: string) => void
   onBrightness: (n: number) => void
 }) {
@@ -963,6 +983,8 @@ function AppSurface(props: {
     switch (app) {
       case 'messages':
         return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onOpenPhoto={(id) => props.onOpenApp('gallery', { photoId: id })} onForward={props.onForward} />
+      case 'assistant':
+        return <AssistantApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onAiAction={props.onAiAction} />
       case 'gallery':
         return <GalleryApp caseDef={props.caseDef} os={props.os} initialPhotoId={props.galleryPhotoId} onInspect={props.onInspect} />
       case 'phone':

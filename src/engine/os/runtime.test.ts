@@ -12,8 +12,11 @@ import {
   clearCall,
   evidenceBonus,
   visibleMessages,
+  aiRegen,
+  aiThumbs,
+  currentAnswer,
 } from './runtime'
-import type { CaseOS } from './types'
+import type { CaseOS, OSMessage } from './types'
 
 const caseDef: CaseOS = {
   id: 't',
@@ -145,5 +148,52 @@ describe('glassOS runtime', () => {
     const b1 = evidenceBonus(caseDef, s)
     expect(b1.found).toBe(3)
     expect(b1.bonus).toBe(10)
+  })
+
+  it('cycles assistant regen variants without ever improving the citation', () => {
+    let s = initialOSState()
+    const msg: OSMessage = {
+      id: 'ai1',
+      from: 'them',
+      kind: 'ai',
+      text: 'base answer',
+      sources: [{ id: 's1', ref: 'Fake Journal, 2024', detail: 'does not exist', verdict: 'missing' }],
+      variants: {
+        regen: [
+          { text: 'regen one', sources: [{ id: 's2', ref: 'Fake Journal B, 2023', detail: 'also does not exist', verdict: 'missing' }] },
+          { text: 'regen two' },
+        ],
+        thumbs: { text: 'MORE confident base answer' },
+      },
+    }
+    // no variants applied → the base answer
+    expect(currentAnswer(msg, s.ai['ai1']).via).toBe('base')
+    expect(currentAnswer(msg, s.ai['ai1']).text).toBe('base answer')
+    // each regen advances one variant; past the end it clamps to the last
+    s = aiRegen(s, 'ai1')
+    expect(currentAnswer(msg, s.ai['ai1']).text).toBe('regen one')
+    s = aiRegen(s, 'ai1')
+    expect(currentAnswer(msg, s.ai['ai1']).text).toBe('regen two')
+    s = aiRegen(s, 'ai1')
+    expect(currentAnswer(msg, s.ai['ai1']).text).toBe('regen two')
+  })
+
+  it('thumbs-up swaps to the more confident answer and raises the ai_thumbs flag', () => {
+    let s = initialOSState()
+    const msg: OSMessage = {
+      id: 'ai2',
+      from: 'them',
+      kind: 'ai',
+      text: 'uncertain answer',
+      variants: { thumbs: { text: 'absolutely certain answer' } },
+    }
+    s = aiThumbs(s, 'ai2')
+    const answer = currentAnswer(msg, s.ai['ai2'])
+    expect(answer.via).toBe('thumbs')
+    expect(answer.text).toBe('absolutely certain answer')
+    expect(s.flags['ai_thumbs']).toBe(true)
+    // thumbs survives a regen — you chose to be agreed with
+    s = aiRegen(s, 'ai2')
+    expect(currentAnswer(msg, s.ai['ai2']).via).toBe('thumbs')
   })
 })

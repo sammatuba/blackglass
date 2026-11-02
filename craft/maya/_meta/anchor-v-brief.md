@@ -137,3 +137,33 @@ One anchor, three phones, one night into morning. Failure-mode beats, in order:
 
 *Next action: writing session opens this brief, picks the answers to §8, then
 drafts the three phones in parallel per the multi-writer pipeline.*
+
+## §8 — DECIDED (2026-11-03, overnight autonomous run — user-overridable)
+
+The user directive for the night was *finish to completion* with **immersion** as
+the stated north star. These four canon answers were made on that basis and are
+the user's to veto; each is wired so a veto is a content-level edit, not an
+engine one.
+
+1. **Name: the app is “Ask”, the model is “Ask 4.”** The verb is the anchor's
+   verb — you ASK, it answers — and the version number carries the platform
+   critique (a row of trusted predecessors implied). One Settings model card
+   ships on every phone: *"Ask can be wrong — especially about the things it
+   says most confidently."* The characters never read it; the player can.
+2. **The dosage beat stays medical.** It is the Filipino-family heart of the
+   anchor (maintenance meds, the missing reseta, the closed clinic). Guardrails
+   hold: invented names only, the specific number is wrong and contradicted
+   in-scene by Joy (who gives no number — dosing is a person, not a paragraph),
+   the clinic line repeats the rule, and no path depicts a wrong dose taken.
+3. **One vendor across all phones.** The morning GC lands precisely because
+   the dosage answer and the fake citation wear *the same confident font*.
+   Three apps would triple the surface and dilute the critique.
+4. **Anchor V ships now** (this run) as the season's fifth anchor and completes
+   Phase 5 content breadth. The fifth *cast* anchor (OFW ring, classroom ring)
+   stays aspirational in the architecture doc — it needs its own brief and a
+   user-facing writing session.
+
+Shipped under these decisions: `src/games/blackglass/content/assistant.ts`,
+the Ask surface (`src/engine/os/apps/index.tsx` — `AssistantApp`, `kind:'ai'`,
+citation chips, sources drawer, regen/thumbs), E2 judgment
+(`docs/av-playthrough-judgment.md`), Convergence chapter 5.

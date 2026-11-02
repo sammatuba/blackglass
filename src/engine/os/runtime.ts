@@ -1,4 +1,4 @@
-import type { FlagValue, OSMessage, OSRule, OSState, CaseOS } from './types'
+import type { FlagValue, OSMessage, OSRule, OSState, CaseOS, OSSource } from './types'
 
 /* Pure rule engine for glassOS. A rule fires when every `when`
    condition holds; firing appends messages to thread inboxes (after a
@@ -15,6 +15,7 @@ export function initialOSState(caseDef?: CaseOS): OSState {
     sentReplies: [],
     inspected: [],
     evidence: [],
+    ai: {},
     call: null,
     moment: null,
     done: false,
@@ -136,6 +137,38 @@ export function forwardMessage(state: OSState, toThreadId: string, link: { pageI
     caption: link.caption,
     forwarded: true,
   })
+}
+
+/** the answer currently displayed for an assistant message, given the
+    applied variants — regen cycles, thumbs-up swaps to the confident one */
+export function currentAnswer(
+  msg: OSMessage,
+  ai?: OSState['ai'][string],
+): { text: string; sources?: OSSource[]; via: 'base' | 'regen' | 'thumbs' } {
+  const v = msg.variants
+  if (ai?.thumbs && v?.thumbs) return { ...v.thumbs, via: 'thumbs' }
+  if (v?.regen?.length && ai?.regen) {
+    const pick = v.regen[Math.min(ai.regen, v.regen.length) - 1]
+    if (pick) return { ...pick, via: 'regen' }
+  }
+  return { text: msg.text ?? '', sources: msg.sources, via: 'base' }
+}
+
+/** regenerate an assistant answer: cycle its regen variants (the citation
+    never improves — it just comes back wearing different confidence) */
+export function aiRegen(state: OSState, msgId: string): OSState {
+  const applied = state.ai[msgId]?.regen ?? 0
+  return { ...state, ai: { ...state.ai, [msgId]: { ...state.ai[msgId], regen: applied + 1 } } }
+}
+
+/** thumbs-up an assistant answer: it comes back more confident — and the
+    phone remembers you liked being agreed with (flag, so content can hear it) */
+export function aiThumbs(state: OSState, msgId: string): OSState {
+  return {
+    ...state,
+    flags: { ...state.flags, ai_thumbs: true },
+    ai: { ...state.ai, [msgId]: { ...state.ai[msgId], thumbs: true } },
+  }
 }
 
 export function setCallPhase(state: OSState, phase: 'incoming' | 'live' | 'ended', declined = false): OSState {

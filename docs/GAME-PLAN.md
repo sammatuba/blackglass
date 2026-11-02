@@ -81,8 +81,8 @@ The gap to "full game":
 - ~~The finale doesn't exist; the anthology ends four times.~~ → **M3**
 - Presentation stops at functional in places (transitions, notification center, stage depth). → M4 (backlog)
 - The verb set is mostly read/choose; interaction depth (examine, forward, search, voice-note playback) is thin. → M5 (backlog)
-- Content ends at four anchors; the season is thin for "full game" shelf life. → M6 (needs writing sessions)
-- Generated media is one clip + seven stills. → M7 (external; placeholders now)
+- ~~Content ends at four anchors; the season is thin for "full game" shelf life.~~ → **M6** (Anchor V shipped 2026-11-03)
+- Generated media is one clip + seven stills. → M7 (external; placeholders now — the clip is the last placeholder)
 
 ## 6. Milestones
 
@@ -141,13 +141,15 @@ photos names the tell (“The sameness is the tell”); either column opens full
 size (`scripts/compare-smoke.mjs`). “Recovered messages” forensic mode is
 reserved for a future anchor (M6).
 
-### M6 — Content breadth ◐ brief ready 2026-09-11
-`craft/maya/_meta/anchor-v-brief.md` specs the recommended Anchor V — **THE
-ASSISTANT** (verb ASK): hallucinated authority, sycophancy, citation-shaped
-confidence, with a new AI-chat app surface and no external assets. Alternatives
-from the architecture doc's axes (AI recruiter, election audio, romance scam)
-remain candidates for Anchor VI+. Each new anchor must ship a new lesson, a new
-verb, and a new UI posture.
+### M6 — Content breadth ✅ shipped 2026-11-03
+Anchor V — **THE ASSISTANT** ("CERTAIN", verb ASK) shipped on a new Ask surface
+(`kind:'ai'` answers, citation chips, sources drawer, regen/thumbs sycophancy
+mechanics). Three phones: the dosage (Tita), the proposal (Maya), the
+fact-check (Bea). E2 judgment PASS 4/4 (`docs/av-playthrough-judgment.md`);
+canon decisions in `craft/maya/_meta/anchor-v-brief.md` §8 (user-overridable).
+Alternatives from the architecture doc's axes (AI recruiter, election audio,
+romance scam) remain candidates for Anchor VI+. "Recovered messages" forensic
+mode stays reserved for a future anchor.
 
 ### M7 — External assets (placeholders in place)
 See register. None block play.
@@ -157,7 +159,7 @@ See register. None block play.
 | Asset / capability | Used by | Placeholder shipping now | External step |
 |---|---|---|---|
 | Tito Mike deepfake clip | GUARANTEED video page | still poster + fake-player chrome; tells carry `at` when clip lands | same Veo i2v flow as Dr. Anita |
-| Voice audio (voice notes, cloned Renz) | IT'S ME, family chats | text + duration + waveform-style chrome; no sound | TTS or recorded VO; keep text fallback |
+| Voice audio (voice notes, cloned Renz) | IT'S ME, family chats | ~~text + duration + waveform chrome~~ **real audio since 2026-11-03** (`public/voicenotes/`, Kokoro + Chatterbox, provenance in `play/blackglass-phones/voice/PROVENANCE.md`) | done |
 | Additional diegetic stills | future pages/evidence | emoji/CSS fallbacks via `artifactUrl`/`artifactVideo` | ChatGPT worksheet + sync script |
 | Convergence key art | finale | CSS/type only (no image needed) | optional generated poster |
 | Localization (EN/Tagalog mix) | all anchors | as written; code-switch is intentional | professional pass, i18n scaffold |
