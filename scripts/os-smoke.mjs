@@ -1,6 +1,7 @@
 /* Dev helper: drive glassOS Case 01 — unlock, snoop, decide, call, debrief. */
 import { chromium } from 'playwright-core'
 import { axeCheck } from './lib/axe.mjs'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -23,7 +24,16 @@ const tap = async (name, timeout = 4000) => {
 }
 const settle = (ms) => page.waitForTimeout(ms)
 
-await page.goto(`${BASE}/blackglass/scam-radar`, { waitUntil: 'networkidle' })
+// deep links 404 on hosts without SPA rewrites — fall in through the hub card
+const direct = await gotoWithRetry(page, `${BASE}/blackglass/scam-radar`, { attempts: 2 }).catch(() => null)
+if (!direct?.ok()) {
+  await gotoWithRetry(page, `${BASE}/blackglass/`)
+  const card = page.getByRole('link', { name: /Scam Radar|Start scam training/i }).first()
+  await card.waitFor({ state: 'visible', timeout: 15000 })
+  await card.click()
+  await page.waitForTimeout(900)
+}
+errors.length = 0 // the hub-fallback probe's expected 404s are not game errors
 await settle(600)
 await tap(/It’s Me, Again/i)
 

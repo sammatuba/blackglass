@@ -1,6 +1,7 @@
 /* Dev helper: drive the Scam Radar feed loop end-to-end and screenshot. */
 import { chromium } from 'playwright-core'
 import { axeCheck } from './lib/axe.mjs'
+import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await chromium.launch({ channel: 'chrome' })
@@ -9,7 +10,16 @@ const page = await browser.newPage({ viewport: { width: 420, height: 900 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
 page.on('pageerror', (e) => errors.push(String(e)))
 
-await page.goto(`${BASE}/blackglass/scam-radar`, { waitUntil: 'networkidle' })
+// deep links 404 on hosts without SPA rewrites — fall in through the hub card
+const direct = await gotoWithRetry(page, `${BASE}/blackglass/scam-radar`, { attempts: 2 }).catch(() => null)
+if (!direct?.ok()) {
+  await gotoWithRetry(page, `${BASE}/blackglass/`)
+  const card = page.getByRole('link', { name: /Scam Radar|Start scam training/i }).first()
+  await card.waitFor({ state: 'visible', timeout: 15000 })
+  await card.click()
+  await page.waitForTimeout(900)
+}
+errors.length = 0 // the hub-fallback probe's expected 404s are not game errors
 await page.waitForTimeout(700)
 await page.screenshot({ path: '/tmp/radar-menu.png' })
 
