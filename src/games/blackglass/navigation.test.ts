@@ -3,10 +3,11 @@ import { KANGKONG } from './content/kangkong'
 import { VOICECLONE } from './content/voiceclone'
 import { DEEPFAKE } from './content/deepfake'
 import { FIVEWEEKS } from './content/fiveweeks'
+import { ASSISTANT } from './content/assistant'
 
 /** Never let a diegetic "Open X" button drop a player on an unrelated home
  * screen because an authored conversation ID was renamed. */
-const ANCHORS = [KANGKONG, VOICECLONE, DEEPFAKE, FIVEWEEKS]
+const ANCHORS = [KANGKONG, VOICECLONE, DEEPFAKE, FIVEWEEKS, ASSISTANT]
 
 describe('anthology phone navigation', () => {
   it('all opening moment destinations belong to their phone', () => {

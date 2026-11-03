@@ -76,11 +76,10 @@ const gotoGame = async () => {
 /* — TITA: the dosage — the GC path, correction read from the inbox — */
 await gotoGame()
 await tap(/CERTAIN/i)
-await tap(/pick up/i)
+await tap(/Tita Merly/i) // the phone card (the rack header button shadows /pick up/i)
 await settle(2500)
 await tap(/Swipe up to open/i)
-await tap(/Tap the star/i, 12000)
-await tap(/Open Ask/i, 8000)
+await tap(/Tap the star/i, 12000) // the opening moment opens the Ask thread
 await settle(500)
 await tap(/Papa’s maintenance/i)
 await settle(9500)
@@ -110,8 +109,7 @@ await tap(/CERTAIN/i)
 await tap(/Maya/i, 8000) // the entry phone shows ✓ lived; the others wake
 await settle(2500)
 await tap(/Swipe up to open/i)
-await tap(/Open the dark folder/i, 12000)
-await tap(/Open Ask/i, 8000)
+await tap(/Open the dark folder/i, 12000) // opens the Ask thread
 await settle(500)
 await tap(/Draft the methodology framing/i)
 await settle(9500)
@@ -130,8 +128,7 @@ await tap(/CERTAIN/i)
 await tap(/Bea/i, 8000)
 await settle(2500)
 await tap(/Swipe up to open/i)
-await tap(/Open the second window/i, 12000)
-await tap(/Open Ask/i, 8000)
+await tap(/Open the second window/i, 12000) // opens the Ask thread
 await settle(500)
 await tap(/Fact-check this thread draft/i)
 await settle(9500)

@@ -84,14 +84,12 @@ await shot('/tmp/bg-0-select.png')
 await tap(/IT’S ME/i)
 await settle(500)
 await shot('/tmp/bg-1-vc-rack.png')
-await tap(/pick up/i)
+await tap(/Tita Merly/i)
 await settle(4500) // opening pushes: voice note + number + damage photo
 await tap(/Swipe up to open/i)
-await tap(/Open Viber/i, 12000) // the kitchen moment
+await tap(/Open Viber/i, 12000) // the kitchen moment opens the thread
 await settle(300)
 await shot('/tmp/bg-2-vc-kitchen.png')
-await tap(/Open Messages/i)
-await tap(/Kuya Renz/i)
 await settle(6500) // the listen chain: play, the transcript aside, it's him
 await shot('/tmp/bg-3-vc-voice.png')
 await capture('voiceclone · the listen chain')
@@ -130,12 +128,10 @@ await shot('/tmp/bg-8-vc-rack-awake.png')
 await gotoGame()
 await tap(/FIVE WEEKS/i)
 await settle(400)
-await tap(/pick up/i)
+await tap(/Bea/i)
 await settle(700)
 await tap(/Swipe up to open/i)
-await tap(/Open the feed/i, 12000) // the Week 1 moment
-await tap(/Open Messages/i)
-await tap(/Threads · @beareyes\.ph/i)
+await tap(/Open the feed/i, 12000) // the Week 1 moment opens the feed
 await settle(800)
 await tap(/Cut the caveats/i)
 await settle(3500)
@@ -156,12 +152,10 @@ await capture('fiveweeks · dynamic timeline')
 await gotoGame()
 await tap(/GUARANTEED/i)
 await settle(400)
-await tap(/pick up/i)
+await tap(/Tita Merly/i)
 await settle(4000)
 await tap(/Swipe up to open/i)
-await tap(/Open Viber/i, 12000) // the Sunday moment
-await tap(/Open Messages/i)
-await tap(/Auntie Linda/i)
+await tap(/Open Viber/i, 12000) // the Sunday moment opens the thread
 await settle(5500) // the watch chain
 await shot('/tmp/bg-11-df-linda.png')
 await tap(/Forward to the family GC/i)
@@ -178,12 +172,10 @@ await settle(2500)
 /* ============ ANCHOR I — THREE PHONES (spot-check) ============ */
 await gotoGame()
 await tap(/THREE PHONES/i)
-await tap(/pick up/i)
+await tap(/Maya/i)
 await settle(8200)
 await tap(/Swipe up to open/i)
-await tap(/Open the family GC/i, 12000)
-await tap(/Open Messages/i)
-await tap(/Santos Family GC/i)
+await tap(/Open the family GC/i, 12000) // opens the GC
 await settle(9000)
 await tap(/❤️ and scroll past/i)
 await tap(/Lock the phone/i, 10000)
@@ -194,13 +186,12 @@ await shot('/tmp/bg-14-kangkong-awake.png')
 await gotoGame()
 await tap(/CERTAIN/i)
 await settle(400)
-await tap(/pick up/i)
+await tap(/Tita Merly/i)
 await settle(3000)
 await tap(/Swipe up to open/i)
-await tap(/Tap the star/i, 12000) // the "pinned first tile" moment
+await tap(/Tap the star/i, 12000) // the opening moment opens the Ask thread
 await settle(400)
 await shot('/tmp/bg-15-av-home.png')
-await tap(/Open Ask/i, 8000) // the dock icon
 await settle(600)
 await shot('/tmp/bg-16-av-ask.png')
 await tap(/Papa’s maintenance/i) // the first prompt

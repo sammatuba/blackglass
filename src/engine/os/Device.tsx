@@ -391,8 +391,11 @@ export function GlassOS({
     setOS(s)
     // The button says "Open the family GC" — it must really take the player
     // into that conversation, not make them hunt through a launcher first.
-    if (destination && caseDef.threads.some((t) => t.id === destination)) {
-      openApp('messages', { threadId: destination })
+    // Assistant threads live in their own app, not Messages.
+    if (destination) {
+      const thread = caseDef.threads.find((t) => t.id === destination)
+      if (thread?.service === 'assistant') openApp('assistant')
+      else if (thread) openApp('messages', { threadId: destination })
     }
     bump()
   }, [bump, caseDef, openApp])

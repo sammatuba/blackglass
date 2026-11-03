@@ -111,6 +111,7 @@ const TITA_AV: CaseOS = {
   moments: [
     {
       id: 'av-tita-open',
+      openThread: 'ask', // the moment's button opens the conversation it names
       label: 'Tap the star',
       text: [
         'Tuesday night. The dishes are done, Papa is asleep in front of the late news, and you are doing the quiet math of the medicine cabinet: enough for tonight, none for tomorrow.',
@@ -333,6 +334,7 @@ const MAYA_AV: CaseOS = {
   moments: [
     {
       id: 'av-maya-open',
+      openThread: 'ask', // the moment's button opens the conversation it names
       label: 'Open the dark folder',
       text: [
         '11:40 PM. The deck is 90% done and the 10% is the part the client’s board will actually read: methodology. “Research-backed,” Marga said, with an emoji that made it a requirement.',
@@ -555,6 +557,7 @@ const BEA_AV: CaseOS = {
   moments: [
     {
       id: 'av-bea-open',
+      openThread: 'ask', // the moment's button opens the conversation it names
       label: 'Open the second window',
       text: [
         '1:05 AM. The thread draft is open in one window; in the other, the little star. Your rule has always been check everything — and Ask checks everything, instantly, in perfect grammar, at the hour when no human is awake.',
