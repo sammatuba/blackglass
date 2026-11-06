@@ -13,6 +13,7 @@
     "icons": "node scripts/make-icons.mjs",
     "assets:sync": "node scripts/sync-artifacts.mjs",
     "assets:budget": "node scripts/asset-budget.mjs",
+    "reachability": "node scripts/reachability.mjs",
     "shots:diff": "node scripts/shot-diff.mjs"
   },
   "dependencies": {

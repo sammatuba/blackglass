@@ -306,6 +306,7 @@ const TITA_AV: CaseOS = {
     'ev-av-twelve': '“12 peer-reviewed references” — the drawer held none',
     'ev-av-pattern': 'Thumbs-up: the answer got more confident, not more right',
     'ev-av-ledger': 'Read the medicines row — the cost of a free answer',
+    'ev-journal': 'Searched the journal in scholar.ph — 0 results',
   },
   endFlag: 'avt_done',
 }

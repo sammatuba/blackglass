@@ -391,7 +391,9 @@ const MAYA_DF: CaseOS = {
     { id: 'dm-coda', when: { flag: 'df_3' }, moment: 'df-maya-end' },
     { id: 'dm-done', when: { flag: 'dismissed:df-maya-end' }, set: { dfm_done: true } },
   ],
-  evidenceLabels: {},
+  evidenceLabels: {
+    'ev-mike': 'Watched the deepfake play in the family GC — “Parang totoo mukha”',
+  },
   endFlag: 'dfm_done',
 }
 
