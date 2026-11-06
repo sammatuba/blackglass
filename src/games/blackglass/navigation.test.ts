@@ -37,4 +37,19 @@ describe('anthology phone navigation', () => {
       ).toBe(true)
     }
   })
+
+  it('every shipped phone is inhabited: calendar + wallet ambient data (P1)', () => {
+    for (const anchor of ANCHORS) {
+      for (const phone of Object.values(anchor.phones)) {
+        expect(phone.calendar?.length, `${anchor.id}/${phone.id} has no calendar events`).toBeGreaterThan(0)
+        expect(phone.wallet?.rows.length, `${anchor.id}/${phone.id} has no wallet rows`).toBeGreaterThan(0)
+        const rowIds = (phone.wallet?.rows ?? []).map((r) => r.id)
+        expect(new Set(rowIds).size, `${anchor.id}/${phone.id} has duplicate wallet row ids`).toBe(rowIds.length)
+        for (const row of phone.wallet?.rows ?? []) {
+          expect(row.amount.length, `${anchor.id}/${phone.id}/${row.id} amount must be authored text`).toBeGreaterThan(0)
+          expect(row.amount, `${anchor.id}/${phone.id}/${row.id} amounts are display strings`).toMatch(/^[+\-₱p]|pending/i)
+        }
+      }
+    }
+  })
 })

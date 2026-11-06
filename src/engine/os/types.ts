@@ -12,6 +12,8 @@ export type AppId =
   | 'contacts'
   | 'notes'
   | 'settings'
+  | 'calendar'
+  | 'wallet'
 
 /** how far the device's chrome has drifted from trustworthy (P4 — the UI is
     the narrative). Moves with story state via rules; renders as data-stage. */
@@ -233,6 +235,37 @@ export interface OSNote {
   body: string
 }
 
+/* ---- ambient surfaces (framework P1 — the device is inhabited) ----
+   Calendar and wallet carry a life, not a plot: authored data only. The
+   wallet doubles as the accusatory ledger (framework §1.5) — its mundane
+   rows are where the season's money trail lands. */
+
+export interface OSCalEvent {
+  day: string
+  time?: string
+  title: string
+  place?: string
+  /** only visible once this flag is set (plans that appear mid-story) */
+  requires?: string
+}
+
+export interface OSWalletRow {
+  id: string
+  day: string
+  label: string
+  /** authored display string — the engine never does math on money */
+  amount: string
+  kind?: 'in' | 'out'
+  note?: string
+  /** only visible once this flag is set (a transaction that happens in-story) */
+  requires?: string
+  /** flag-value gates for rows that belong to one branch only */
+  when?: Record<string, FlagValue>
+  /** verdict-bearing detail revealed on tap (P2 — the ledger re-reads) */
+  meta?: string
+  evidence?: string
+}
+
 export interface CaseOS {
   id: string
   title: string
@@ -270,6 +303,10 @@ export interface CaseOS {
   moments?: OSMoment[]
   /** flags seeded into the initial state (cross-phone unlocks, carried choices) */
   initialFlags?: Record<string, FlagValue>
+  /** ambient: the week this phone's person lives in (P1) */
+  calendar?: OSCalEvent[]
+  /** ambient + accusatory ledger: money in and out, authored display strings (P1/P2) */
+  wallet?: { balance?: string; rows: OSWalletRow[] }
   /** human labels for evidence ids — Notes app + debrief */
   evidenceLabels?: Record<string, string>
   /** when this flag is set (and the chain drains), the case is complete */

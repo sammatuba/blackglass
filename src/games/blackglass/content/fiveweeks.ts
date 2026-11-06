@@ -39,6 +39,21 @@ const BEA_5W: CaseOS = {
   notes: [
     { title: 'workshop deck — “Seeing Clearly”', body: 'slide 4: do not trust a source just because it confirms you · slide 12: if everyone you follow agrees with you, you’re not informed — you’re comfortable' },
   ],
+  /* ambient (P1): the professional's five weeks — the work compounds,
+     and so does the feed's payment for it */
+  calendar: [
+    { day: 'Mon', time: '11:00 AM', title: '1:1 · comms lead' },
+    { day: 'Thu', time: '4:00 PM', title: 'Podcast recording', place: '“the anatomy of a debunk”' },
+    { day: 'Sat · wk 5', time: '2:00 PM', title: 'Seeing Clearly workshop', place: 'Zoom green room · 73 registered' },
+  ],
+  wallet: {
+    balance: '₱31,862.55',
+    rows: [
+      { id: '5w-bea-w1', day: 'Fri', label: 'Workshop honorarium', amount: '+₱2,400.00', kind: 'in' },
+      { id: '5w-bea-w2', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
+      { id: '5w-bea-w3', day: 'Tue', label: 'Coffee', amount: '-₱180.00', note: 'third day in a row' },
+    ],
+  },
   replies: [
     { id: 'w1-nuance', threadId: 'feed', label: 'Keep the caveats — nuance over performance', hideWhen: 'w1', set: { w1: 'nuance' } },
     { id: 'w1-sharp', threadId: 'feed', label: 'Cut the caveats — sharp is clarity', hideWhen: 'w1', set: { w1: 'sharp' } },

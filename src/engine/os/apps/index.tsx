@@ -1738,6 +1738,113 @@ export function SettingsApp({
   )
 }
 
+/* =====================================================================
+   CALENDAR — ambient (P1): the week this person lives in, no plot.
+   ===================================================================== */
+
+export function CalendarApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
+  const events = (caseDef.calendar ?? []).filter((e) => !e.requires || os.flags[e.requires])
+  if (events.length === 0) return <EmptyState icon="🗓" title="No events" sub="This week is wide open." />
+  const days: { day: string; items: typeof events }[] = []
+  for (const e of events) {
+    const last = days[days.length - 1]
+    if (last && last.day === e.day) last.items.push(e)
+    else days.push({ day: e.day, items: [e] })
+  }
+  return (
+    <div className="h-full overflow-y-auto px-4 pb-8">
+      {days.map(({ day, items }) => (
+        <section key={day} aria-label={day}>
+          <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">{day}</h3>
+          <div className="mt-2 space-y-1.5">
+            {items.map((e, i) => (
+              <div key={i} className="flex min-h-11 items-baseline gap-3 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5">
+                <span className="w-14 shrink-0 text-[11px] font-semibold tabular-nums text-[var(--os-dim)]">{e.time ?? 'all day'}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[12.5px] font-semibold leading-snug text-[var(--os-ink)]">{e.title}</span>
+                  {e.place && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-faint)]">{e.place}</span>}
+                </span>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  )
+}
+
+/* =====================================================================
+   WALLET — ambient + the accusatory ledger (P1/P2): money in and out.
+   The engine never does math on money — every amount is authored text.
+   ===================================================================== */
+
+export function WalletApp({
+  caseDef,
+  os,
+  onInspect,
+}: {
+  caseDef: CaseOS
+  os: OSState
+  onInspect: (id: string, evidence?: string) => void
+}) {
+  const wallet = caseDef.wallet
+  const [openId, setOpenId] = useState<string | null>(null)
+  const rows = (wallet?.rows ?? []).filter(
+    (r) => (!r.requires || os.flags[r.requires]) && Object.entries(r.when ?? {}).every(([k, v]) => String(os.flags[k]) === String(v)),
+  )
+  if (!wallet || rows.length === 0) return <EmptyState icon="🪙" title="No transactions" sub="Nothing moves here yet." />
+  const open = rows.find((r) => r.id === openId)
+  return (
+    <div className="h-full overflow-y-auto px-4 pb-8">
+      {wallet.balance && (
+        <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-4 py-3">
+          <div className="text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Available balance</div>
+          <div className="mt-0.5 text-xl font-bold tabular-nums text-[var(--os-ink)]">{wallet.balance}</div>
+        </div>
+      )}
+      <h3 className="mt-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Transactions</h3>
+      <div className="mt-2 space-y-1.5">
+        {rows.map((r) => {
+          const expandable = !!r.meta
+          const isOpen = openId === r.id
+          const body = (
+            <>
+              <span className="w-12 shrink-0 text-[11px] font-semibold text-[var(--os-faint)]">{r.day}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[12.5px] font-semibold text-[var(--os-ink)]">{r.label}</span>
+                {r.note && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-faint)]">{r.note}</span>}
+                {isOpen && r.meta && <span className="mt-1.5 block rounded-lg border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-2.5 py-2 text-[11.5px] leading-relaxed text-[var(--os-ink)]">{r.meta}</span>}
+              </span>
+              <span className={`shrink-0 text-[12.5px] font-bold tabular-nums ${r.kind === 'in' ? 'text-[var(--os-ok)]' : 'text-[var(--os-ink)]'}`}>{r.amount}</span>
+              {expandable && <span className="w-3 shrink-0 text-[var(--os-faint)]" aria-hidden="true">{isOpen ? '⌃' : '›'}</span>}
+            </>
+          )
+          return expandable ? (
+            <button
+              key={r.id}
+              type="button"
+              aria-expanded={isOpen}
+              onClick={() => {
+                sfx.open()
+                setOpenId(isOpen ? null : r.id)
+                if (!isOpen) onInspect(r.id, r.evidence)
+              }}
+              className="flex w-full items-baseline gap-3 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5 text-left transition-colors hover:bg-[var(--os-hover)]"
+            >
+              {body}
+            </button>
+          ) : (
+            <div key={r.id} className="flex min-h-11 items-baseline gap-3 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2.5">
+              {body}
+            </div>
+          )
+        })}
+      </div>
+      {open && <p className="sr-only">{open.meta}</p>}
+    </div>
+  )
+}
+
 /* short-video page (the anthology's debunker trap). Plays for real when a
    generated clip exists; otherwise the still + fake chrome stand in. */
 function VideoPageBody({ page }: { page: CaseOS['pages'][number] }) {

@@ -131,6 +131,20 @@ const MAYA: CaseOS = {
   notes: [
     { title: 'Saturday list', body: 'kettle · PixelPush v2 · Mama: load · Bea tonight?' },
   ],
+  /* ambient (P1): Maya's week + money — mundane rows, no plot */
+  calendar: [
+    { day: 'Sat', time: '7:00 PM', title: 'Bea tonight?', place: 'unconfirmed since Tuesday' },
+    { day: 'Sun', time: 'all day', title: 'Reset. no screens.', place: 'recurring · never once kept' },
+    { day: 'Mon', time: '10:00 AM', title: 'PixelPush standup' },
+  ],
+  wallet: {
+    balance: '₱12,410.90',
+    rows: [
+      { id: 'kk-maya-w1', day: 'Fri', label: 'PixelPush · invoice #41', amount: '+₱18,000.00', kind: 'in' },
+      { id: 'kk-maya-w2', day: 'Sat', label: 'Electric kettle · online order', amount: '-₱1,249.00' },
+      { id: 'kk-maya-w3', day: 'Sat', label: 'Load · Mama', amount: '-₱300.00' },
+    ],
+  },
   replies: [
     { id: 'm-tap', threadId: 'gc', label: 'Tap the link — maybe you’re wrong', set: { maya_choice: 'tapped' } },
     { id: 'm-ask', threadId: 'gc', label: '“Tita, san niyo po nakuha yung link? 😊”', set: { maya_choice: 'asked' } },
@@ -279,6 +293,22 @@ const TITA: CaseOS = {
   notes: [
     { title: 'Sa palengke', body: 'kangkong ₱20 · tuyo · Papa’s med ayaw kalimutan' },
   ],
+  /* ambient (P1): the palengke ledger — care expressed as distribution */
+  calendar: [
+    { day: 'Sat', time: '5:30 AM', title: 'Palengke — kangkong, tuyo' },
+    { day: 'Sat', time: '6:00 PM', title: 'Mass', place: 'with Papa · same pew' },
+    { day: 'Sun', time: '12:00 PM', title: 'Family lunch', place: "Mama's" },
+    { day: 'Wed', time: '7:00 PM', title: 'Bible study' },
+  ],
+  wallet: {
+    balance: '₱8,214.30',
+    rows: [
+      { id: 'kk-tita-w1', day: 'Sat', label: 'Kangkong · palengke', amount: '-₱20.00' },
+      { id: 'kk-tita-w2', day: 'Sat', label: 'Tuyo · palengke', amount: '-₱120.00' },
+      { id: 'kk-tita-w3', day: 'Fri', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
+      { id: 'kk-tita-w4', day: 'Mon', label: 'Load', amount: '-₱100.00' },
+    ],
+  },
   replies: [
     { hideWhen: 'tita_confirmed', id: 't-open', threadId: 'joy', label: 'Open the link — kung totoo ito, dapat malaman ng lahat', set: { tita_choice: 'opened' } },
     { hideWhen: 'tita_confirmed', id: 't-fwd', threadId: 'joy', label: 'Forward to the Family GC first — they should know right away', set: { tita_choice: 'forward' } },
@@ -479,6 +509,21 @@ const BEA: CaseOS = {
   notes: [
     { title: 'work deck (draft)', body: '“the fill-in-the-blank scare template” — slide 4: EXPOSED + they don’t want you to + [profession] silent' },
   ],
+  /* ambient (P1): the consultant's week — competence as a calendar */
+  calendar: [
+    { day: 'Sat', time: '10:00 AM', title: 'Webinar run-through', place: 'living room, slides on the TV' },
+    { day: 'Mon', time: '2:00 PM', title: 'Deck: the fill-in-the-blank template' },
+    { day: 'Wed', time: '7:30 PM', title: 'Council dinner', place: 'usual place' },
+  ],
+  wallet: {
+    balance: '₱29,102.35',
+    rows: [
+      { id: 'kk-bea-w1', day: 'Fri', label: 'Webinar honorarium', amount: '+₱2,400.00', kind: 'in' },
+      { id: 'kk-bea-w2', day: 'Sat', label: 'Coffee', amount: '-₱180.00', note: 'third day in a row' },
+      { id: 'kk-bea-w3', day: 'Sat', label: 'Jeep + trike', amount: '-₱96.00' },
+      { id: 'kk-bea-w4', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
+    ],
+  },
   replies: [
     { hideWhen: 'bea_consulted', id: 'b-tiktok', threadId: 'maya4ever', label: 'Open TikTok — see what’s already circulating', set: { bea_choice: 'tiktok' } },
     { hideWhen: 'bea_consulted', id: 'b-snopes', threadId: 'maya4ever', label: 'Cross-check the Snopes tab you’ve had open six days', set: { bea_choice: 'snopes' } },

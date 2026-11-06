@@ -15,7 +15,7 @@ import {
 } from './runtime'
 import { sfx, vibrate } from './sound'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, silenceMs, typingMs } from './pacing'
-import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
+import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, CalendarApp, WalletApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
 import { aiRegen, aiThumbs } from './runtime'
@@ -899,6 +899,9 @@ function HomeScreen({
     { id: 'phone' },
     { id: 'contacts' },
     { id: 'notes', badge: os.evidence.length || undefined },
+    /* ambient surfaces — an inhabited phone has a life, not just a plot (P1) */
+    { id: 'calendar' },
+    { id: 'wallet' },
   ]
   const hasAsk = caseDef.threads.some((t) => t.service === 'assistant')
   const dockApps: { id: AppId; badge?: number }[] = [
@@ -1015,6 +1018,10 @@ function AppSurface(props: {
         }} />
       case 'settings':
         return <SettingsApp caseDef={props.caseDef} os={props.os} onBrightness={props.onBrightness} />
+      case 'calendar':
+        return <CalendarApp caseDef={props.caseDef} os={props.os} />
+      case 'wallet':
+        return <WalletApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
     }
   })()
 

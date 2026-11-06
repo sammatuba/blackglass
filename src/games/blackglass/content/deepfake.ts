@@ -88,6 +88,22 @@ const TITA_DF: CaseOS = {
   notes: [
     { title: 'Para kay Papa', body: 'cardiology follow-up next month · maintenance meds mahal na naman' },
   ],
+  /* ambient (P1) + the accusatory ledger (P2): the padala she was moved to
+     risk; the registration row only appears on the branch that went there */
+  calendar: [
+    { day: 'Sun', time: '6:00 PM', title: 'Mass', place: 'done — Papa napped through it' },
+    { day: 'Sat', time: '4:00 PM', title: 'Prayer group', place: 'Linda’s place' },
+    { day: 'next month', time: '10:00 AM', title: 'Papa: cardiology follow-up', place: 'Dr. Villaflor' },
+  ],
+  wallet: {
+    balance: '₱12,000.00',
+    rows: [
+      { id: 'df-tita-w1', day: 'Fri', label: 'Padala · Anak (US)', amount: '+₱12,000.00', kind: 'in', note: 'for bills and groceries, she said' },
+      { id: 'df-tita-w2', day: 'Sat', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
+      { id: 'df-tita-w3', day: 'Sun', label: 'Grocery top-up', amount: '-₱735.50' },
+      { id: 'df-tita-w4', day: 'Sun', label: 'AngatPinas Invest · registration', amount: '-₱5,000.00', note: 'step 2 of 3 · payment pending', when: { df_tita_act: 'register' } },
+    ],
+  },
   replies: [
     { id: 'df-fwd', threadId: 'linda', label: 'Forward to the family GC — “Para kay Papa”', hideWhen: 'df_1', set: { df_tita: 'forward' } },
     { id: 'df-ask', threadId: 'linda', label: 'Ask your daughter in the US first', hideWhen: 'df_1', set: { df_tita: 'asked' } },
@@ -249,6 +265,21 @@ const MAYA_DF: CaseOS = {
   photos: [],
   pages: [mikeVideo()],
   notes: [],
+  /* ambient (P1): broke on paper, rich in caution — the balance the hope
+     in the GC does not know about */
+  calendar: [
+    { day: 'Sun', time: '12:00 PM', title: 'Family lunch', place: 'done — you said nothing yet' },
+    { day: 'Mon', time: '11:00 AM', title: 'Client call', place: 'the one that pays late' },
+    { day: 'Fri', time: 'all day', title: 'Payout (please)' },
+  ],
+  wallet: {
+    balance: '₱1,847.22',
+    rows: [
+      { id: 'df-maya-w1', day: 'Fri', label: 'Client payment', amount: 'pending', kind: 'in', note: 'retainer pays late' },
+      { id: 'df-maya-w2', day: 'Sun', label: 'Groceries', amount: '-₱280.00' },
+      { id: 'df-maya-w3', day: 'Sun', label: 'Load', amount: '-₱99.00' },
+    ],
+  },
   replies: [
     { id: 'dm-call', threadId: 'gc', label: 'Say it’s fake in the GC', hideWhen: 'df_2', set: { df_maya: 'called' } },
     { id: 'dm-bea', threadId: 'gc', label: 'Ask Bea first — get cover before you wreck the hope', hideWhen: 'df_2', set: { df_maya: 'bea' } },
@@ -368,6 +399,20 @@ const BEA_DF: CaseOS = {
   notes: [
     { title: 'debunk doc (open since 2:47)', body: 'sec screenshot ✓ · melted-seal side-by-side ✓ · mouth-lag gif ⏳' },
   ],
+  /* ambient (P1): the debunker's Sunday — the work is in the calendar */
+  calendar: [
+    { day: 'Sun', time: 'all day', title: 'Laundry, finally' },
+    { day: 'Mon', time: '9:00 AM', title: 'Receipts thread for the council' },
+    { day: 'Sat', time: '10:00 AM', title: 'Office hours' },
+  ],
+  wallet: {
+    balance: '₱29,861.20',
+    rows: [
+      { id: 'df-bea-w1', day: 'Sun', label: 'Laundry', amount: '-₱120.00' },
+      { id: 'df-bea-w2', day: 'Sun', label: 'Coffee', amount: '-₱180.00', note: 'debunking is thirsty work' },
+      { id: 'df-bea-w3', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
+    ],
+  },
   replies: [
     { id: 'bf-receipts', threadId: 'threadspost', label: 'Send Maya more receipts — the mouth-lag gif', hideWhen: 'bdf_1', set: { df_bea: 'receipts' } },
     { id: 'bf-reach', threadId: 'threadspost', label: 'Check your reach', hideWhen: 'bdf_1', set: { df_bea: 'reach' } },

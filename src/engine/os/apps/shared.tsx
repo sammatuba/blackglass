@@ -9,6 +9,9 @@ export const APP_META: Record<AppId, { name: string; icon: string; tile: string 
   contacts: { name: 'Contacts', icon: '👤', tile: 'bg-gradient-to-b from-amber-400/90 to-orange-600/90' },
   notes: { name: 'Notes', icon: '📝', tile: 'bg-gradient-to-b from-yellow-300/90 to-amber-500/90' },
   settings: { name: 'Settings', icon: '⚙️', tile: 'bg-gradient-to-b from-slate-400/90 to-slate-600/90' },
+  /* ambient surfaces — original iconography, type-only */
+  calendar: { name: 'Calendar', icon: '🗓', tile: 'bg-gradient-to-b from-rose-400/90 to-red-600/90' },
+  wallet: { name: 'Wallet', icon: '🪙', tile: 'bg-gradient-to-b from-lime-400/90 to-green-700/90' },
 }
 
 export function Avatar({ name, hue, size = 'md' }: { name: string; hue: number; size?: 'sm' | 'md' }) {

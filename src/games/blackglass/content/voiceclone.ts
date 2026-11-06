@@ -57,6 +57,21 @@ const TITA_VC: CaseOS = {
   notes: [
     { title: 'Kay Renz', body: 'boss na naman ang masama — dinadala niya nang tahimik. Pray for him.' },
   ],
+  /* ambient (P1) + the accusatory ledger (P2): the send row only lands
+     once it has happened — and then it sits under the groceries */
+  calendar: [
+    { day: 'Tue', time: '7:00 PM', title: 'Prayer group', place: 'did not go' },
+    { day: 'Sat', time: '6:00 PM', title: 'Mass', place: 'with Papa' },
+    { day: 'Sun', time: '9:00 AM', title: 'Call Anak (US)', place: 'Sunday is her Monday morning' },
+  ],
+  wallet: {
+    rows: [
+      { id: 'vc-tita-w1', day: 'Mon', label: 'Padala · Anak (US)', amount: '+₱15,000.00', kind: 'in', note: 'for Papa’s check-up, the water, the electric' },
+      { id: 'vc-tita-w2', day: 'Tue', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
+      { id: 'vc-tita-w3', day: 'Tue', label: 'Water bill', amount: '-₱612.30' },
+      { id: 'vc-tita-w4', day: 'Tue', label: 'GCash Send · 0915-•••-•••• · 8:21 PM', amount: '-₱18,500.00', requires: 'vc_after' },
+    ],
+  },
   replies: [
     { id: 'vc-ask', threadId: 'renz', label: 'Ask him where he is — “sino kasama mo?”', hideWhen: 'vc_chosen', set: { tita_vc: 'asked' } },
     { id: 'vc-mama', threadId: 'renz', label: 'Call Mama — she should know', hideWhen: 'vc_chosen', set: { tita_vc: 'mama' } },
@@ -230,6 +245,21 @@ const MAYA_VC: CaseOS = {
     { threadId: 'renz', msg: { from: 'you', text: 'kuya okay ka lang???', at: '8:07 PM' } },
     { threadId: 'renz', msg: { from: 'sys', text: 'Message not delivered' } },
   ],
+  /* ambient (P1): verification has no line item; the panic costs nothing
+     and pays nothing — that is the economics of this evening */
+  calendar: [
+    { day: 'Wed', time: '10:00 AM', title: 'Client call', place: 'the one that pays late' },
+    { day: 'Fri', time: 'all day', title: 'Payout (please)' },
+    { day: 'Sat', time: 'all day', title: 'Rest', place: 'dubious' },
+  ],
+  wallet: {
+    balance: '₱6,041.15',
+    rows: [
+      { id: 'vc-maya-w1', day: 'Mon', label: 'Rent share', amount: '-₱4,500.00' },
+      { id: 'vc-maya-w2', day: 'Tue', label: 'Load', amount: '-₱300.00' },
+      { id: 'vc-maya-w3', day: 'Fri', label: 'Client payment', amount: 'pending', kind: 'in', note: 'retainer pays late' },
+    ],
+  },
   photos: [],
   pages: [],
   notes: [],
@@ -408,6 +438,21 @@ const BEA_VC: CaseOS = {
   notes: [
     { title: 'Voice Cloning 101 · slide 12 (draft)', body: '“What to do if you receive a cloned call” — unfinished since the weekend.' },
   ],
+  /* ambient (P1): the expert's week — the webinar exists in the calendar,
+     the verification call does not */
+  calendar: [
+    { day: 'Tue', time: '9:00 PM', title: 'Council sync', place: 'Janine’s link, screenshotted' },
+    { day: 'Sat', time: '2:00 PM', title: 'Finish Slide 12', place: 'overdue since the weekend' },
+    { day: 'Mon', time: '1:00 PM', title: 'Draft: platform accountability panel' },
+  ],
+  wallet: {
+    balance: '₱28,744.10',
+    rows: [
+      { id: 'vc-bea-w1', day: 'Fri', label: 'Webinar honorarium', amount: '+₱2,400.00', kind: 'in' },
+      { id: 'vc-bea-w2', day: 'Tue', label: 'Coffee', amount: '-₱180.00', note: 'third day in a row' },
+      { id: 'vc-bea-w3', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
+    ],
+  },
   replies: [
     { id: 'bv-expert', threadId: 'maya4ever', label: 'Stay on the couch — you’ve given her the tools', hideWhen: 'bvc_chose', set: { bea_vc: 'expert' } },
     { id: 'bv-content', threadId: 'maya4ever', label: 'Finish Slide 12 while you wait', hideWhen: 'bvc_chose', set: { bea_vc: 'content' } },

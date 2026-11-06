@@ -76,6 +76,20 @@ const TITA_AV: CaseOS = {
   notes: [
     { title: 'Para kay Papa', body: 'maintenance meds · botika closes 10 · cardiology follow-up next month (Dr. Villaflor) · huwag kalimutan ang reseta!!!' },
   ],
+  /* ambient (P1): the week is built around Papa's prescriptions */
+  calendar: [
+    { day: 'Sat', time: '6:00 PM', title: 'Mass', place: 'with Papa' },
+    { day: 'Wed', time: '9:30 AM', title: 'Botika run', place: 'before 10 — with the clinic copy' },
+    { day: 'next month', time: '10:00 AM', title: 'Papa: cardiology follow-up', place: 'Dr. Villaflor' },
+  ],
+  wallet: {
+    balance: '₱3,412.75',
+    rows: [
+      { id: 'av-tita-w1', day: 'Mon', label: 'Papa’s maintenance · monthly', amount: '-₱1,240.00' },
+      { id: 'av-tita-w2', day: 'Sun', label: 'Jeep fare ×2', amount: '-₱56.00' },
+      { id: 'av-tita-w3', day: 'Sat', label: 'Sold the old electric fan', amount: '+₱350.00', kind: 'in' },
+    ],
+  },
   replies: [
     {
       id: 'av-t1',
@@ -310,6 +324,20 @@ const MAYA_AV: CaseOS = {
   notes: [
     { title: 'deck_notes.txt', body: 'methodology: needs “research-backed” framing · one credible study = whole section breathes · deadline 8 AM · eye drops · sleep is for the shipped' },
   ],
+  /* ambient (P1): the deadline owns the week */
+  calendar: [
+    { day: 'Wed', time: '8:00 AM', title: 'Final deck due', place: 'board meeting moved earlier' },
+    { day: 'Fri', time: 'all day', title: 'Payout (please)' },
+    { day: 'Sat', time: 'all day', title: 'Rest', place: 'dubious' },
+  ],
+  wallet: {
+    balance: '₱1,847.22',
+    rows: [
+      { id: 'av-maya-w1', day: 'Fri', label: 'Client payment · Marga', amount: 'pending', kind: 'in', note: 'retainer pays late' },
+      { id: 'av-maya-w2', day: 'Tue', label: 'Load', amount: '-₱99.00' },
+      { id: 'av-maya-w3', day: 'Mon', label: 'Coffee ×2', amount: '-₱310.00', note: 'two deadlines in one week' },
+    ],
+  },
   replies: [
     {
       id: 'av-m1',
@@ -537,6 +565,20 @@ const BEA_AV: CaseOS = {
   notes: [
     { title: 'thread draft — “The Verification Habit”', body: '9 posts · thesis: verification is a practice, not a feeling · ends with the saved-contact rule · needs: fact-check before posting (always) · eydrops' },
   ],
+  /* ambient (P1): 1 AM — the week is a list of things to be right about */
+  calendar: [
+    { day: 'Wed', time: '11:00 AM', title: 'Post: the assistant answer, annotated' },
+    { day: 'Sat', time: '10:00 AM', title: 'Office hours' },
+    { day: 'Mon', time: '2:00 PM', title: 'Webinar slide 12, again', place: 'it is never finished' },
+  ],
+  wallet: {
+    balance: '₱29,515.20',
+    rows: [
+      { id: 'av-bea-w1', day: 'Tue', label: 'Trike home', amount: '-₱96.00' },
+      { id: 'av-bea-w2', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
+      { id: 'av-bea-w3', day: 'Fri', label: 'Workshop honorarium', amount: '+₱2,400.00', kind: 'in' },
+    ],
+  },
   replies: [
     {
       id: 'av-b1',
