@@ -293,6 +293,24 @@ export interface OSWalletRow {
   evidence?: string
 }
 
+/** P6 (inversion anchor): a home-screen tile that looks native but is not.
+    It renders exactly like a system app — the disguise is the point — and
+    opens the authored Browser page that exposes it. Data only. */
+export interface OSGhostTile {
+  id: string
+  label: string
+  icon: string
+  pageId: string
+}
+
+/** P6: authored per-app screen-time rows (Settings surface). The anomalies
+    are the gaps and the notes — data the player reads, never labeled. */
+export interface OSScreenRow {
+  app: string
+  mins: string
+  note?: string
+}
+
 export interface CaseOS {
   id: string
   title: string
@@ -314,6 +332,8 @@ export interface CaseOS {
     stage?: OSStage
     /** per-anchor signature distortion, shown once the stage leaves clean */
     stageSig?: OSStageSig
+    /** P6: native-looking tiles that are not what they claim (inversion anchor) */
+    ghostTiles?: OSGhostTile[]
   }
   contacts: OSContact[]
   threads: OSThread[]
@@ -334,6 +354,8 @@ export interface CaseOS {
   calendar?: OSCalEvent[]
   /** ambient + accusatory ledger: money in and out, authored display strings (P1/P2) */
   wallet?: { balance?: string; rows: OSWalletRow[] }
+  /** P6: screen-time by app, last 7 days (Settings surface; inversion anchor) */
+  screentime?: OSScreenRow[]
   /** human labels for evidence ids — Notes app + debrief */
   evidenceLabels?: Record<string, string>
   /** when this flag is set (and the chain drains), the case is complete */

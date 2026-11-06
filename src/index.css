@@ -211,6 +211,30 @@ body {
   --os-narr: ui-sans-serif, system-ui, sans-serif;
   --os-narr-size: 13px;
 }
+.theme-own {
+  /* DRAFT (Anchor VI — canon review pending): the holder's own phone —
+     clean, cool, slightly plain. The palette stays innocent; the stage
+     tiers (data-stage) do the corrupting. */
+  --os-bg: #eef1f4;
+  --os-panel: #f7f9fb;
+  --os-ink: #1c2733;
+  --os-dim: #5b6a78;
+  --os-faint: #6b7885;
+  --os-hairline: rgba(28, 39, 51, 0.1);
+  --os-hover: rgba(28, 39, 51, 0.04);
+  --os-chip: rgba(28, 39, 51, 0.05);
+  --os-bub-in: #e3e8ee;
+  --os-bub-in-ink: #1c2733;
+  --os-bub-out: #3f6ea8;
+  --os-bub-out-ink: #ffffff;
+  --os-accent: #2f6f8f;
+  --os-accent-ink: #ffffff;
+  --os-chip-border: rgba(47, 111, 143, 0.45);
+  --os-chip-bg: rgba(47, 111, 143, 0.08);
+  --os-chip-bg-hover: rgba(47, 111, 143, 0.16);
+  --os-narr: ui-serif, Georgia, serif;
+  --os-narr-size: 14px;
+}
 /* narration + asides inside threads — the anthology's prose channel */
 .os-narr {
   font-family: var(--os-narr);

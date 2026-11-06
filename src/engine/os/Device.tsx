@@ -948,6 +948,22 @@ function HomeScreen({
     <div className="absolute inset-0 z-10 flex flex-col px-5 pb-4 pt-12 text-[var(--os-ink)]">
       <div className="grid grid-cols-4 gap-x-3 gap-y-5">
         {tiles.map(renderIcon)}
+        {/* ghost tiles render exactly like system tiles — the disguise is the
+            point (P6 inversion anchor); the page they open is the tell */}
+        {(caseDef.phone.ghostTiles ?? []).map((g) => (
+          <button
+            key={g.id}
+            type="button"
+            onClick={() => onOpenApp('browser', { pageId: g.pageId })}
+            aria-label={`Open ${g.label}`}
+            className="group flex flex-col items-center gap-1.5"
+          >
+            <span className="relative grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-b from-slate-400/90 to-slate-600/90 text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95">
+              {g.icon}
+            </span>
+            <span className="text-2xs font-medium opacity-85">{g.label}</span>
+          </button>
+        ))}
       </div>
 
       <div className="mt-auto">

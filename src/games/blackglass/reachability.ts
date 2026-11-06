@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import type { AnthologyAnchor, CaseOS, FlagValue, OSRule } from '../../engine/os/types'
+import type { CaseOS, FlagValue, OSRule } from '../../engine/os/types'
+import type { AnthologyAnchor } from './types'
 import { evidenceIds } from '../../engine/os/runtime'
 import { ARTIFACT_FORMATS } from './artifact-list'
 import { VOICE_FILES } from './voice-list'
