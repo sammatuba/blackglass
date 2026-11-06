@@ -10,6 +10,7 @@ import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { gotoWithRetry } from './lib/nav.mjs'
+import { axeCheck } from './lib/axe.mjs'
 
 const TRANSCRIPT = !!process.env.TRANSCRIPT
 const transcript = []
@@ -93,6 +94,7 @@ await shot('/tmp/bg-2-vc-kitchen.png')
 await settle(6500) // the listen chain: play, the transcript aside, it's him
 await shot('/tmp/bg-3-vc-voice.png')
 await capture('voiceclone · the listen chain')
+await axeCheck(page, 'anthology vc thread')
 
 // the choice — and the clone calls live
 await tap(/Ask him where he is/i)
@@ -104,9 +106,13 @@ await shot('/tmp/bg-5-vc-live.png')
 await capture('voiceclone · live call transcript')
 await tap(/End call/i, 5000)
 await settle(1500)
+// the ledger moment rises before the send (P2 cross-reference); its button
+// opens the Wallet — dismiss, then go home via the gesture bar
+await tap(/Open the ledger/i, 8000)
+await settle(500)
 
 // the send (home → Messages → the GCash thread)
-await tap(/Home/i, 4000)
+await tap(/^Home$/i, 4000)
 await tap(/Open Messages/i)
 await tap(/Send Money/i, 8000)
 await settle(2500)
@@ -140,8 +146,11 @@ await settle(3500)
 await tap(/Quote-post the correction/i)
 await settle(3500)
 await tap(/Leave them muted/i)
+await settle(2000)
+await tap(/Open the Wallet/i, 8000) // the ledger moment (P2) rises before the webinar — dismiss it
 await settle(5000) // the webinar chain drains → completion
 await shot('/tmp/bg-9-5w-webinar.png')
+await axeCheck(page, 'anthology 5w webinar')
 await settle(2500)
 await tap(/What five weeks did/i, 8000)
 await settle(1200)
@@ -159,7 +168,11 @@ await tap(/Open Viber/i, 12000) // the Sunday moment opens the thread
 await settle(5500) // the watch chain
 await shot('/tmp/bg-11-df-linda.png')
 await tap(/Forward to the family GC/i)
-await settle(3000)
+await settle(2000)
+await tap(/Open the Wallet/i, 8000) // the ledger moment (P2) rises before the registration branch
+await tryTap(/^Home$/i)
+await tryTap(/Open Messages/i)
+await tryTap(/Auntie Linda/i)
 await tap(/Reserve a slot/i, 8000)
 await settle(1500)
 await shot('/tmp/bg-12-df-register.png')
@@ -207,7 +220,9 @@ await settle(5000) // the regen composes in fresh
 await shot('/tmp/bg-19-av-regen.png')
 await capture('assistant · regenerated')
 await tap(/So I give him the 10 tonight/i, 8000) // the follow prompt
-await settle(4500)
+await settle(2500)
+await tryTap(/Open the Wallet/i, 6000) // the ledger moment (P2) rises before the correction — dismiss it
+await settle(1500)
 // beat the coda out the door: watch Joy's correction land in the GC if the
 // pump is still draining; the moment overlay wins otherwise (tolerant taps)
 await tryTap(/Home/i)

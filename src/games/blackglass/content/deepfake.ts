@@ -71,7 +71,14 @@ const TITA_DF: CaseOS = {
     theme: 'tita',
   },
   contacts: [
-    { id: 'linda', name: 'Auntie Linda', number: '0923-445-7801', relation: 'prayer group · since the parish fair' },
+    {
+      id: 'linda',
+      name: 'Auntie Linda',
+      number: '0923-445-7801',
+      relation: 'prayer group · since the parish fair',
+      /* P2: the thread where the blessing arrived */
+      xrefs: [{ label: 'The Viber thread — “Legit yan ha sis”', threadId: 'linda' }],
+    },
     { id: 'maya', name: 'Maya', number: '0918-226-5590', relation: 'designer' },
     { id: 'papa', name: 'Papa', number: '0919-448-7702', relation: 'napping' },
   ],
@@ -98,7 +105,17 @@ const TITA_DF: CaseOS = {
   wallet: {
     balance: '₱12,000.00',
     rows: [
-      { id: 'df-tita-w1', day: 'Fri', label: 'Padala · Anak (US)', amount: '+₱12,000.00', kind: 'in', note: 'for bills and groceries, she said' },
+      {
+        id: 'df-tita-w1',
+        day: 'Fri',
+        label: 'Padala · Anak (US)',
+        amount: '+₱12,000.00',
+        kind: 'in',
+        note: 'for bills and groceries, she said',
+        /* the accusatory row (P2): the money the video was built to move */
+        meta: '₱12,000 — the padala, for bills and groceries, she said. The video promises to turn it into ₱15,500 by Friday next. Ledgers do not multiply. They only remember what actually happened.',
+        evidence: 'ev-df-ledger',
+      },
       { id: 'df-tita-w2', day: 'Sat', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
       { id: 'df-tita-w3', day: 'Sun', label: 'Grocery top-up', amount: '-₱735.50' },
       { id: 'df-tita-w4', day: 'Sun', label: 'AngatPinas Invest · registration', amount: '-₱5,000.00', note: 'step 2 of 3 · payment pending', when: { df_tita_act: 'register' } },
@@ -112,6 +129,15 @@ const TITA_DF: CaseOS = {
     { id: 'df-pool', threadId: 'linda', label: 'Wait — let the family decide together', hideWhen: 'df_act', set: { df_tita_act: 'pool' } },
   ],
   moments: [
+    {
+      id: 'dt-xref',
+      label: 'Open the Wallet',
+      openApp: 'wallet',
+      text: [
+        '₱12,000. The padala from Friday, for bills and groceries, she said. The video promises to turn it into ₱15,500 by Friday next.',
+        'The Wallet does not promise. It only remembers: the medicines, the groceries, the fare. The real fund is itemized — and it was already enough of a miracle before anyone promised thirty percent.',
+      ],
+    },
     {
       id: 'df-tita-sunday',
       label: 'Open Viber',
@@ -219,12 +245,20 @@ const TITA_DF: CaseOS = {
         { threadId: 'linda', msg: { from: 'sys', kind: 'aside', text: 'You did not ask about slots. The offer moved on its own, closer, the way a tide does.' } },
       ],
     },
+    {
+      /* P2 moment — the cross-referencing tap, before the decision: the
+         button opens the ledger */
+      id: 'dt-xref',
+      when: { flag: 'df_1' },
+      moment: 'dt-xref',
+    },
     { id: 'dt-coda', when: { flag: 'df_act' }, moment: 'df-tita-end' },
     { id: 'dt-done', when: { flag: 'dismissed:df-tita-end' }, set: { dft_done: true } },
   ],
   evidenceLabels: {
     'ev-mike': 'Watched the video twice — the face was the proof',
     'ev-angat': 'Opened the registration page — the colors of trust',
+    'ev-df-ledger': 'Read the padala row — the money the video was built to move',
   },
   endFlag: 'dft_done',
 }

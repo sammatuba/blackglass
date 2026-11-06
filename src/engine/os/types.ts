@@ -32,6 +32,8 @@ export interface OSContact {
   relation?: string
   /** inspecting this contact counts as evidence (verification) */
   evidence?: string
+  /** P2: threads/photos/pages that touch this contact — rendered as tappable lines */
+  xrefs?: OSXref[]
 }
 
 export interface OSTell {
@@ -39,6 +41,26 @@ export interface OSTell {
   detail: string
   /** timestamp in the artifact where the tell shows (e.g. "0:06") — video artifacts */
   at?: string
+}
+
+/** data-horror cross-reference (P2): a pointer from one surface to another —
+    a contact that names the threads that touch it, a photo that opens the
+    page it came from. The player assembles the trail; nothing is labeled. */
+export interface OSXref {
+  label: string
+  threadId?: string
+  photoId?: string
+  pageId?: string
+  evidence?: string
+}
+
+/** authored capture metadata for a photo (P2 — the metadata panel).
+    Fields are display strings; `pageId` opens the authored Browser page. */
+export interface OSPhotoMeta {
+  time?: string
+  place?: string
+  device?: string
+  pageId?: string
 }
 
 /** a citation chip on an assistant answer — the tells of Anchor V live here */
@@ -72,6 +94,8 @@ export interface OSPhoto {
   /** diegetic artifact image (resolved by the game from its asset glob);
       falls back to the emoji placeholder when absent */
   src?: string
+  /** P2: authored capture metadata — the panel under the photo */
+  meta?: OSPhotoMeta
   /** normalized tells for the examine layer */
   tells?: OSTell[]
   /** artifacts from the same batch compare side by side; the note names the tell */
@@ -228,6 +252,9 @@ export interface OSMoment {
   /** the real conversation to open when the interstitial button names one.
       Optional so reflective/end moments still return to the current app. */
   openThread?: string
+  /** P2: open an app surface instead — the button literally directs the
+      cross-referencing tap ("Open the Wallet") */
+  openApp?: AppId
 }
 
 export interface OSNote {

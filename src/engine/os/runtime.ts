@@ -221,8 +221,12 @@ export function evidenceIds(caseDef: CaseOS): string[] {
   const clues: string[] = []
   for (const p of caseDef.photos) if (p.evidence) clues.push(p.evidence)
   for (const pg of caseDef.pages) if (pg.evidence) clues.push(pg.evidence)
-  for (const c of caseDef.contacts) if (c.evidence) clues.push(c.evidence)
+  for (const c of caseDef.contacts) {
+    if (c.evidence) clues.push(c.evidence)
+    for (const x of c.xrefs ?? []) if (x.evidence) clues.push(x.evidence)
+  }
   for (const v of caseDef.voicemails ?? []) if (v.evidence) clues.push(v.evidence)
+  for (const r of caseDef.wallet?.rows ?? []) if (r.evidence) clues.push(r.evidence)
   for (const r of caseDef.rules) for (const e of r.evidence ?? []) clues.push(e)
   return [...new Set(clues)]
 }

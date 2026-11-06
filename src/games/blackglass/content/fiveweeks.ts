@@ -49,7 +49,16 @@ const BEA_5W: CaseOS = {
   wallet: {
     balance: '₱31,862.55',
     rows: [
-      { id: '5w-bea-w1', day: 'Fri', label: 'Workshop honorarium', amount: '+₱2,400.00', kind: 'in' },
+      {
+        id: '5w-bea-w1',
+        day: 'Fri',
+        label: 'Workshop honorarium',
+        amount: '+₱2,400.00',
+        kind: 'in',
+        /* the accusatory row (P2): what the job paid vs what the feed paid */
+        meta: '₱2,400 for teaching people to see clearly. The feed paid more than that every week for five weeks of being less careful — and it never once sent an invoice.',
+        evidence: 'ev-5w-ledger',
+      },
       { id: '5w-bea-w2', day: 'Thu', label: 'Tooling subscription · monthly', amount: '-₱540.00' },
       { id: '5w-bea-w3', day: 'Tue', label: 'Coffee', amount: '-₱180.00', note: 'third day in a row' },
     ],
@@ -65,6 +74,15 @@ const BEA_5W: CaseOS = {
     { id: 'w4-keep', requires: 'w4_read', threadId: 'feed', label: 'Leave them muted — clarity requires curation', hideWhen: 'w4', set: { w4: 'muted' } },
   ],
   moments: [
+    {
+      id: 'w5-xref',
+      label: 'Open the Wallet',
+      openApp: 'wallet',
+      text: [
+        'One last thing before the webinar goes live. The Wallet, the honorarium row: ₱2,400, for teaching people to see clearly.',
+        'The feed has paid you more than that every week for five weeks, and it never once asked you to teach anything. Read the ledger like a stranger would. That is the whole exercise.',
+      ],
+    },
     {
       id: 'w1-open',
       label: 'Open the feed',
@@ -154,6 +172,13 @@ const BEA_5W: CaseOS = {
       ],
     },
     {
+      /* P2 moment — the cross-referencing tap, before the webinar: the
+         button opens the ledger */
+      id: 'w5-xref',
+      when: { flag: 'w4_done' },
+      moment: 'w5-xref',
+    },
+    {
       id: 'w4-arrive',
       when: { flag: 'w3_done' },
       set: { w4_read: true },
@@ -197,7 +222,9 @@ const BEA_5W: CaseOS = {
       ],
     },
   ],
-  evidenceLabels: {},
+  evidenceLabels: {
+    'ev-5w-ledger': 'Read the honorarium row — what the job paid vs what the feed paid',
+  },
   endFlag: 'w5_done',
 }
 

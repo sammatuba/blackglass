@@ -1003,11 +1003,13 @@ export function GalleryApp({
   os,
   initialPhotoId,
   onInspect,
+  onOpenPage,
 }: {
   caseDef: CaseOS
   os: OSState
   initialPhotoId?: string | null
   onInspect: (id: string, evidence?: string) => void
+  onOpenPage: (id: string) => void
 }) {
   const [openId, setOpenId] = useState<string | null>(initialPhotoId ?? null)
   const [zoom, setZoom] = useState(false)
@@ -1159,6 +1161,39 @@ export function GalleryApp({
                   </span>
                 </button>
                 <h3 className="mt-3 text-sm font-bold text-[var(--os-ink)]">{open.title}</h3>
+                {open.meta && (
+                  <div className="mt-2 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3 py-2.5">
+                    <p className="text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Details</p>
+                    <dl className="mt-1">
+                      {(
+                        [
+                          ['Captured', open.meta.time],
+                          ['Location', open.meta.place],
+                          ['Device', open.meta.device],
+                        ] as const
+                      )
+                        .filter(([, v]) => v)
+                        .map(([k, v]) => (
+                          <div key={k} className="mt-1.5 flex items-baseline gap-2">
+                            <dt className="w-16 shrink-0 text-[11px] font-semibold text-[var(--os-faint)]">{k}</dt>
+                            <dd className="min-w-0 flex-1 text-[11.5px] leading-snug text-[var(--os-ink)]">{v}</dd>
+                          </div>
+                        ))}
+                    </dl>
+                    {open.meta.pageId && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          sfx.open()
+                          onOpenPage(open.meta!.pageId!)
+                        }}
+                        className="mt-2.5 flex min-h-11 w-full items-center gap-2 rounded-lg border border-[var(--os-hairline)] bg-[var(--os-chip-bg)] px-3 py-2 text-left text-[11.5px] font-semibold text-[var(--os-ink)] transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+                      >
+                        <span aria-hidden="true">📍</span> Open the location in Browser
+                      </button>
+                    )}
+                  </div>
+                )}
                 {open.tells && open.tells.length > 0 && (
                   <div className="mt-3 space-y-2 overflow-y-auto">
                     <p className="text-[10px] font-bold tracking-[0.2em] text-[var(--os-accent)] uppercase">Look again</p>
@@ -1469,10 +1504,16 @@ export function ContactsApp({
   caseDef,
   os,
   onInspect,
+  onOpenThread,
+  onOpenPage,
+  onOpenPhoto,
 }: {
   caseDef: CaseOS
   os: OSState
   onInspect: (id: string, evidence?: string) => void
+  onOpenThread: (id: string) => void
+  onOpenPage: (id: string) => void
+  onOpenPhoto: (id: string) => void
 }) {
   const [q, setQ] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
@@ -1523,6 +1564,31 @@ export function ContactsApp({
               <p className="mt-3 rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] p-3 text-[12px] leading-relaxed text-[var(--os-ink)]">
                 ⌕ Cross-check: the number texting you is <span className="font-bold">not this one</span>. Saved contacts don’t change silently — that’s the whole point of them.
               </p>
+            )}
+            {open.xrefs && open.xrefs.length > 0 && (
+              <div className="mt-3">
+                <p className="text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Touches</p>
+                <div className="mt-1.5 space-y-1.5">
+                  {open.xrefs.map((x, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => {
+                        sfx.open()
+                        if (x.threadId) onOpenThread(x.threadId)
+                        else if (x.photoId) onOpenPhoto(x.photoId)
+                        else if (x.pageId) onOpenPage(x.pageId)
+                        if (x.evidence) onInspect(open.id + '-xref-' + i, x.evidence)
+                      }}
+                      className="flex min-h-11 w-full items-center gap-2 rounded-xl border border-[var(--os-hairline)] bg-[var(--os-chip-bg)] px-3 py-2 text-left text-[11.5px] font-semibold leading-snug text-[var(--os-ink)] transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+                    >
+                      <span aria-hidden="true">{x.threadId ? '💬' : x.photoId ? '🖼️' : '🔗'}</span>
+                      <span className="min-w-0 flex-1">{x.label}</span>
+                      <span aria-hidden="true" className="text-[var(--os-faint)]">›</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )}

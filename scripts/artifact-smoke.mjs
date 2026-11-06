@@ -4,9 +4,10 @@
    Live:   SHOT_BASE=https://sammatuba.github.io/blackglass node scripts/artifact-smoke.mjs */
 import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
+import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' }) // system Chrome, same as the other host smokes
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 // smoke runs use the fast pace; cadence math is covered by pacing.test.ts
@@ -52,12 +53,16 @@ await tapWhen(/Open Viber/i, 12000) // the kitchen moment
 await settle(300)
 
 /* ---- gallery zoom on the damage photo ---- */
+// dismissing the wake moment opens the authored conversation (845dd57) —
+// go home before reaching for the gallery tile
+await tapWhen(/^Home$/i, 8000)
 await tapWhen(/Open Gallery/i, 8000)
 await tapWhen(/the damage/i, 8000)
 await page.getByRole('dialog', { name: /Photo:/ }).waitFor({ state: 'visible', timeout: 5000 })
 await tapWhen(/Zoom in/i, 5000)
 assert((await page.getByText('2×').count()) > 0, 'zoom in shows the 2× badge')
 await page.screenshot({ path: '/tmp/artifact-1-zoom.png' })
+await axeCheck(page, 'artifact photo viewer')
 await tapWhen(/Zoom out/i, 5000)
 assert((await page.getByText('1×').count()) > 0, 'zoom out returns to 1×')
 await tapWhen(/Close photo/i, 5000) // close the viewer
@@ -79,7 +84,7 @@ await page.getByRole('button', { name: /Play voice message/ }).first().waitFor({
 /* ---- Notes search: the case board gets a filter ---- */
 await tapWhen(/^Home$/i, 5000)
 await tapWhen(/Open Notes/i, 8000)
-const search = page.getByLabel(/Search notes and evidence/i)
+const search = page.getByLabel(/Search notes and saved details/i)
 await search.waitFor({ state: 'visible', timeout: 5000 })
 await search.fill('Renz')
 assert((await page.getByText(/1 of 1 match/).count()) > 0, 'search reports the match count')

@@ -85,7 +85,15 @@ const TITA_AV: CaseOS = {
   wallet: {
     balance: '₱3,412.75',
     rows: [
-      { id: 'av-tita-w1', day: 'Mon', label: 'Papa’s maintenance · monthly', amount: '-₱1,240.00' },
+      {
+        id: 'av-tita-w1',
+        day: 'Mon',
+        label: 'Papa’s maintenance · monthly',
+        amount: '-₱1,240.00',
+        /* the accusatory row (P2): the cost of a free answer */
+        meta: '₱1,240 a month, every month — the medicines the app gave dosage advice about, for free, in under a second. The botika would not sell without the reseta. That refusal was the last human check in the whole night.',
+        evidence: 'ev-av-ledger',
+      },
       { id: 'av-tita-w2', day: 'Sun', label: 'Jeep fare ×2', amount: '-₱56.00' },
       { id: 'av-tita-w3', day: 'Sat', label: 'Sold the old electric fan', amount: '+₱350.00', kind: 'in' },
     ],
@@ -124,6 +132,15 @@ const TITA_AV: CaseOS = {
     },
   ],
   moments: [
+    {
+      id: 'avt-xref',
+      label: 'Open the Wallet',
+      openApp: 'wallet',
+      text: [
+        'While the GC sleeps, one more thing worth reading. The Wallet: ₱1,240, every month, the biggest line in the ledger — the medicines the app answered for, for free, in under a second.',
+        'The botika would not sell without the reseta. That refusal was the last human check in the whole night, and it did more than any citation the machine could invent.',
+      ],
+    },
     {
       id: 'av-tita-open',
       openThread: 'ask', // the moment's button opens the conversation it names
@@ -260,6 +277,12 @@ const TITA_AV: CaseOS = {
         { threadId: 'gc', msg: { from: 'sys', kind: 'silence', receipt: true, text: 'Sent · 9:41 PM. The house is asleep. Nobody in the GC is awake.' } },
       ],
     },
+    {
+      /* P2 moment — the cross-referencing tap: the button opens the ledger */
+      id: 'avt-xref',
+      when: { flag: 'av_2' },
+      moment: 'avt-xref',
+    },
     /* — the correction, every path — */
     {
       id: 'avt-correction',
@@ -282,6 +305,7 @@ const TITA_AV: CaseOS = {
     'ev-av-fig2': 'Regenerated: the fake citation grew a figure',
     'ev-av-twelve': '“12 peer-reviewed references” — the drawer held none',
     'ev-av-pattern': 'Thumbs-up: the answer got more confident, not more right',
+    'ev-av-ledger': 'Read the medicines row — the cost of a free answer',
   },
   endFlag: 'avt_done',
 }

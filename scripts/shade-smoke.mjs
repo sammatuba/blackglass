@@ -4,9 +4,10 @@
    Live:   SHOT_BASE=https://sammatuba.github.io/blackglass node scripts/shade-smoke.mjs */
 import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
+import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' }) // system Chrome, same as the other host smokes
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 // smoke runs use the fast pace; cadence math is covered by pacing.test.ts
@@ -42,7 +43,8 @@ await tapWhen(/THREE PHONES/i)
 await tapWhen(/pick up/i)
 await settle(8200)
 await tapWhen(/Swipe up to open/i)
-await tapWhen(/Open the family GC/i, 15000) // dismiss the wake moment; stay on home
+await tapWhen(/Open the family GC/i, 15000) // dismiss the wake moment — which opens the GC (845dd57)
+await tapWhen(/^Home$/i, 5000) // go home so the arriving pushes drop banners (in-view threads suppress them)
 
 // messages land off-screen → a banner drops
 const banner = page.getByRole('button', { name: /Salamat po Ate/ }).first()
@@ -54,6 +56,7 @@ await banner.click()
 await settle(600)
 assert((await page.getByText('Santos Family GC 🏠').count()) > 0, 'banner tap opened the GC thread')
 await page.screenshot({ path: '/tmp/shade-2-thread.png' })
+await axeCheck(page, 'shade thread')
 
 // back home: the bell carries the unread count
 await tapWhen(/^Home$/i, 5000)

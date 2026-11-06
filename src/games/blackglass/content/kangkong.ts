@@ -274,11 +274,24 @@ const TITA: CaseOS = {
     theme: 'tita',
   },
   contacts: [
-    { id: 'joy', name: 'Joy A.', number: '0921-887-4410', relation: 'hospital canteen days · since forever' },
+    {
+      id: 'joy',
+      name: 'Joy A.',
+      number: '0921-887-4410',
+      relation: 'hospital canteen days · since forever',
+      /* P2: the vouch chain, one tap away */
+      xrefs: [{ label: 'The Viber thread — where the link arrived wrapped in the cousin', threadId: 'joy' }],
+    },
     { id: 'mama', name: 'Mama', number: '0917-553-0147', relation: 'inipit' },
     { id: 'papa', name: 'Papa', number: '0919-448-7702', relation: 'hypertension · quarter past six' },
     { id: 'peachy', name: 'Tita Peachy', number: '0908-115-6629', relation: 'sister · HK' },
-    { id: 'maya', name: 'Maya', number: '0918-226-5590', relation: 'designer · ibig sabihin, matalino' },
+    {
+      id: 'maya',
+      name: 'Maya',
+      number: '0918-226-5590',
+      relation: 'designer · ibig sabihin, matalino',
+      xrefs: [{ label: 'The family GC — the question she will have to answer', threadId: 'gc' }],
+    },
   ],
   threads: [
     { id: 'joy', service: 'viber', name: 'Joy A.', hue: 20 },
@@ -305,7 +318,15 @@ const TITA: CaseOS = {
     rows: [
       { id: 'kk-tita-w1', day: 'Sat', label: 'Kangkong · palengke', amount: '-₱20.00' },
       { id: 'kk-tita-w2', day: 'Sat', label: 'Tuyo · palengke', amount: '-₱120.00' },
-      { id: 'kk-tita-w3', day: 'Fri', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
+      {
+        id: 'kk-tita-w3',
+        day: 'Fri',
+        label: 'Papa’s maintenance · botika',
+        amount: '-₱1,240.00',
+        /* the accusatory row (P2): the money the link claims to protect */
+        meta: 'Papa’s medicines are the biggest line in this ledger, every month. The link promised to protect exactly this — from a vegetable. It was never about the vegetable.',
+        evidence: 'ev-kk-ledger',
+      },
       { id: 'kk-tita-w4', day: 'Mon', label: 'Load', amount: '-₱100.00' },
     ],
   },
@@ -315,6 +336,15 @@ const TITA: CaseOS = {
     { hideWhen: 'tita_confirmed', id: 't-voice', threadId: 'joy', label: 'Send Joy a voice note — ask her more about the cousin', set: { tita_choice: 'voicenote' } },
   ],
   moments: [
+    {
+      id: 'tit-xref',
+      label: 'Open the Wallet',
+      openApp: 'wallet',
+      text: [
+        'Before the day gets loud, there is one thing left to look at. The Wallet keeps the whole morning itemized: kangkong, ₱20. Tuyo. Papa’s medicines, the biggest line every month.',
+        'The link promised to protect exactly this. It was never about the vegetable — and the ledger already knew that before the link arrived.',
+      ],
+    },
     {
       id: 'tita-kitchen',
       label: 'Pick up the phone',
@@ -409,6 +439,12 @@ const TITA: CaseOS = {
       ],
     },
     {
+      /* P2 moment — the cross-referencing tap: the button opens the ledger */
+      id: 'tit-xref',
+      when: { flag: 'dismissed:tita-kitchen2' },
+      moment: 'tit-xref',
+    },
+    {
       id: 'tit-recog',
       when: { allFlags: ['dismissed:tita-kitchen2', 'done_maya'], notFlag: 'tita_done' },
       set: { tita_recog: true },
@@ -427,6 +463,7 @@ const TITA: CaseOS = {
   ],
   evidenceLabels: {
     'ev-kk-page': 'Opened the link Tita forwarded — worried doctors, red text',
+    'ev-kk-ledger': 'Read the maintenance row — the money the link claims to protect',
   },
   endFlag: 'tita_done',
 }
@@ -483,6 +520,7 @@ const BEA: CaseOS = {
       src: artifactUrl('kangkong-clickbait'),
       series: { id: 'healthtruthph', note: 'Same layout, same “EXPOSED,” same .click family — different vegetable. The sameness is the tell.' },
       evidence: 'ev-kk-shot',
+      meta: { time: 'Sat · 7:12 AM', place: 'Screenshot', device: 'Maya’s phone' },
     },
     {
       id: 'kk-ampalaya-shot',
@@ -493,6 +531,7 @@ const BEA: CaseOS = {
       requires: 'bea_fast',
       series: { id: 'healthtruthph', note: 'Same layout, same “EXPOSED,” same .click family — different vegetable. The sameness is the tell.' },
       evidence: 'ev-ampalaya',
+      meta: { time: 'Sat · 7:09 AM', place: 'Screenshot', device: 'Camille’s phone', pageId: 'ampalaya' },
     },
     {
       id: 'kk-malunggay-shot',
@@ -503,6 +542,7 @@ const BEA: CaseOS = {
       requires: 'bea_fast',
       series: { id: 'healthtruthph', note: 'Same layout, same “EXPOSED,” same .click family — different vegetable. The sameness is the tell.' },
       evidence: 'ev-malunggay',
+      meta: { time: 'Sat · 7:15 AM', place: 'Screenshot', device: 'Unknown device' },
     },
   ],
   pages: [ampalayaPage(), anitaPage()],

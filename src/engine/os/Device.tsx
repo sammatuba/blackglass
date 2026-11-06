@@ -206,6 +206,10 @@ export function GlassOS({
               sfx.callIncoming()
               vibrate([60, 80, 60])
             }
+            // a raised moment holds the pass here — the world stays exactly
+            // as the player last saw it until the interstitial is dismissed
+            // (OSMoment: "the rule pump pauses until it is dismissed")
+            if (osRef.current.moment) break
             await sleep(scaled(settleMs()))
           }
         }
@@ -393,14 +397,18 @@ export function GlassOS({
 
   const dismissMoment = useCallback(() => {
     const momentId = osRef.current.moment
-    const destination = caseDef.moments?.find((m) => m.id === momentId)?.openThread
+    const moment = caseDef.moments?.find((m) => m.id === momentId)
+    const destination = moment?.openThread
     const s = closeMoment(osRef.current)
     osRef.current = s
     setOS(s)
     // The button says "Open the family GC" — it must really take the player
     // into that conversation, not make them hunt through a launcher first.
-    // Assistant threads live in their own app, not Messages.
-    if (destination) {
+    // Assistant threads live in their own app, not Messages. A moment can
+    // also name an app surface directly (the P2 cross-referencing tap).
+    if (moment?.openApp) {
+      openApp(moment.openApp)
+    } else if (destination) {
       const thread = caseDef.threads.find((t) => t.id === destination)
       if (thread?.service === 'assistant') openApp('assistant')
       else if (thread) openApp('messages', { threadId: destination })
@@ -1002,13 +1010,13 @@ function AppSurface(props: {
       case 'assistant':
         return <AssistantApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onAiAction={props.onAiAction} />
       case 'gallery':
-        return <GalleryApp caseDef={props.caseDef} os={props.os} initialPhotoId={props.galleryPhotoId} onInspect={props.onInspect} />
+        return <GalleryApp caseDef={props.caseDef} os={props.os} initialPhotoId={props.galleryPhotoId} onInspect={props.onInspect} onOpenPage={props.onOpenPage} />
       case 'phone':
         return <PhoneApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
       case 'browser':
         return <BrowserApp caseDef={props.caseDef} os={props.os} pageId={props.browserPage} onOpenPage={props.onOpenPage} onInspect={props.onInspect} />
       case 'contacts':
-        return <ContactsApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
+        return <ContactsApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} onOpenThread={props.onOpenThread} onOpenPage={props.onOpenPage} onOpenPhoto={(id) => props.onOpenApp('gallery', { photoId: id })} />
       case 'notes':
         return <NotesApp caseDef={props.caseDef} os={props.os} onOpenSource={(evidenceId) => {
           const photo = props.caseDef.photos.find((p) => p.evidence === evidenceId)

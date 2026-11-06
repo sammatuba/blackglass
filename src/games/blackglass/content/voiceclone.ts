@@ -12,7 +12,17 @@ import type { AnthologyAnchor } from '../types'
    ===================================================================== */
 
 const VC_CONTACTS_TITA = [
-  { id: 'renz', name: 'Kuya Renz', number: '0928-771-3345', relation: 'your nephew · since he was ten' },
+  {
+    id: 'renz',
+    name: 'Kuya Renz',
+    number: '0928-771-3345',
+    relation: 'your nephew · since he was ten',
+    /* P2 cross-reference: the two channels that both claimed to be him */
+    xrefs: [
+      { label: 'The family GC — where the real Renz answered at 8:24 PM', threadId: 'gc' },
+      { label: 'The Viber thread — the voice note, “the damage”, the number', threadId: 'renz' },
+    ],
+  },
   { id: 'mama', name: 'Mama', number: '0917-553-0147', relation: 'ate' },
   { id: 'maya', name: 'Maya', number: '0918-226-5590', relation: 'designer' },
   { id: 'papa', name: 'Papa', number: '0919-448-7702', relation: 'the living room · late news' },
@@ -51,7 +61,15 @@ const TITA_VC: CaseOS = {
     { threadId: 'renz', msg: { from: 'them', kind: 'photo', photoId: 'vc-accident', caption: 'eto yung damage', at: '8:04 PM' } },
   ],
   photos: [
-    { id: 'vc-accident', title: 'IMG from “Renz” · the damage', kind: 'photo', emoji: '🚗', src: artifactUrl('clone-accident-photo') },
+    {
+      id: 'vc-accident',
+      title: 'IMG from “Renz” · the damage',
+      kind: 'photo',
+      emoji: '🚗',
+      src: artifactUrl('clone-accident-photo'),
+      /* P2 metadata panel: the capture record a real photo carries — and this one doesn't */
+      meta: { time: 'Tue · 8:04 PM', place: 'No location attached', device: 'Unknown device' },
+    },
   ],
   pages: [],
   notes: [
@@ -69,7 +87,16 @@ const TITA_VC: CaseOS = {
       { id: 'vc-tita-w1', day: 'Mon', label: 'Padala · Anak (US)', amount: '+₱15,000.00', kind: 'in', note: 'for Papa’s check-up, the water, the electric' },
       { id: 'vc-tita-w2', day: 'Tue', label: 'Papa’s maintenance · botika', amount: '-₱1,240.00' },
       { id: 'vc-tita-w3', day: 'Tue', label: 'Water bill', amount: '-₱612.30' },
-      { id: 'vc-tita-w4', day: 'Tue', label: 'GCash Send · 0915-•••-•••• · 8:21 PM', amount: '-₱18,500.00', requires: 'vc_after' },
+      {
+        id: 'vc-tita-w4',
+        day: 'Tue',
+        label: 'GCash Send · 0915-•••-•••• · 8:21 PM',
+        amount: '-₱18,500.00',
+        requires: 'vc_after',
+        /* the accusatory row (P2): tap it and the ledger re-reads */
+        meta: '0915-•••-••••. The saved contact Kuya Renz is 0928-771-3345 — the number you have known since he was ten. The number that received ₱18,500 is not that number. Open Contacts. Saved contacts don’t change silently.',
+        evidence: 'ev-vc-ledger',
+      },
     ],
   },
   replies: [
@@ -80,6 +107,15 @@ const TITA_VC: CaseOS = {
     { id: 'vc-trycall', threadId: 'gcash', label: 'Call Renz one more time first', hideWhen: 'vc_sent', set: { tita_sent: 'sent', tita_triedfirst: true } },
   ],
   moments: [
+    {
+      id: 'vt-xref',
+      label: 'Open the ledger',
+      openApp: 'wallet',
+      text: [
+        '₱24,180.50 — the number is still in your head from the app. The Wallet knows where it came from: last week’s padala, for Papa’s check-up, the water, the electric.',
+        'Whatever you decide in the next ten minutes, decide with the ledger open. It is the only thing in this phone that cannot be cloned.',
+      ],
+    },
     {
       id: 'vc-tita-kitchen',
       label: 'Open Viber',
@@ -149,6 +185,12 @@ const TITA_VC: CaseOS = {
       ],
     },
     {
+      /* P2 moment — the cross-referencing tap: the button opens the ledger */
+      id: 'vt-xref',
+      when: { flag: 'vc_gcash' },
+      moment: 'vt-xref',
+    },
+    {
       id: 'vt-sent',
       when: { replySent: 'vc-send' },
       set: { vc_after: true },
@@ -202,6 +244,7 @@ const TITA_VC: CaseOS = {
   ],
   evidenceLabels: {
     'ev-vc-photo': 'Looked at “the damage” — proof shaped like the voice',
+    'ev-vc-ledger': 'Read the send row — the number that received it is not Renz’s',
   },
   endFlag: 'vc_done',
 }
