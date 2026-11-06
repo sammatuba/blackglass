@@ -28,6 +28,17 @@ const tapWhen = async (name, timeout = 15000) => {
   await loc.click()
   await settle(400)
 }
+const tryTap = async (name, timeout = 2500) => {
+  try {
+    const loc = page.getByRole('button', { name }).first()
+    await loc.waitFor({ state: 'visible', timeout })
+    await loc.click()
+    await settle(300)
+    return true
+  } catch {
+    return false
+  }
+}
 const assert = (cond, msg) => {
   if (!cond) throw new Error(`ASSERT: ${msg}`)
 }
@@ -86,6 +97,53 @@ await page.getByRole('button', { name: /Transfer · 0915-•••-•••• 
 await settle(600)
 assert((await page.getByText(/You were asleep at 3:47 AM/).count()) > 0, 'the row re-reads as the verdict')
 await axeCheck(page, 'draft-vi ledger')
+
+/* ---- complete the SPOT loop: mail rule + screen time → assembly ---- */
+await tapWhen(/^Home$/i, 8000)
+await tapWhen(/Open Messages/i, 8000)
+await tapWhen(/Santos Family GC/i, 8000)
+await tapWhen(/Check the mail rules/i, 8000)
+await settle(2000)
+await tapWhen(/Tap to open in Browser/i, 8000) // the pushed link → the forwarding page
+await settle(800)
+assert((await page.getByText(/records-keeper@vaultmail\.services/).count()) > 0, 'the forwarding rule renders')
+// the routine moment (systemic cause, V2) rises after the second anomaly —
+// it holds the pass, so dismiss it before navigating
+await tapWhen(/Keep looking/i, 10000)
+await settle(500)
+await tapWhen(/^Home$/i, 8000)
+await tapWhen(/Open Messages/i, 8000)
+await tapWhen(/Santos Family GC/i, 8000)
+await tapWhen(/Check the screen time/i, 8000)
+await settle(2000) // the nudge opens Settings; assembly flips the stage
+assert((await page.locator('.os-skin[data-stage]').getAttribute('data-stage')) === 'compromised', 'full assembly moves the stage to compromised')
+// the guide push + mirror epilogue rise in the same drain — the performed
+// report is on screen before you sign it
+await page.getByRole('button', { name: /Sign the report/i }).first().waitFor({ state: 'visible', timeout: 12000 })
+assert((await page.getByText(/field at the bottom of the report/).count()) > 0, 'the performed report renders')
+await tapWhen(/Sign the report/i, 8000)
+
+/* ---- completion → the rack wakes Mama (phone 2) ---- */
+await settle(4500)
+await tapWhen(/Mama \(DRAFT\)/i, 12000)
+await settle(4500)
+await tapWhen(/Swipe up to open/i)
+await tapWhen(/Read what arrived/i, 12000)
+await settle(800)
+assert((await page.getByText(/3:47 AM/).count()) > 0, 'Mama’s phone shows the sends as they arrived')
+// her replies live in the DM to the holder, not the GC the moment opens —
+// navigate with tolerant taps (banners and beats can sit over any one step)
+await tryTap(/^Home$/i)
+await tryTap(/^Home$/i)
+await tryTap(/Open Messages/i)
+await tryTap(/Anak/i)
+await tapWhen(/okay ka lang ba talaga/i, 12000)
+await settle(2500)
+// the mirror text is on screen before you put the phone down
+await page.getByRole('button', { name: /Put the phone down/i }).first().waitFor({ state: 'visible', timeout: 12000 })
+assert((await page.getByText(/smallest plainest words she has/).count()) > 0, 'the epilogue mirror lands on Mama')
+await tapWhen(/Put the phone down/i, 8000)
+await axeCheck(page, 'draft-vi mama mirror')
 
 console.log('draft-vi ok — errors:', errors.length ? errors : 'none')
 await browser.close()

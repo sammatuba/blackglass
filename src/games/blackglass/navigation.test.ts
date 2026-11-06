@@ -4,6 +4,7 @@ import { VOICECLONE } from './content/voiceclone'
 import { DEEPFAKE } from './content/deepfake'
 import { FIVEWEEKS } from './content/fiveweeks'
 import { ASSISTANT } from './content/assistant'
+import { COMPROMISED } from './content/compromised'
 
 /** Never let a diegetic "Open X" button drop a player on an unrelated home
  * screen because an authored conversation ID was renamed. */
@@ -51,5 +52,45 @@ describe('anthology phone navigation', () => {
         }
       }
     }
+  })
+})
+
+describe('anchor VI draft navigation (P6 — gated behind ?draft=vi)', () => {
+  it('the draft anchor obeys the same navigation contract', () => {
+    for (const phone of Object.values(COMPROMISED.phones)) {
+      for (const moment of phone.moments ?? []) {
+        if (!moment.openThread) continue
+        expect(
+          phone.threads.some((thread) => thread.id === moment.openThread),
+          `${COMPROMISED.id}/${phone.id}/${moment.id} targets missing ${moment.openThread}`,
+        ).toBe(true)
+      }
+    }
+    const entry = COMPROMISED.phones[COMPROMISED.entry]
+    expect(entry, 'draft anchor has no entry phone').toBeDefined()
+    expect(entry.moments?.some((m) => m.openThread), 'draft entry should hand off to a conversation').toBe(true)
+  })
+
+  it('the draft anchor is inhabited like the season (both phones)', () => {
+    expect(COMPROMISED.order).toEqual(['own', 'mama'])
+    for (const phone of Object.values(COMPROMISED.phones)) {
+      expect(phone.calendar?.length, `${phone.id} has no calendar`).toBeGreaterThan(0)
+      expect(phone.wallet?.rows.length, `${phone.id} has no wallet rows`).toBeGreaterThan(0)
+    }
+  })
+
+  it('the mirror epilogue is performed from the run (P7): report variants + dynamic timeline', () => {
+    const own = COMPROMISED.phones.own
+    // two report variants keyed on the run's recorded flags
+    expect(own.moments?.some((m) => m.id === 'own-report-full')).toBe(true)
+    expect(own.moments?.some((m) => m.id === 'own-report-partial')).toBe(true)
+    expect(own.rules.some((r) => r.id === 'own-coda-full' && r.when.allFlags?.includes('own_assembled'))).toBe(true)
+    expect(own.rules.some((r) => r.id === 'own-coda-partial' && r.when.notFlag === 'own_assembled')).toBe(true)
+    // the season's epilogue channel reads the recorded runs
+    const dynamicKeys = COMPROMISED.timeline.events.flatMap((e) => (e.dynamic ? [e.dynamic.key] : []))
+    expect(dynamicKeys).toContain('own_assembled')
+    expect(dynamicKeys).toContain('mo_reached')
+    // mama's silence is a beat too
+    expect(COMPROMISED.phones.mama.opening.some((m) => m.msg.kind === 'silence')).toBe(true)
   })
 })

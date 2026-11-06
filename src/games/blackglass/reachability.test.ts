@@ -6,7 +6,8 @@ import { VOICECLONE } from './content/voiceclone'
 import { DEEPFAKE } from './content/deepfake'
 import { FIVEWEEKS } from './content/fiveweeks'
 import { ASSISTANT } from './content/assistant'
-import { auditAnchors, ledgerMarkdown } from './reachability'
+import { COMPROMISED } from './content/compromised'
+import { auditAnchors, auditPhone, ledgerMarkdown } from './reachability'
 
 /* P9 — reachability is the quality bar. The walk runs on every `npm test`;
    it asserts the season is green and regenerates docs/REACHABILITY-LEDGER.md
@@ -70,5 +71,19 @@ describe('reachability ledger (P9)', () => {
     writeFileSync(out, md)
     expect(existsSync(out)).toBe(true)
     expect(md).toContain('Season status: GREEN')
+  })
+
+  it('the DRAFT anchor (flag-gated) obeys the same reachability bar', () => {
+    // audited per phone (not written into the season ledger — the draft is
+    // not part of the live season until canon-approved)
+    for (const phoneId of COMPROMISED.order) {
+      const ledger = auditPhone(COMPROMISED.phones[phoneId], PUBLIC)
+      const blocking = ledger.issues.filter((i) => !i.detail.includes('(informational)'))
+      expect(ledger.endFlagOk, `${phoneId}: endFlag ${ledger.endFlag} — ${ledger.endFlagPath}`).toBe(true)
+      for (const e of ledger.endings) {
+        expect(e.ok, `${phoneId} outcome "${e.title}": ${e.path.join(' · ')}`).toBe(true)
+      }
+      expect(blocking, blocking.map((i) => `[${i.kind}] ${i.detail}`).join('\n')).toEqual([])
+    }
   })
 })

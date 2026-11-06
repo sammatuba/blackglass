@@ -101,8 +101,74 @@ still point back at the player's recorded choices).
 
 ## 7. Appendix — the V1 → self-critique → V2 record (P6 doctrine)
 
-*(completed during P6; both passes summarized below — see §8.)*
+The doctrine's loop was run literally: V1 (the P5 skeleton prose) → recorded
+self-critique against the framework bar → V2. Both passes summarized here.
 
-## 8. V1/V2 critique + implementation notes
+### V1 (2026-11-08, ~03:40) — competent, predictable
 
-*(filled by the run in P6.)*
+What V1 had: one phone ('own'), five anomaly surfaces (ghost tile, mail rule,
+screen-time, ledger, GC sends), stages clean→uneasy→compromised, a static
+mirror-report moment, and the 3:47 sends as opening pushes.
+
+### Self-critique against the bar (recorded, 2026-11-08 ~04:00)
+
+1. **Predictable? YES, mechanically.** The SPOT loop reads as a checklist —
+   find five things, watch the stage flip three times. A player can predict
+   the "chrome corrupts" beat from the second anomaly. The twist is in the
+   premise, but the *delivery* has no turn.
+2. **Emotional payoff? WEAK.** Nothing lands on a person. The anomalies are
+   competent puzzle-work; the fear of exposure never touches anyone on
+   screen. The payoff is a filled checklist, not a felt violation.
+3. **Mirror moment? HALF.** "You write your own name first" has the right
+   shape but it is *told*, not performed — the player reads a report the prose
+   already wrote. Nothing they did during the run changes the report.
+4. **One fear? DRIFTED.** The recovery beat imported the money-panic back in —
+   V1's ledger rows read like anchor II's fear (money loss) wearing anchor VI's
+   clothes. Exposure was the label; money was the feeling.
+
+### V2 synthesis — three directions at once (2026-11-08 ~04:10)
+
+- **Systemic cause, not a single villain:** the access is now *a routine* —
+  a repair-shop counter, a lent charger, a cousin's kid's game weekend (all
+  DRAFT/TBC, brief §5.3). "There is only a door that was, for ten minutes,
+  open." No hacker appears, because in real exposures there usually isn't one
+  you can point at.
+- **One sympathetic counter-direction:** phone 2 is **Mama's phone** — she was
+  awake at 3:47 (a mother's hour), read the two messages eleven times, typed
+  three replies and deleted all of them because love in this family looks like
+  not hovering. The program bet on that politeness. Her silence mirrors the
+  holder's; the season's Rashomon structure (same events, second phone) is
+  restored, and the fear lands on a person.
+- **The player's own choices implicated:** the report is now *performed* — two
+  variants gated by the run's recorded flags (`own_assembled`). Find
+  everything and the report goes out complete, "signed with your own name
+  first." Skip surfaces and your report carries holes: "a report is only as
+  long as what you actually looked at." The anchor timeline's epilogue also
+  reads the run (`own_assembled`, `mo_reached`) the way THE CONVERGENCE reads
+  the season.
+- **One fear restored:** the money stays in V2 — but re-framed as *evidence of
+  watching*, not loss: "small amounts, evenly spaced — not greed; inventory."
+  The fear remains exposure; the ledger proves the watching.
+
+### What V2 changed structurally
+
+- Added phone 2 (`mama`) with full prose: the 3:47 sends as they ARRIVED, her
+  deleted replies (the P8 silence is now hers too), the confession arriving in
+  two shapes keyed on `mo_reached`.
+- The mirror-moment epilogue split into `own-report-full` / `own-report-partial`.
+- The routine beat (`own-routine` moment) added after the second anomaly.
+- Timeline events made dynamic on `mo_reached` and `own_assembled`.
+
+## 8. Implementation notes
+
+- Phones: `own` (entry) → `mama` (unlocks after `own` is lived). Third phone:
+  not attempted (07:00 time-box; noted in the overnight report as stretch).
+- Mama reuses the `tita` theme (DRAFT — a distinct palette is possible at
+  canon review; the season's light-warm family phone read correctly).
+- The confession text in Mama's phone intentionally stays summarized in prose
+  rather than re-authoring the full report twice (DRY + the player has just
+  read it in phone 1).
+- Flag contract: `own_spotted_tools/mail/time`, `own_routine`, `own_assembled`,
+  `own_guided`, `own_done`; `mo_reached`/`mo_waited`, `mo_seen_confession`,
+  `mo_done`. The timeline's dynamic keys read `own_assembled` + `mo_reached`
+  from the recorded runs (same channel THE CONVERGENCE uses).

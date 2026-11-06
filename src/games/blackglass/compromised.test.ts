@@ -42,8 +42,9 @@ describe('anchor VI draft gating (P5)', () => {
     expect(phone.opening.some((m) => m.msg.from === 'you')).toBe(true) // messages you didn't send
     // the P8 silence beat rides the 3:47 sends
     expect(phone.opening.some((m) => m.msg.kind === 'silence' && m.msg.receipt)).toBe(true)
-    // the mirror epilogue exists and completes the case
-    expect(phone.moments?.some((m) => m.id === 'own-report')).toBe(true)
+    // the mirror epilogue is performed (P7): variants keyed on the run's flags
+    expect(phone.moments?.some((m) => m.id === 'own-report-full')).toBe(true)
+    expect(phone.moments?.some((m) => m.id === 'own-report-partial')).toBe(true)
     expect(phone.endFlag).toBe('own_done')
     // the recovery page stays inside the guardrail: signs + first moves, no tools
     const guide = phone.pages.find((p) => p.id === 'spotcheck')!
