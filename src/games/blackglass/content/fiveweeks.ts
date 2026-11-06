@@ -23,6 +23,7 @@ const BEA_5W: CaseOS = {
     battery: 55,
     lockNote: '“epistemic cowardice is choosing civility over clarity” — found it in 2022, changed her life a little bit.',
     theme: 'bea',
+    stageSig: 'feed-shimmer',
   },
   contacts: [
     { id: 'janine', name: 'Janine', number: 'the council', relation: 'council' },
@@ -64,6 +65,16 @@ const BEA_5W: CaseOS = {
   ],
   rules: [
     { id: 'w1-open', when: { flag: 'os_unlocked' }, moment: 'w1-open' },
+    {
+      /* P5 dwell — the feed pays while you hesitate: the economics tick
+         between the moment you arrive and the choice you make */
+      id: 'w1-dwell',
+      when: { flag: 'dismissed:w1-open', notFlag: 'w1' },
+      dwell: 2,
+      push: [
+        { threadId: 'feed', msg: { from: 'sys', text: '44 likes · 7 reposts · +12 followers since you opened the app' } },
+      ],
+    },
     {
       id: 'w2-arrive',
       when: { flag: 'w1' },
@@ -112,6 +123,12 @@ const BEA_5W: CaseOS = {
       ],
     },
     {
+      /* P8 silence — whatever you did in week 3, the room just gets quieter */
+      id: 'w3-silence',
+      when: { flag: 'w3_done' },
+      push: [{ threadId: 'feed', msg: { from: 'sys', kind: 'silence', text: 'Nothing new for a moment. The numbers do not pause.' } }],
+    },
+    {
       id: 'w3-piled-r',
       when: { replySent: 'w3-piled' },
       set: { w3_done: true },
@@ -125,6 +142,7 @@ const BEA_5W: CaseOS = {
       id: 'w4-arrive',
       when: { flag: 'w3_done' },
       set: { w4_read: true },
+      stage: 'uneasy',
       push: [
         { threadId: 'feed', msg: { from: 'sys', text: 'WEEK 4 · Mar 3–9 · 2,104 followers (+416) · muted: 9' } },
         { threadId: 'feed', msg: { from: 'sys', kind: 'narr', text: 'Thursday. A stranger replies to an old thread with a good-faith complication — a “well, actually, in some cultural contexts” that is true, and beside the point. You read it twice. Not wrong. Not helpful. You hover over their username. You click mute.' } },

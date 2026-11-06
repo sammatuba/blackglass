@@ -55,6 +55,7 @@ const TITA_AV: CaseOS = {
     battery: 64,
     lockNote: 'The Last Supper. Downloaded three years ago. Never changed.',
     theme: 'tita',
+    stageSig: 'glass-flicker',
   },
   contacts: [
     { id: 'joy', name: 'Joy', number: '0927-551-3088', relation: 'pamangkin · nurse, QC' },
@@ -174,6 +175,7 @@ const TITA_AV: CaseOS = {
     {
       id: 'avt-vc-echo',
       when: { allFlags: ['av_1', 'done_voiceclone'], notFlag: 'avt_vc' },
+      stage: 'uneasy',
       typingIn: 'ask',
       push: [
         {
@@ -235,6 +237,15 @@ const TITA_AV: CaseOS = {
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'You paste the whole answer — the steps, the journal, the 94%. It sits in the GC wearing the same font as everything else anyone has ever said in there.' } },
       ],
     },
+    {
+      /* P8 silence — the app answered in seconds; the family takes hours.
+         The pause before the correction is where the lesson lives. */
+      id: 'avt-silence',
+      when: { flag: 'av_2' },
+      push: [
+        { threadId: 'gc', msg: { from: 'sys', kind: 'silence', receipt: true, text: 'Sent · 9:41 PM. The house is asleep. Nobody in the GC is awake.' } },
+      ],
+    },
     /* — the correction, every path — */
     {
       id: 'avt-correction',
@@ -279,6 +290,7 @@ const MAYA_AV: CaseOS = {
     battery: 31,
     lockNote: 'Mt. Pulag, 2023. Fog, grass, no people.',
     theme: 'maya',
+    stageSig: 'glass-flicker',
   },
   contacts: [
     { id: 'marga', name: 'Marga · client', number: '0977-204-1180', relation: 'retainer, pays late' },
@@ -394,6 +406,7 @@ const MAYA_AV: CaseOS = {
     {
       id: 'avm-df-echo',
       when: { allFlags: ['avm_1', 'done_deepfake'], notFlag: 'avm_df' },
+      stage: 'uneasy',
       typingIn: 'ask',
       push: [
         { threadId: 'ask', msg: { from: 'sys', text: '— new chat —' } },
@@ -455,6 +468,24 @@ const MAYA_AV: CaseOS = {
       ],
     },
     { id: 'avm-coda', when: { flag: 'avm_2' }, moment: 'av-maya-end' },
+    {
+      /* P5 dwell — the assistant reaches back on its own: helpfulness as
+         pressure. It was not asked to keep watch; it watched anyway. */
+      id: 'avm-dwell',
+      when: { flag: 'avm_1', notFlag: 'avm_2' },
+      dwell: 2,
+      push: [
+        {
+          threadId: 'ask',
+          msg: {
+            from: 'them',
+            kind: 'ai',
+            text: 'You’ve been editing for a while, Maya — want me to fold your changes into a clean client-ready summary? I can draft the follow-up email too, so it’s ready when you are. 💙',
+          },
+        },
+        { threadId: 'ask', msg: { from: 'sys', kind: 'aside', text: 'Nobody asked it to keep watch. It watched anyway, and offered, and the offer was good. That is how the leash gets comfortable.' } },
+      ],
+    },
     { id: 'avm-done', when: { flag: 'dismissed:av-maya-end' }, set: { avm_done: true } },
   ],
   evidenceLabels: {
@@ -486,6 +517,7 @@ const BEA_AV: CaseOS = {
     battery: 47,
     lockNote: '“epistemic cowardice is choosing civility over clarity” — found it in 2022, changed her life a little bit.',
     theme: 'bea',
+    stageSig: 'glass-flicker',
   },
   contacts: [
     { id: 'maya', name: 'Maya 💛', number: '0918-226-5590', relation: 'best friend' },
@@ -632,6 +664,7 @@ const BEA_AV: CaseOS = {
     {
       id: 'avb-5w-echo',
       when: { allFlags: ['avb_2', 'done_fiveweeks'], notFlag: 'avb_5w' },
+      stage: 'uneasy',
       typingIn: 'ask',
       push: [
         {

@@ -18,6 +18,8 @@ export function initialOSState(caseDef?: CaseOS): OSState {
     ai: {},
     call: null,
     moment: null,
+    stage: caseDef?.phone?.stage ?? 'clean',
+    idle: 0,
     done: false,
   }
 }
@@ -41,6 +43,9 @@ function condMet(rule: OSRule, state: OSState): boolean {
     if (!state.call || Boolean(state.call.declined) !== Boolean(w.callDeclined)) return false
   }
   if (w.inspected && !state.inspected.includes(w.inspected)) return false
+  // dwell (P5): needs N idle player beats since the last rule fired.
+  // Old saves predate the counter — they read as 0, never error.
+  if (rule.dwell != null && (state.idle ?? 0) < rule.dwell) return false
   return true
 }
 
@@ -81,7 +86,11 @@ export function applyRule(state: OSState, rule: OSRule): OSState {
     sentReplies: [...state.sentReplies],
     inspected: [...state.inspected],
     evidence: [...state.evidence],
+    // the world just spoke: the idle clock restarts (dwell counts beats
+    // the player acts without new story beats)
+    idle: 0,
   }
+  if (rule.stage) s.stage = rule.stage
   if (rule.set) s.flags = { ...s.flags, ...rule.set }
   if (rule.evidence) {
     for (const e of rule.evidence) if (!s.evidence.includes(e)) s.evidence.push(e)
@@ -111,9 +120,21 @@ export function applyPushAt(state: OSState, rule: OSRule, index: number): OSStat
   return appendMsg(state, p.threadId, p.msg)
 }
 
+/** one more idle player beat (P5 dwell): replies, inspections, forwards,
+    ai actions — anything the player does while the world stays quiet */
+function beat(state: OSState): OSState {
+  return { ...state, idle: (state.idle ?? 0) + 1 }
+}
+
+/** a player beat that isn't a state mutation — opening a thread or an app.
+    The Device layer calls this so "the player is poking around" counts too. */
+export function markBeat(state: OSState): OSState {
+  return beat(state)
+}
+
 /** the player sends a suggested reply: record it + echo it into the thread */
 export function markReplied(state: OSState, threadId: string, replyId: string, label: string, set?: Record<string, FlagValue>): OSState {
-  const withEcho = appendMsg(state, threadId, { from: 'you', text: label })
+  const withEcho = beat(appendMsg(state, threadId, { from: 'you', text: label }))
   return {
     ...withEcho,
     sentReplies: [...withEcho.sentReplies, replyId],
@@ -124,19 +145,21 @@ export function markReplied(state: OSState, threadId: string, replyId: string, l
 export function markInspected(state: OSState, id: string, evidence?: string): OSState {
   const inspected = state.inspected.includes(id) ? state.inspected : [...state.inspected, id]
   const ev = evidence && !state.evidence.includes(evidence) ? [...state.evidence, evidence] : state.evidence
-  return { ...state, inspected, evidence: ev }
+  return beat({ ...state, inspected, evidence: ev })
 }
 
 /** the player forwards a link: a marked copy lands in the target thread.
     Pure expression — it sets no flags, so authored branches stay intact */
 export function forwardMessage(state: OSState, toThreadId: string, link: { pageId?: string; caption?: string }): OSState {
-  return appendMsg(state, toThreadId, {
-    from: 'you',
-    kind: 'link',
-    pageId: link.pageId,
-    caption: link.caption,
-    forwarded: true,
-  })
+  return beat(
+    appendMsg(state, toThreadId, {
+      from: 'you',
+      kind: 'link',
+      pageId: link.pageId,
+      caption: link.caption,
+      forwarded: true,
+    }),
+  )
 }
 
 /** the answer currently displayed for an assistant message, given the
@@ -158,17 +181,17 @@ export function currentAnswer(
     never improves — it just comes back wearing different confidence) */
 export function aiRegen(state: OSState, msgId: string): OSState {
   const applied = state.ai[msgId]?.regen ?? 0
-  return { ...state, ai: { ...state.ai, [msgId]: { ...state.ai[msgId], regen: applied + 1 } } }
+  return beat({ ...state, ai: { ...state.ai, [msgId]: { ...state.ai[msgId], regen: applied + 1 } } })
 }
 
 /** thumbs-up an assistant answer: it comes back more confident — and the
     phone remembers you liked being agreed with (flag, so content can hear it) */
 export function aiThumbs(state: OSState, msgId: string): OSState {
-  return {
+  return beat({
     ...state,
     flags: { ...state.flags, ai_thumbs: true },
     ai: { ...state.ai, [msgId]: { ...state.ai[msgId], thumbs: true } },
-  }
+  })
 }
 
 export function setCallPhase(state: OSState, phase: 'incoming' | 'live' | 'ended', declined = false): OSState {

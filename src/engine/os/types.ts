@@ -13,6 +13,14 @@ export type AppId =
   | 'notes'
   | 'settings'
 
+/** how far the device's chrome has drifted from trustworthy (P4 — the UI is
+    the narrative). Moves with story state via rules; renders as data-stage. */
+export type OSStage = 'clean' | 'uneasy' | 'compromised'
+
+/** per-anchor signature distortion, applied only once the stage leaves clean.
+    Original, subtle, reduced-motion safe (see index.css stage tiers). */
+export type OSStageSig = 'feed-shimmer' | 'wave-stutter' | 'glass-flicker'
+
 export type FlagValue = string | boolean | number
 
 export interface OSContact {
@@ -110,7 +118,7 @@ export interface OSVoicemail {
 export interface OSMessage {
   id: string
   from: 'them' | 'you' | 'sys'
-  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside' | 'ai'
+  kind?: 'text' | 'voice' | 'photo' | 'link' | 'callcard' | 'narr' | 'aside' | 'ai' | 'silence'
   text?: string
   secs?: number
   /** real audio behind a voice note (resolved via voicenoteUrl) — when absent the bubble plays its synthesized pacing */
@@ -121,6 +129,8 @@ export interface OSMessage {
   caption?: string
   /** forwarded by the player — the bubble carries a Forwarded mark */
   forwarded?: boolean
+  /** kind:'silence' only — a delivered receipt that never becomes "read" */
+  receipt?: boolean
   /** citation chips under a kind:'ai' answer */
   sources?: OSSource[]
   /** regenerate / thumbs-up alternates (kind:'ai') */
@@ -199,6 +209,12 @@ export interface OSRule {
   /** raise a full-screen prose interstitial inside the phone; the rule
       pump pauses until it is dismissed */
   moment?: string
+  /** move the device chrome to this stage when the rule fires (P4) */
+  stage?: OSStage
+  /** dwell trigger (P5): fire only after this many idle player beats
+      (replies, inspections, forwards, ai actions) since the last rule
+      fired. Unprompted by design — pair with `when: {}`. */
+  dwell?: number
 }
 
 /** full-screen prose interstitial — the anthology's narration channel */
@@ -234,6 +250,10 @@ export interface CaseOS {
     lockNote?: string
     /** UI-as-character skin: keys a `.theme-<name>` palette (engine CSS) */
     theme?: string
+    /** starting chrome stage (defaults 'clean'); rules move it (P4) */
+    stage?: OSStage
+    /** per-anchor signature distortion, shown once the stage leaves clean */
+    stageSig?: OSStageSig
   }
   contacts: OSContact[]
   threads: OSThread[]
@@ -291,5 +311,9 @@ export interface OSState {
   }
   /** active prose interstitial id (pauses the rule pump) */
   moment: string | null
+  /** device chrome stage (P4); old saves read as 'clean' through the UI */
+  stage?: OSStage
+  /** idle player beats since the last rule fired (P5 dwell); old saves read as 0 */
+  idle?: number
   done: boolean
 }

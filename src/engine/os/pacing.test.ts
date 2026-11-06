@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bannerMs, continueMs, openingMs, paceSpeed, proseMs, scaled, setPaceSpeed, typingMs } from './pacing'
+import { bannerMs, continueMs, openingMs, paceSpeed, proseMs, scaled, setPaceSpeed, silenceMs, typingMs } from './pacing'
 
 describe('human cadence', () => {
   afterEach(() => vi.unstubAllGlobals())
@@ -49,5 +49,25 @@ describe('human cadence', () => {
     expect(paceSpeed()).toBe(1.5)
     setPaceSpeed(0.75)
     expect(localStorage.setItem).toHaveBeenCalledWith('cgAI_glassos_pace', '0.75')
+  })
+})
+
+describe('silence beats (P8)', () => {
+  it('silence outlasts typing for the same line — the absence is the beat', () => {
+    const line = 'nobody answers'
+    expect(silenceMs(line)).toBeGreaterThan(typingMs(line))
+    expect(silenceMs()).toBeGreaterThanOrEqual(2600)
+  })
+
+  it('scales down at 8× but never below one frame', () => {
+    const one = scaled(silenceMs('a pause before the reveal'), 1)
+    const eight = scaled(silenceMs('a pause before the reveal'), 8)
+    expect(eight).toBeLessThan(one)
+    expect(eight).toBeGreaterThanOrEqual(40)
+  })
+
+  it('stays inside its authored band whatever the note length', () => {
+    expect(silenceMs('x'.repeat(400))).toBeLessThanOrEqual(7500)
+    expect(silenceMs('x'.repeat(400))).toBeGreaterThanOrEqual(2600)
   })
 })

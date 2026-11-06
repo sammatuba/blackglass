@@ -184,6 +184,25 @@ const TITA_DF: CaseOS = {
         { threadId: 'gc', msg: { from: 'you', text: 'Mga pamangkin, tignan niyo. Si Tito Mike ang nag-endorso, 30% in 30 days. Ano sa tingin niyo? Baka pwede i-pool for Papa 🙏', at: '2:34 PM' } },
       ],
     },
+    {
+      /* P8 silence — the daughter is asleep on the other side of the world;
+         the wait is the beat (and the app with the answer is right there) */
+      id: 'dt-silence',
+      when: { replySent: 'df-ask' },
+      push: [
+        { threadId: 'linda', msg: { from: 'sys', kind: 'silence', receipt: true, text: 'Delivered · 2:30 PM. It is 2:30 AM where she is. The message will wait.' } },
+      ],
+    },
+    {
+      /* P5 dwell — urgency arrives on its own: the offer tightens while you think */
+      id: 'dt-dwell',
+      when: { flag: 'df_read', notFlag: 'df_1' },
+      dwell: 2,
+      push: [
+        { threadId: 'linda', msg: { from: 'them', text: 'Sis, limited slots daw sa group — 3 days lang ang promo 🙏 Baka maka-secure ka na ng slot for Papa’s fund', at: '2:41 PM' } },
+        { threadId: 'linda', msg: { from: 'sys', kind: 'aside', text: 'You did not ask about slots. The offer moved on its own, closer, the way a tide does.' } },
+      ],
+    },
     { id: 'dt-coda', when: { flag: 'df_act' }, moment: 'df-tita-end' },
     { id: 'dt-done', when: { flag: 'dismissed:df-tita-end' }, set: { dft_done: true } },
   ],

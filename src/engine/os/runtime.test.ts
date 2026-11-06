@@ -16,7 +16,7 @@ import {
   aiThumbs,
   currentAnswer,
 } from './runtime'
-import type { CaseOS, OSMessage } from './types'
+import type { CaseOS, OSMessage, OSState } from './types'
 
 const caseDef: CaseOS = {
   id: 't',
@@ -195,5 +195,78 @@ describe('glassOS runtime', () => {
     // thumbs survives a regen — you chose to be agreed with
     s = aiRegen(s, 'ai2')
     expect(currentAnswer(msg, s.ai['ai2']).via).toBe('thumbs')
+  })
+})
+
+describe('staged theming (P4)', () => {
+  it('starts on the phone\'s declared stage, defaulting to clean', () => {
+    expect(initialOSState(caseDef).stage).toBe('clean')
+    const dirty: CaseOS = { ...caseDef, phone: { ...caseDef.phone, stage: 'compromised' } }
+    expect(initialOSState(dirty).stage).toBe('compromised')
+  })
+
+  it('moves the stage when a fired rule carries one', () => {
+    let s = initialOSState()
+    s = applyRule(s, { id: 'r-stage', when: {}, stage: 'uneasy' })
+    expect(s.stage).toBe('uneasy')
+    s = applyRule(s, { id: 'r-stage2', when: {}, stage: 'compromised' })
+    expect(s.stage).toBe('compromised')
+  })
+
+  it('leaves the stage alone when a rule carries none', () => {
+    let s = applyRule(initialOSState(), { id: 'r-stage', when: {}, stage: 'uneasy' })
+    s = applyRule(s, { id: 'r-plain', when: {}, push: [{ threadId: 'scammer', msg: { text: 'hi' } }] })
+    expect(s.stage).toBe('uneasy')
+  })
+})
+
+describe('dwell triggers (P5)', () => {
+  const dwellCase: CaseOS = {
+    ...caseDef,
+    rules: [
+      { id: 'dwell2', when: {}, dwell: 2, push: [{ threadId: 'scammer', msg: { text: 'the phone reaches back' } }] },
+      { id: 'after', when: { flag: 'dwell_seen' }, set: { dwell_seen2: true } },
+    ],
+  }
+
+  it('holds a dwell rule until the idle count is reached', () => {
+    let s = initialOSState(dwellCase)
+    expect(pendingRules(dwellCase, s).map((r) => r.id)).not.toContain('dwell2')
+    s = markInspected(s, 'p1')
+    expect(pendingRules(dwellCase, s).map((r) => r.id)).not.toContain('dwell2')
+    s = markInspected(s, 'p1') // re-inspecting the same item still counts as a beat
+    expect(pendingRules(dwellCase, s).map((r) => r.id)).toContain('dwell2')
+  })
+
+  it('counts replies, forwards and ai actions as beats', () => {
+    let s = initialOSState(dwellCase)
+    s = markReplied(s, 'scammer', 'r1', 'Who is this?')
+    s = forwardMessage(s, 'scammer', {})
+    s = aiRegen(s, 'm1')
+    expect(pendingRules(dwellCase, s).map((r) => r.id)).toContain('dwell2')
+    s = applyRule(s, dwellCase.rules[0])
+    // one more ai action is a fresh beat, but the rule has fired once — never again
+    s = aiThumbs(s, 'm1')
+    expect(s.applied).toContain('dwell2')
+    expect(pendingRules(dwellCase, s).map((r) => r.id)).not.toContain('dwell2')
+  })
+
+  it('fires once and resets the idle clock on every rule fire', () => {
+    let s = initialOSState(dwellCase)
+    s = markInspected(s, 'p1')
+    s = markInspected(s, 'p1')
+    s = applyRule(s, dwellCase.rules[0]) // fires: idle resets to 0
+    expect(s.idle).toBe(0)
+    // the chained rule ('after') needs no beats; firing it also resets the clock
+    s = { ...s, flags: { ...s.flags, dwell_seen: true } }
+    const ready = pendingRules(dwellCase, s)
+    expect(ready.map((r) => r.id)).toEqual(['after'])
+    const after = applyRule(s, ready[0])
+    expect(after.idle).toBe(0)
+  })
+
+  it('reads old saves without the counter as zero, never erroring', () => {
+    const old: OSState = { ...initialOSState(dwellCase), idle: undefined }
+    expect(pendingRules(dwellCase, old).map((r) => r.id)).not.toContain('dwell2')
   })
 })

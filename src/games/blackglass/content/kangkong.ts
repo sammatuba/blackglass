@@ -215,6 +215,17 @@ const MAYA: CaseOS = {
       ],
     },
     { id: 'may-coda', when: { flag: 'maya_decided' }, moment: 'maya-end' },
+    {
+      /* P5 dwell — the phone reaches back: the link keeps moving while you
+         decide. Fires only when you linger (two idle beats, no story beat). */
+      id: 'may-dwell',
+      when: { flag: 'maya_seen', notFlag: 'maya_decided' },
+      dwell: 2,
+      push: [
+        { threadId: 'gc', msg: { from: 'them', text: 'Sharing ko rin po sa church group ha, importante ito 🙏', at: '6:26 AM' } },
+        { threadId: 'gc', msg: { from: 'sys', kind: 'aside', text: 'You have not replied. The link has not waited for you.' } },
+      ],
+    },
     { id: 'may-done', when: { flag: 'dismissed:maya-end' }, set: { maya_done: true } },
   ],
   evidenceLabels: {
@@ -358,6 +369,15 @@ const TITA: CaseOS = {
       ],
     },
     { id: 'tit-coda', when: { flag: 'tita_forwarded' }, moment: 'tita-kitchen2' },
+    {
+      /* P8 silence — the sent link sits in the family GC with no answer yet;
+         the pause is the beat before the recognition arrives */
+      id: 'tit-silence',
+      when: { flag: 'dismissed:tita-kitchen2' },
+      push: [
+        { threadId: 'gc', msg: { from: 'sys', kind: 'silence', text: 'Sent · 6:03 AM. Mama ❤️’d it at 6:31. Nobody has said a word since.' } },
+      ],
+    },
     {
       id: 'tit-recog',
       when: { allFlags: ['dismissed:tita-kitchen2', 'done_maya'], notFlag: 'tita_done' },

@@ -51,6 +51,13 @@ export function proseMs(text: string): number {
   return Math.round(jitter(clamp(950 + text.length * 16, 1050, 2600), 0.15))
 }
 
+/** the silence beat (P8): no typing indicator, no reply — just the wait,
+    sized to what was (not) answered. Longest of the pacing waits: the
+    absence is the beat. `text` is the note that rides the silence, if any. */
+export function silenceMs(text = ''): number {
+  return Math.round(clamp(jitter(2400 + text.length * 55, 0.08), 2600, 7500))
+}
+
 /** the pause between rules — the world breathes before the next beat */
 export function settleMs(): number {
   return Math.round(500 + Math.random() * 400)

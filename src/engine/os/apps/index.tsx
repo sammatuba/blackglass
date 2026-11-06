@@ -321,6 +321,24 @@ function Conversation({
               </div>
             )
           }
+          if (m.kind === 'silence') {
+            return (
+              <div
+                key={m.id}
+                data-msg={m.id}
+                data-from={m.from ?? 'sys'}
+                className="os-silence"
+                role="note"
+                aria-label={`${m.text ? m.text + ' — ' : ''}a pause; no reply${m.receipt ? ' · delivered, no read' : ''}`}
+              >
+                <span className="os-silence-dots" aria-hidden="true">
+                  · · ·
+                </span>
+                {m.text && <span className="os-silence-note">{m.text}</span>}
+                {m.receipt && <span className="os-silence-receipt">✓✓ Delivered</span>}
+              </div>
+            )
+          }
           if (m.from === 'sys' && !m.kind) {
             return (
               <p key={m.id} data-msg={m.id} data-from={m.from ?? 'sys'} className="mx-8 rounded-full bg-[var(--os-chip)] px-3 py-1 text-center text-[10.5px] text-[var(--os-dim)]">
@@ -726,6 +744,24 @@ export function AssistantApp({
             return (
               <div key={m.id} data-msg={m.id} data-from={m.from ?? 'sys'} className={m.kind === 'narr' ? 'os-narr' : 'os-aside'}>
                 {m.text}
+              </div>
+            )
+          }
+          if (m.kind === 'silence') {
+            return (
+              <div
+                key={m.id}
+                data-msg={m.id}
+                data-from={m.from ?? 'sys'}
+                className="os-silence"
+                role="note"
+                aria-label={`${m.text ? m.text + ' — ' : ''}a pause; no reply${m.receipt ? ' · delivered, no read' : ''}`}
+              >
+                <span className="os-silence-dots" aria-hidden="true">
+                  · · ·
+                </span>
+                {m.text && <span className="os-silence-note">{m.text}</span>}
+                {m.receipt && <span className="os-silence-receipt">✓✓ Delivered</span>}
               </div>
             )
           }

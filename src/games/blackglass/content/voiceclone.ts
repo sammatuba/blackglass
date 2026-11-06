@@ -36,6 +36,7 @@ const TITA_VC: CaseOS = {
     battery: 43,
     lockNote: 'The Last Supper. Downloaded three years ago. Never changed.',
     theme: 'tita',
+    stageSig: 'wave-stutter',
   },
   contacts: VC_CONTACTS_TITA,
   threads: [
@@ -110,6 +111,7 @@ const TITA_VC: CaseOS = {
       id: 'vt-call-drops',
       when: { call: 'ended' },
       set: { vc_callended: true },
+      stage: 'uneasy',
       push: [
         { threadId: 'renz', msg: { from: 'sys', kind: 'narr', text: 'He talks over every question — the battery, the guy, please trust me — and the line drops. The last thing you heard was please trust me.' } },
       ],
@@ -163,6 +165,15 @@ const TITA_VC: CaseOS = {
       ],
     },
     {
+      /* P8 silence — your message says delivered. It will keep saying
+         delivered. The pause is the held breath before the GC reveals. */
+      id: 'vt-silence',
+      when: { flag: 'vc_gc' },
+      push: [
+        { threadId: 'renz', msg: { from: 'sys', kind: 'silence', receipt: true, text: 'No reply comes. No typing indicator. The message will keep saying delivered.' } },
+      ],
+    },
+    {
       id: 'vt-gc2',
       when: { flag: 'vc_gc' },
       set: { vc_done: true },
@@ -198,6 +209,7 @@ const MAYA_VC: CaseOS = {
     battery: 22,
     lockNote: 'Mt. Pulag, 2023. Fog, grass, no people.',
     theme: 'maya',
+    stageSig: 'wave-stutter',
   },
   contacts: [
     { id: 'renz', name: 'Kuya Renz', number: '0928-771-3345', relation: 'kuya' },
@@ -331,6 +343,7 @@ const MAYA_VC: CaseOS = {
       id: 'mv-truth',
       when: { flag: 'mvc_2' },
       set: { mvc_3: true },
+      stage: 'uneasy',
       push: [
         { threadId: 'gc', msg: { from: 'them', text: '?? naglalaro lang ako ng badminton anong nangyayari', at: '8:24 PM' } },
         { threadId: 'gc', msg: { from: 'them', text: '14 MISSED CALLS??? MAYA??? MA???', at: '8:24 PM' } },
@@ -341,6 +354,17 @@ const MAYA_VC: CaseOS = {
       ],
     },
     { id: 'mv-coda', when: { flag: 'mvc_3' }, moment: 'vc-maya-end' },
+    {
+      /* P5 dwell — the phone reaches back: the thing wearing her brother's
+         account tells the one person who verifies to stand down */
+      id: 'mv-dwell',
+      when: { flag: 'mvc_read', notFlag: 'mvc_1' },
+      dwell: 2,
+      push: [
+        { threadId: 'renz', msg: { from: 'them', text: 'Maya, wag mo na kaming abalahan. Si Tita Merly na ang bahala. Mag-concentrate ka na lang sa work mo.', at: '8:13 PM' } },
+        { threadId: 'renz', msg: { from: 'sys', kind: 'aside', text: 'The account has her name in it. The account knows she is awake. Verification takes minutes; the other side reads the room in seconds.' } },
+      ],
+    },
     { id: 'mv-done', when: { flag: 'dismissed:vc-maya-end' }, set: { mvc_done: true } },
   ],
   evidenceLabels: {},
@@ -365,6 +389,7 @@ const BEA_VC: CaseOS = {
     battery: 71,
     lockNote: '“epistemic cowardice is choosing civility over clarity” — found it in 2022, changed her life a little bit.',
     theme: 'bea',
+    stageSig: 'wave-stutter',
   },
   contacts: [
     { id: 'maya', name: 'Maya 💛', number: '0918-226-5590', relation: 'best friend since high school' },

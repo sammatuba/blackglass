@@ -7,13 +7,14 @@ import {
   dismissMoment as closeMoment,
   forwardMessage,
   initialOSState,
+  markBeat,
   markReplied,
   pendingRules,
   setCallPhase,
   visibleMessages,
 } from './runtime'
 import { sfx, vibrate } from './sound'
-import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
+import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, silenceMs, typingMs } from './pacing'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
@@ -154,7 +155,7 @@ export function GlassOS({
               }
               const hasThemLine = rule.push.some((p) => {
                 const kind = p.msg.kind
-                return kind !== 'narr' && kind !== 'aside' && (p.msg.from ?? 'them') === 'them'
+                return kind !== 'narr' && kind !== 'aside' && kind !== 'silence' && (p.msg.from ?? 'them') === 'them'
               })
               // a rule may ask for a bare typing beat with no line of its own
               if (rule.typingIn && !hasThemLine) {
@@ -170,12 +171,14 @@ export function GlassOS({
                 }
                 const p = rule.push[idx]
                 const kind = p.msg.kind
-                const silent = kind === 'narr' || kind === 'aside'
+                const silent = kind === 'narr' || kind === 'aside' || kind === 'silence'
                 const fromThem = (p.msg.from ?? 'them') === 'them'
                 const text = p.msg.text ?? ''
                 if (silent || !fromThem) {
                   stopTyping()
-                  await sleep(scaled(silent ? proseMs(text) : continueMs()))
+                  // the silence beat (P8): no indicator, no sound — the wait
+                  // itself is the delivery; everything else keeps its air
+                  await sleep(scaled(kind === 'silence' ? silenceMs(text) : silent ? proseMs(text) : continueMs()))
                 } else if (typingThread !== p.threadId) {
                   stopTyping()
                   startTyping(p.threadId)
@@ -268,7 +271,12 @@ export function GlassOS({
     setGalleryPhotoId(id === 'gallery' ? opts?.photoId ?? null : null)
     if (opts?.threadId) setThreadId(opts.threadId)
     if (opts?.pageId) setBrowserPage(opts.pageId)
-  }, [])
+    // poking around counts as an idle beat — dwell rules hear it (P5)
+    const s = markBeat(osRef.current)
+    osRef.current = s
+    setOS(s)
+    bump()
+  }, [bump])
 
   const goHome = useCallback(() => {
     sfx.open()
@@ -609,6 +617,8 @@ function DeviceFrame(props: {
       <div className="device-frame relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5">
         {/* screen */}
         <div
+          data-stage={os.stage ?? caseDef.phone.stage ?? 'clean'}
+          data-sig={caseDef.phone.stageSig}
           className={`os-skin relative h-[74dvh] max-h-[760px] min-h-[560px] overflow-hidden rounded-[2rem] bg-[var(--os-bg)] ${
             caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''
           }`}
