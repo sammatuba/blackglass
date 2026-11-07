@@ -240,6 +240,7 @@ const TITA_DF: CaseOS = {
       id: 'dt-dwell',
       when: { flag: 'df_read', notFlag: 'df_1' },
       dwell: 2,
+      advanceMin: 7, // the offer tightens as the clock ticks (P3)
       push: [
         { threadId: 'linda', msg: { from: 'them', text: 'Sis, limited slots daw sa group — 3 days lang ang promo 🙏 Baka maka-secure ka na ng slot for Papa’s fund', at: '2:41 PM' } },
         { threadId: 'linda', msg: { from: 'sys', kind: 'aside', text: 'You did not ask about slots. The offer moved on its own, closer, the way a tide does.' } },

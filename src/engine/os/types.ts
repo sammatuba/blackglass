@@ -218,8 +218,12 @@ export interface OSRule {
     notFlag?: string
     replySent?: string
     call?: 'accepted' | 'declined' | 'ended'
-    /** require the ended call to have been declined (or not) */
-    callDeclined?: boolean
+  /** require the ended call to have been declined (or not) */
+  callDeclined?: boolean
+  /** fire only once the story clock has reached this HH:MM (P3) — the
+      9:41 push, the call at 8:12. The clock advances with beats, so a
+      time condition is "after enough of the story has passed". */
+  time?: string
     inspected?: string
   }
   /** the sender types in `typingIn` before the pushes land. Derived mode:
@@ -254,6 +258,13 @@ export interface OSRule {
       (replies, inspections, forwards, ai actions) since the last rule
       fired. Unprompted by design — pair with `when: {}`. */
   dwell?: number
+  /** jump the story clock to this HH:MM (P3) */
+  advance?: string
+  /** or move it forward by this many minutes */
+  advanceMin?: number
+  /** move the status-bar battery to this percent (display only — the
+      compromised anchor's overnight drain lives here) */
+  battery?: number
 }
 
 /** full-screen prose interstitial — the anthology's narration channel */
@@ -347,7 +358,14 @@ export interface CaseOS {
     stageSig?: OSStageSig
     /** P6: native-looking tiles that are not what they claim (inversion anchor) */
     ghostTiles?: OSGhostTile[]
+    /** P3: the phone keeps its own time — seeded from `time`/`meridiem`.
+        Every player beat advances `perBeat` minutes (default 2), every
+        fired rule `perRule` (default 3); rules may jump it with
+        `advance`/`advanceMin`. The status bar, lock screen and Clock app
+        render it live. */
+    clock?: { perBeat?: number; perRule?: number }
   }
+
   contacts: OSContact[]
   threads: OSThread[]
   /** messages pushed when the case opens (before any player action) */
@@ -428,5 +446,9 @@ export interface OSState {
   stage?: OSStage
   /** idle player beats since the last rule fired (P5 dwell); old saves read as 0 */
   idle?: number
+  /** the story clock in minutes since midnight (P3); old saves read as the phone's start time */
+  clockMin?: number
+  /** live battery percent; old saves read the phone's authored value */
+  battery?: number
   done: boolean
 }

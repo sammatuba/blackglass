@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CaseOS, OSMessage, OSState, OSSource } from '../types'
-import { currentAnswer, visibleMessages } from '../runtime'
+import { currentAnswer, formatClock, startClock, visibleMessages } from '../runtime'
 import { isMuted, setMuted, sfx } from '../sound'
 import { paceSpeed, setPaceSpeed } from '../pacing'
 import { Avatar, EmptyState } from './shared'
@@ -1735,12 +1735,14 @@ export function NotesApp({ caseDef, os, onOpenSource }: { caseDef: CaseOS; os: O
 
 export function SettingsApp({
   caseDef,
+  os,
   onBrightness,
 }: {
   caseDef: CaseOS
   os: OSState
   onBrightness: (n: number) => void
 }) {
+  const battery = os.battery ?? caseDef.phone.battery
   const [muted, setM] = useState(isMuted())
   const [bright, setBright] = useState(100)
   const [pace, setPace] = useState(paceSpeed())
@@ -1852,7 +1854,7 @@ export function SettingsApp({
       <div className="mt-2 space-y-1 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4 text-[12px] text-[var(--os-dim)]">
         <p>glassOS 4.0 · sandbox device</p>
         <p>Nothing here is real: not the numbers, not the pages, not the money. That’s what makes it safe to practice on.</p>
-        <p className="text-[var(--os-faint)]">{caseDef.phone.day} · battery {caseDef.phone.battery}%</p>
+        <p className="text-[var(--os-faint)]">{caseDef.phone.day} · battery {battery}%</p>
       </div>
     </div>
   )
@@ -2092,13 +2094,16 @@ export function WeatherApp({ caseDef }: { caseDef: CaseOS }) {
    ===================================================================== */
 
 export function ClockApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
-  void os // the live story clock renders here once the clock engine lands (P3)
-  const time = `${caseDef.phone.time} ${caseDef.phone.meridiem}`
+  // the live story clock (P3) — this phone keeps its own time
+  const clock = formatClock(os.clockMin ?? startClock(caseDef))
   return (
     <div className="grid h-full place-items-center px-6 text-center text-[var(--os-ink)]">
       <div>
         <div className="text-[12px] font-semibold tracking-wide text-[var(--os-dim)] uppercase">{caseDef.phone.day}</div>
-        <div className="font-display mt-2 text-6xl font-semibold tracking-tight drop-shadow">{time}</div>
+        <div className="font-display mt-2 text-6xl font-semibold tracking-tight drop-shadow">
+          {clock.time}
+          <span className="ml-1.5 text-xl opacity-75">{clock.meridiem}</span>
+        </div>
         <p className="mt-4 text-2xs leading-snug text-[var(--os-faint)]">glassOS · this phone keeps its own time</p>
       </div>
     </div>

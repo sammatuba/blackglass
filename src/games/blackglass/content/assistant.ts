@@ -546,6 +546,7 @@ const MAYA_AV: CaseOS = {
       id: 'avm-dwell',
       when: { flag: 'avm_1', notFlag: 'avm_2' },
       dwell: 2,
+      advanceMin: 7, // it answered in seconds; the clock moves anyway (P3)
       push: [
         {
           threadId: 'ask',

@@ -181,6 +181,13 @@ const OWN: CaseOS = {
   ],
   rules: [
     { id: 'own-open', when: { flag: 'os_unlocked' }, moment: 'own-open' },
+    {
+      /* P3 time-keyed drain — the battery keeps falling while you look
+         around. No push, no label: the number in the corner just drops. */
+      id: 'own-drain',
+      when: { time: '4:06' },
+      battery: 27,
+    },
     // the reply → surface wiring: the SPOT loop must lead somewhere real
     {
       id: 'own-ask-mail',

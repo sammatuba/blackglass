@@ -7,6 +7,34 @@ import type { FlagValue, OSMessage, OSRule, OSState, CaseOS, OSSource } from './
 
 let pushSeq = 0
 
+/* ---- the story clock (P3) ----
+   The phone keeps its own time: seeded from the phone's authored
+   `time`/`meridiem`, advanced by the UI layer (beats) and by rules
+   (`advance`/`advanceMin`). The device renders it live. */
+
+export function parseClock(value: string, meridiem?: string): number {
+  const m = value.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i)
+  if (!m) return 0
+  let h = parseInt(m[1], 10)
+  const min = parseInt(m[2], 10)
+  const suffix = (m[3] ?? meridiem ?? '').toUpperCase()
+  if (suffix === 'PM' && h < 12) h += 12
+  if (suffix === 'AM' && h === 12) h = 0
+  return h * 60 + min
+}
+
+export function formatClock(min: number): { time: string; meridiem: string } {
+  const m = ((Math.round(min) % 1440) + 1440) % 1440
+  const h24 = Math.floor(m / 60)
+  const mm = String(m % 60).padStart(2, '0')
+  return { time: `${h24 % 12 === 0 ? 12 : h24 % 12}:${mm}`, meridiem: h24 < 12 ? 'AM' : 'PM' }
+}
+
+/** the clock a phone wakes up with */
+export function startClock(caseDef: CaseOS): number {
+  return parseClock(caseDef.phone.time, caseDef.phone.meridiem)
+}
+
 export function initialOSState(caseDef?: CaseOS): OSState {
   return {
     inbox: {},
@@ -20,6 +48,7 @@ export function initialOSState(caseDef?: CaseOS): OSState {
     moment: null,
     stage: caseDef?.phone?.stage ?? 'clean',
     idle: 0,
+    clockMin: caseDef ? startClock(caseDef) : 0,
     done: false,
   }
 }
@@ -46,6 +75,8 @@ function condMet(rule: OSRule, state: OSState): boolean {
   // dwell (P5): needs N idle player beats since the last rule fired.
   // Old saves predate the counter — they read as 0, never error.
   if (rule.dwell != null && (state.idle ?? 0) < rule.dwell) return false
+  // time (P3): met once the story clock has reached the authored HH:MM
+  if (w.time != null && (state.clockMin ?? 0) < parseClock(w.time)) return false
   return true
 }
 
@@ -110,6 +141,9 @@ export function applyRule(state: OSState, rule: OSRule): OSState {
     s.call = { ...s.call, phase: 'ended' }
   }
   if (rule.moment) s.moment = rule.moment
+  if (rule.advance) s.clockMin = parseClock(rule.advance)
+  else if (rule.advanceMin) s.clockMin = (s.clockMin ?? 0) + rule.advanceMin
+  if (rule.battery != null) s.battery = rule.battery
   return s
 }
 

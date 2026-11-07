@@ -6,6 +6,8 @@ import {
   initialOSState,
   markInspected,
   markReplied,
+  parseClock,
+  formatClock,
   pendingRules,
   resolveOutcome,
   setCallPhase,
@@ -281,5 +283,49 @@ describe('dwell triggers (P5)', () => {
     // and a save with the record but an unseen message still works
     const s3 = aiThumbs(s2, 'unseen')
     expect(s3.ai?.['unseen']?.thumbs).toBe(true)
+  })
+})
+
+describe('story clock (P3)', () => {
+  it('parses authored times with and without meridiem', () => {
+    expect(parseClock('6:47', 'AM')).toBe(6 * 60 + 47)
+    expect(parseClock('6:47', 'PM')).toBe(18 * 60 + 47)
+    expect(parseClock('9:41 PM')).toBe(21 * 60 + 41)
+    expect(parseClock('12:05', 'AM')).toBe(5)
+    expect(parseClock('12:05', 'PM')).toBe(12 * 60 + 5)
+  })
+
+  it('formats minutes back into display strings, 12-hour', () => {
+    expect(formatClock(6 * 60 + 47)).toEqual({ time: '6:47', meridiem: 'AM' })
+    expect(formatClock(0)).toEqual({ time: '12:00', meridiem: 'AM' })
+    expect(formatClock(720)).toEqual({ time: '12:00', meridiem: 'PM' })
+    expect(formatClock(21 * 60 + 41)).toEqual({ time: '9:41', meridiem: 'PM' })
+    // the clock never falls off the edge of the day
+    expect(formatClock(1440 + 90)).toEqual({ time: '1:30', meridiem: 'AM' })
+  })
+
+  it('seeds the initial state from the phone start', () => {
+    expect(initialOSState(caseDef).clockMin).toBe(parseClock('9:47', 'PM'))
+  })
+
+  it('rules jump the clock (advance / advanceMin) and move the battery', () => {
+    let s = initialOSState(caseDef)
+    s = applyRule(s, { id: 'r1', when: {}, advanceMin: 9 })
+    expect(s.clockMin).toBe(parseClock('9:47', 'PM') + 9)
+    s = applyRule(s, { id: 'r2', when: {}, advance: '5:30 AM' })
+    expect(s.clockMin).toBe(parseClock('5:30', 'AM'))
+    s = applyRule(s, { id: 'r3', when: {}, battery: 21 })
+    expect(s.battery).toBe(21)
+  })
+
+  it('a time condition holds once the clock reaches it, not before', () => {
+    const timed = { ...caseDef, rules: [{ id: 'nine', when: { time: '9:52 PM' }, set: { late: true } }] }
+    let s = initialOSState(timed)
+    expect(pendingRules(timed, s).map((r) => r.id)).not.toContain('nine')
+    s = { ...s, clockMin: parseClock('9:52', 'PM') }
+    expect(pendingRules(timed, s).map((r) => r.id)).toContain('nine')
+    // and it stays met afterwards (time only moves forward)
+    s = { ...s, clockMin: parseClock('11:59', 'PM') }
+    expect(pendingRules(timed, s).map((r) => r.id)).toContain('nine')
   })
 })

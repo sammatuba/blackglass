@@ -7,12 +7,14 @@ import {
   clearCall,
   dialCall,
   dismissMoment as closeMoment,
+  formatClock,
   forwardMessage,
   initialOSState,
   markBeat,
   markReplied,
   pendingRules,
   setCallPhase,
+  startClock,
   visibleMessages,
 } from './runtime'
 import { sfx, vibrate } from './sound'
@@ -66,7 +68,11 @@ export function GlassOS({
   const [browserPage, setBrowserPage] = useState<string | null>(null)
   const [galleryPhotoId, setGalleryPhotoId] = useState<string | null>(null)
   const [backStack, setBackStack] = useState<ViewState[]>([])
-  const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
+  const [os, setOS] = useState<OSState>(() => {
+    if (!initialState) return initialOSState(caseDef)
+    // resumed saves from before the story clock read as the phone's start time
+    return initialState.clockMin != null ? initialState : { ...initialState, clockMin: startClock(caseDef) }
+  })
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
   const [bannerLog, setBannerLog] = useState<Banner[]>([])
@@ -168,6 +174,11 @@ export function GlassOS({
           for (const rule of ready) {
             if (cancelledRef.current) return
             let s = applyRule(osRef.current, rule)
+            // the story moves, the clock moves with it (P3) — unless the
+            // rule set the clock itself (advance/advanceMin)
+            if (!rule.advance && !rule.advanceMin) {
+              s = { ...s, clockMin: (s.clockMin ?? startClock(caseDef)) + (caseDef.phone.clock?.perRule ?? 3) }
+            }
             osRef.current = s
             setOS(s)
             if (rule.nudgeApp) pushNudge(rule.nudgeApp)
@@ -289,10 +300,15 @@ export function GlassOS({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  /* re-run the rule pump after any player action */
+  /* re-run the rule pump after any player action — and the clock moves:
+     one beat of the player's life costs the phone a couple of minutes (P3) */
   const bump = useCallback(() => {
+    const perBeat = caseDef.phone.clock?.perBeat ?? 2
+    const s = { ...osRef.current, clockMin: (osRef.current.clockMin ?? startClock(caseDef)) + perBeat }
+    osRef.current = s
+    setOS(s)
     void processRules()
-  }, [processRules])
+  }, [processRules, caseDef])
 
   /* ---------- navigation ---------- */
 
@@ -428,6 +444,11 @@ export function GlassOS({
   }, [caseDef, os, reads])
   const totalUnread = useMemo(() => Object.values(unreadByThread).reduce((a, b) => a + b, 0), [unreadByThread])
 
+  /* the phone's own time, live (P3) — the status bar, lock screen, clock
+     app and the desk scene all read this one truth */
+  const liveClock = useMemo(() => formatClock(os.clockMin ?? startClock(caseDef)), [os.clockMin, caseDef])
+  const liveBattery = os.battery ?? caseDef.phone.battery
+
   /* a rule can drop the line (the scammer hangs up); sweep it after a beat */
   useEffect(() => {
     if (os.call?.phase !== 'ended') return
@@ -530,6 +551,8 @@ export function GlassOS({
         typingIn={typingIn}
         unreadByThread={unreadByThread}
         nudgedApp={nudged}
+        clock={liveClock}
+        battery={liveBattery}
         onOpenApp={openApp}
         onOpenThread={(tid) => openApp('messages', { threadId: tid })}
         onCloseThread={() => setThreadId(null)}
@@ -593,7 +616,7 @@ export function GlassOS({
     <>
       <PhoneStage
         hue={wallpaperHue(caseDef.phone.wallpaper)}
-        mood={timeMood(caseDef.phone.time, caseDef.phone.meridiem)}
+        mood={timeMood(liveClock.time, liveClock.meridiem)}
         pulse={pulse}
         ringing={ringing}
         header={
@@ -702,6 +725,8 @@ function DeviceFrame(props: {
   typingIn: string | null
   unreadByThread: Record<string, number>
   nudgedApp: AppId | null
+  clock: { time: string; meridiem: string }
+  battery: number
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void
@@ -744,7 +769,7 @@ function DeviceFrame(props: {
           />
 
           {locked ? (
-            <LockScreen caseDef={caseDef} os={os} unreadByThread={props.unreadByThread} onUnlock={props.onUnlock} />
+            <LockScreen caseDef={caseDef} os={os} unreadByThread={props.unreadByThread} clock={props.clock} onUnlock={props.onUnlock} />
           ) : props.app ? (
             <AppSurface {...props} app={props.app} />
           ) : (
@@ -841,9 +866,9 @@ function DeviceFrame(props: {
           {/* status bar sits above everything except call overlay */}
           {!locked && (
             <StatusBar
-              time={caseDef.phone.time}
-              meridiem={caseDef.phone.meridiem}
-              battery={caseDef.phone.battery}
+              time={props.clock.time}
+              meridiem={props.clock.meridiem}
+              battery={props.battery}
               unread={props.unread}
               onOpenShade={props.onOpenShade}
             />
@@ -1009,11 +1034,13 @@ function LockScreen({
   caseDef,
   os,
   unreadByThread,
+  clock,
   onUnlock,
 }: {
   caseDef: CaseOS
   os: OSState
   unreadByThread: Record<string, number>
+  clock: { time: string; meridiem: string }
   onUnlock: () => void
 }) {
   const preview = caseDef.threads
@@ -1074,8 +1101,8 @@ function LockScreen({
         <div className="text-center">
           <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
           <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
-            {caseDef.phone.time}
-            <span className="ml-1.5 text-xl opacity-75">{caseDef.phone.meridiem}</span>
+            {clock.time}
+            <span className="ml-1.5 text-xl opacity-75">{clock.meridiem}</span>
           </div>
         </div>
 
@@ -1247,6 +1274,8 @@ function AppSurface(props: {
   typingIn: string | null
   unreadByThread: Record<string, number>
   nudgedApp: AppId | null
+  clock: { time: string; meridiem: string }
+  battery: number
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void

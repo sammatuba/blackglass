@@ -235,6 +235,7 @@ const MAYA: CaseOS = {
       id: 'may-dwell',
       when: { flag: 'maya_seen', notFlag: 'maya_decided' },
       dwell: 2,
+      advanceMin: 7, // the clock ticks while you hesitate (P3)
       push: [
         { threadId: 'gc', msg: { from: 'them', text: 'Sharing ko rin po sa church group ha, importante ito 🙏', at: '6:26 AM' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'aside', text: 'You have not replied. The link has not waited for you.' } },

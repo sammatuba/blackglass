@@ -465,6 +465,7 @@ const MAYA_VC: CaseOS = {
       id: 'mv-dwell',
       when: { flag: 'mvc_read', notFlag: 'mvc_1' },
       dwell: 2,
+      advanceMin: 7, // verification takes minutes — the clock says so (P3)
       push: [
         { threadId: 'renz', msg: { from: 'them', text: 'Maya, wag mo na kaming abalahan. Si Tita Merly na ang bahala. Mag-concentrate ka na lang sa work mo.', at: '8:13 PM' } },
         { threadId: 'renz', msg: { from: 'sys', kind: 'aside', text: 'The account has her name in it. The account knows she is awake. Verification takes minutes; the other side reads the room in seconds.' } },

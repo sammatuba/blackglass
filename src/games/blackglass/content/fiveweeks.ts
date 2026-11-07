@@ -104,6 +104,7 @@ const BEA_5W: CaseOS = {
       id: 'w1-dwell',
       when: { flag: 'dismissed:w1-open', notFlag: 'w1' },
       dwell: 2,
+      advanceMin: 9, // the feed pays while you hesitate — time is the meter (P3)
       push: [
         { threadId: 'feed', msg: { from: 'sys', text: '44 likes · 7 reposts · +12 followers since you opened the app' } },
       ],
