@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { AppId, CaseOS, OSMessage, OSMoment, OSState } from './types'
 import {
   applyPushAt,
   applyRule,
   clearCall,
+  dialCall,
   dismissMoment as closeMoment,
   forwardMessage,
   initialOSState,
@@ -14,8 +16,9 @@ import {
   visibleMessages,
 } from './runtime'
 import { sfx, vibrate } from './sound'
-import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, silenceMs, typingMs } from './pacing'
-import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, CalendarApp, WalletApp, SERVICE_LABEL } from './apps'
+import { bannerMs, continueMs, openingMs, paceSpeed, proseMs, scaled, setPaceSpeed, settleMs, silenceMs, typingMs } from './pacing'
+import { isMuted, setMuted } from './sound'
+import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, CalendarApp, WalletApp, WeatherApp, ClockApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
 import { aiRegen, aiThumbs } from './runtime'
@@ -446,6 +449,28 @@ export function GlassOS({
     setOS(ns)
   }, [])
 
+  /* the player dials a recent back: rings, then connects (authored
+     transcript) or nobody picks up. The overlay owns the phases. */
+  const dialTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dial = useCallback((name: string, number: string, transcript?: string[]) => {
+    sfx.callIncoming()
+    vibrate([40, 80, 40])
+    const callId = `dial:${number}`
+    const ns = dialCall(osRef.current, { callId, from: name, number, transcript })
+    osRef.current = ns
+    setOS(ns)
+    if (dialTimer.current) clearTimeout(dialTimer.current)
+    dialTimer.current = setTimeout(() => {
+      if (cancelledRef.current) return
+      if (osRef.current.call?.callId !== callId || osRef.current.call.phase !== 'incoming') return
+      const next = transcript ? setCallPhase(osRef.current, 'live') : setCallPhase(osRef.current, 'ended')
+      if (transcript) sfx.callConnect()
+      else sfx.callEnd()
+      osRef.current = next
+      setOS(next)
+    }, 2400)
+  }, [])
+
   const endCall = useCallback(
     (declined: boolean) => {
       sfx.callEnd()
@@ -549,6 +574,7 @@ export function GlassOS({
         }}
         onAcceptCall={acceptCall}
         onEndCall={endCall}
+        onDial={dial}
         onDismissMoment={dismissMoment}
         bannerLog={bannerLog}
         shadeOpen={shadeOpen}
@@ -558,7 +584,7 @@ export function GlassOS({
         onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, backStack, goBack, os, typingIn, unreadByThread, nudged, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, totalUnread, openShade],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, backStack, goBack, os, typingIn, unreadByThread, nudged, openApp, goHome, onExit, acceptCall, endCall, dial, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, totalUnread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -687,6 +713,7 @@ function DeviceFrame(props: {
   onForward: (msg: OSMessage, toThreadId: string) => void
   onAcceptCall: () => void
   onEndCall: (declined: boolean) => void
+  onDial: (name: string, number: string, transcript?: string[]) => void
   onDismissMoment: () => void
   bannerLog: Banner[]
   shadeOpen: boolean
@@ -768,6 +795,9 @@ function DeviceFrame(props: {
                   </button>
                 </div>
               </div>
+              {/* quick controls — the shade is also where a phone keeps its
+                  toggles; same settings the Settings app owns, closer at hand */}
+              <ShadeQuickTiles brightness={props.brightness} onBrightness={props.onBrightness} />
               <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 pb-8">
                 {props.bannerLog.length === 0 ? (
                   <p className="px-2 py-10 text-center text-xs text-[var(--os-faint)]">No notifications yet.</p>
@@ -828,6 +858,67 @@ function DeviceFrame(props: {
             className="os-gesturebar absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full transition-colors before:absolute before:-inset-x-8 before:-inset-y-3 before:content-['']"
           />
         )}
+      </div>
+    </div>
+  )
+}
+
+/* quick controls at the top of the notification shade — brightness rides
+   the device dim, sound and chat pace own the same modules Settings does */
+function ShadeQuickTiles({ brightness, onBrightness }: { brightness: number; onBrightness: (n: number) => void }) {
+  const [muted, setM] = useState(isMuted())
+  const [pace, setPace] = useState(paceSpeed())
+  const paceLabel = pace < 1 ? 'Relaxed' : pace > 1 ? 'Brisk' : 'Normal'
+  const nextPace = pace === 0.75 ? 1 : pace === 1 ? 1.5 : 0.75
+  return (
+    <div className="mx-3 mb-3 space-y-2">
+      <div className="flex items-center gap-3 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-3.5 py-2.5">
+        <span aria-hidden="true" className="text-sm">☀️</span>
+        <input
+          id="shade-brightness"
+          type="range"
+          min={20}
+          max={100}
+          value={brightness}
+          onChange={(e) => onBrightness(Number(e.target.value))}
+          aria-label={`Brightness ${brightness} percent`}
+          className="min-h-11 w-full accent-[var(--os-accent)]"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          type="button"
+          role="switch"
+          aria-checked={!muted}
+          onClick={() => {
+            const m = !muted
+            setMuted(m)
+            setM(m)
+            if (!m) sfx.unlock()
+          }}
+          className="flex min-h-11 items-center gap-2.5 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-3.5 py-2.5 text-left"
+        >
+          <span aria-hidden="true" className="text-sm">{muted ? '🔇' : '🔊'}</span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-semibold text-[var(--os-ink)]">Sounds</span>
+            <span className="block text-2xs text-[var(--os-faint)]">{muted ? 'Off' : 'On'}</span>
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setPaceSpeed(nextPace)
+            setPace(nextPace)
+            sfx.open()
+          }}
+          className="flex min-h-11 items-center gap-2.5 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-3.5 py-2.5 text-left"
+        >
+          <span aria-hidden="true" className="text-sm">💬</span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[12px] font-semibold text-[var(--os-ink)]">Chat pace</span>
+            <span className="block text-2xs text-[var(--os-faint)]">{paceLabel} · tap to change</span>
+          </span>
+        </button>
       </div>
     </div>
   )
@@ -934,51 +1025,100 @@ function LockScreen({
     .filter(Boolean)
     .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage; unread: number }[]
 
+  /* the lock is a surface you slide away, not a button you press — drag up
+     and the whole screen follows the finger; past the threshold it yields.
+     The button below stays for keyboard and click paths. */
+  const DRAG_THRESHOLD = 84
+  const [dragY, setDragY] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const dragStart = useRef<number | null>(null)
+
+  const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    dragStart.current = e.clientY
+    setDragging(true)
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId)
+    } catch {
+      /* no capture (older engines) — move events still land while pressed */
+    }
+  }
+  const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragStart.current == null) return
+    setDragY(Math.min(0, e.clientY - dragStart.current))
+  }
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (dragStart.current == null) return
+    const dy = Math.min(0, e.clientY - dragStart.current)
+    dragStart.current = null
+    setDragging(false)
+    setDragY(0)
+    if (dy < -DRAG_THRESHOLD) onUnlock()
+  }
+
+  const hintOpacity = Math.min(1, Math.max(0.35, 1 + dragY / 140))
+
   return (
-    <div className="absolute inset-0 z-20 flex flex-col px-6 pb-6 pt-14 text-[var(--os-ink)]">
-      <div className="text-center">
-        <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
-        <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
-          {caseDef.phone.time}
-          <span className="ml-1.5 text-xl opacity-75">{caseDef.phone.meridiem}</span>
-        </div>
-      </div>
-
-      <div className="mt-auto space-y-2">
-        {preview.map(({ t, last, unread }) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={onUnlock}
-            className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
-          >
-            <div className="flex items-center gap-2 text-[11px] font-bold tracking-wide opacity-75">
-              {SERVICE_LABEL[t.service]}
-              {unread > 0 && (
-                <span className="rounded-full bg-[var(--os-accent)] px-1.5 text-[10px] font-black text-[var(--os-accent-ink)]" aria-label={`${unread} unread`}>
-                  {unread}
-                </span>
-              )}
-            </div>
-            <div className="text-[13px] font-bold">{t.name}</div>
-            <div className="line-clamp-1 text-[12.5px] opacity-85">
-              {last.kind === 'voice' ? '🎙️ Voice message' : last.kind === 'photo' ? '📷 Photo' : last.kind === 'link' ? '🔗 Link' : last.text}
-            </div>
-          </button>
-        ))}
-      </div>
-
-      <button
-        type="button"
-        onClick={onUnlock}
-        className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 py-2.5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+    <div className="absolute inset-0 z-20 select-none text-[var(--os-ink)]">
+      <div
+        className="flex h-full flex-col px-6 pb-6 pt-14"
+        style={{
+          transform: `translateY(${dragY}px)`,
+          transition: dragging ? 'none' : 'transform 280ms cubic-bezier(0.2, 0.8, 0.3, 1)',
+          touchAction: 'none',
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
       >
-        ⌃ Swipe up to open
-      </button>
-      {caseDef.phone.lockNote && (
-        <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">{caseDef.phone.lockNote}</p>
-      )}
-      <p className="sr-only">Press Enter or activate the unlock button to open the phone.</p>
+        <div className="text-center">
+          <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
+          <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
+            {caseDef.phone.time}
+            <span className="ml-1.5 text-xl opacity-75">{caseDef.phone.meridiem}</span>
+          </div>
+        </div>
+
+        <div className="mt-auto space-y-2">
+          {preview.map(({ t, last, unread }) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={onUnlock}
+              className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
+            >
+              <div className="flex items-center gap-2 text-[11px] font-bold tracking-wide opacity-75">
+                {SERVICE_LABEL[t.service]}
+                {unread > 0 && (
+                  <span className="rounded-full bg-[var(--os-accent)] px-1.5 text-[10px] font-black text-[var(--os-accent-ink)]" aria-label={`${unread} unread`}>
+                    {unread}
+                  </span>
+                )}
+              </div>
+              <div className="text-[13px] font-bold">{t.name}</div>
+              <div className="line-clamp-1 text-[12.5px] opacity-85">
+                {last.kind === 'voice' ? '🎙️ Voice message' : last.kind === 'photo' ? '📷 Photo' : last.kind === 'link' ? '🔗 Link' : last.text}
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={onUnlock}
+          className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 py-2.5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+        >
+          ⌃ Swipe up to open
+        </button>
+        {caseDef.phone.lockNote && (
+          <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">{caseDef.phone.lockNote}</p>
+        )}
+        <p className="sr-only">Press Enter or activate the unlock button to open the phone. Dragging the screen upward also unlocks.</p>
+      </div>
+      {/* the hint fades as the screen gives way */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-2 grid place-items-center" style={{ opacity: hintOpacity }} aria-hidden="true">
+        <span className="h-1 w-12 rounded-full bg-[var(--os-ink)] opacity-40" />
+      </div>
     </div>
   )
 }
@@ -1004,6 +1144,8 @@ function HomeScreen({
     /* ambient surfaces — an inhabited phone has a life, not just a plot (P1) */
     { id: 'calendar' },
     { id: 'wallet' },
+    ...(caseDef.weather ? [{ id: 'weather' as AppId }] : []),
+    { id: 'clock' },
   ]
   const hasAsk = caseDef.threads.some((t) => t.service === 'assistant')
   const dockApps: { id: AppId; badge?: number }[] = [
@@ -1114,6 +1256,7 @@ function AppSurface(props: {
   onSendReply: (reply: CaseOS['replies'][number]) => void
   onAiAction: (msgId: string, action: 'regen' | 'thumbs') => void
   onForward: (msg: OSMessage, toThreadId: string) => void
+  onDial: (name: string, number: string, transcript?: string[]) => void
   onBrightness: (n: number) => void
 }) {
   const { app } = props
@@ -1127,7 +1270,11 @@ function AppSurface(props: {
       case 'gallery':
         return <GalleryApp caseDef={props.caseDef} os={props.os} initialPhotoId={props.galleryPhotoId} onInspect={props.onInspect} onOpenPage={props.onOpenPage} />
       case 'phone':
-        return <PhoneApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} />
+        return <PhoneApp caseDef={props.caseDef} os={props.os} onInspect={props.onInspect} onDial={props.onDial} />
+      case 'weather':
+        return <WeatherApp caseDef={props.caseDef} />
+      case 'clock':
+        return <ClockApp caseDef={props.caseDef} os={props.os} />
       case 'browser':
         return <BrowserApp caseDef={props.caseDef} os={props.os} pageId={props.browserPage} onOpenPage={props.onOpenPage} onInspect={props.onInspect} />
       case 'contacts':

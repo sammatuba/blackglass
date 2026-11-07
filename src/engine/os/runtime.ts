@@ -197,6 +197,19 @@ export function aiThumbs(state: OSState, msgId: string): OSState {
   })
 }
 
+/** the player dials a recent call back — the far side rings; what answers
+    is authored (transcript lines connect, or nobody picks up). A beat: the
+    phone leaves your hand for a moment. */
+export function dialCall(
+  state: OSState,
+  call: { callId: string; from: string; number: string; transcript?: string[] },
+): OSState {
+  return beat({
+    ...state,
+    call: { ...call, direction: 'out' as const, phase: 'incoming' as const },
+  })
+}
+
 export function setCallPhase(state: OSState, phase: 'incoming' | 'live' | 'ended', declined = false): OSState {
   if (!state.call) return state
   return { ...state, call: { ...state.call, phase, declined: declined || state.call.declined } }

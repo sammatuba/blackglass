@@ -308,6 +308,25 @@ const TITA_AV: CaseOS = {
     'ev-av-ledger': 'Read the medicines row — the cost of a free answer',
     'ev-journal': 'Searched the journal in scholar.ph — 0 results',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '26°',
+    cond: 'Kulimlim. Mahina ang ulan, titigil ng gabi.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+    ],
+  },
+  recents: [
+    { name: 'Joy', number: '0927-551-3088', at: 'Tue 7:55 PM', outgoing: true, dial: { transcript: ['Ma? May kailangan ka po ba?', 'Wala naman. Umuwi ka ng maaga bukas, may dala akong gulay.', 'Sige po, Ma. Iingat.'] } },
+    { name: 'Auntie Linda', number: '0923-445-7801', at: 'Mon 3:10 PM', outgoing: true },
+    { name: '0994-772-0185', number: '0994-772-0185', at: 'Sun 8:44 AM', missed: true, dial: {} },
+  ],
   endFlag: 'avt_done',
 }
 
@@ -549,6 +568,25 @@ const MAYA_AV: CaseOS = {
     'ev-av-survives': 'Thumbs-up: promised it survives scrutiny. It does not',
     'ev-journal': 'Searched the journal in scholar.ph — 0 results',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '25°',
+    cond: 'Light rain after ten. The streets are still wet.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+    ],
+  },
+  recents: [
+    { name: 'Mama', number: '0917-553-0147', at: 'Tue 9:03 PM', outgoing: true, dial: { transcript: ['Maya, gising ka pa pala.', 'Medyo. Kumusta po si Papa?', 'Tulog na. Ikaw rin, anak. Huwag nang magpuyat.'] } },
+    { name: 'Papa', number: '0919-448-7702', at: 'Tue 8:17 AM', outgoing: true },
+    { name: 'Bea 💛', number: '0918-664-2093', at: 'Mon 10:22 PM', missed: true },
+  ],
   endFlag: 'avm_done',
 }
 
@@ -826,6 +864,25 @@ const BEA_AV: CaseOS = {
     'ev-av-hth': 'A real page, cited for what it never said',
     'ev-av-calibration': 'The counter-case — it wins both sides',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Manila',
+    now: '26°',
+    cond: 'Rain overnight. The city drips until noon.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Wed', hi: '30°', lo: '24°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+      { day: 'Sat', hi: '31°', lo: '25°' },
+    ],
+  },
+  recents: [
+    { name: 'Maya 💛', number: '0918-226-5590', at: 'Tue 11:48 PM', outgoing: true, dial: { transcript: ['Maya. Gising ka?', 'Nga eh. Ikaw?', 'Hindi ako makatulog. Yung sagot ng Ask kanina, iniisip ko pa rin.'] } },
+    { name: '0995-318-0274', number: '0995-318-0274', at: 'Mon 2:19 PM', missed: true, dial: {} },
+    { name: 'Tita Merly', number: '0936-202-8814', at: 'Sun 5:40 PM', outgoing: true },
+  ],
   endFlag: 'avb_done',
 }
 

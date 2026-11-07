@@ -260,6 +260,38 @@ const TITA_DF: CaseOS = {
     'ev-angat': 'Opened the registration page — the colors of trust',
     'ev-df-ledger': 'Read the padala row — the money the video was built to move',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '30°',
+    cond: 'Mainit ang hapon. Ulap ng bagyo sa silangan.',
+    hi: '32°',
+    lo: '25°',
+    days: [
+      { day: 'Sun', hi: '32°', lo: '25°' },
+      { day: 'Mon', hi: '31°', lo: '24°' },
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+    ],
+  },
+  voicemails: [
+    {
+      id: 'vm-water',
+      from: 'Malinis Water',
+      number: '16203',
+      at: 'Sat 9:20 AM',
+      secs: 11,
+      transcript: [
+        'Advisory po from Malinis Water: may scheduled na maintenance sa inyong area sa Martes, 9 AM hanggang 4 PM.',
+        'Asahan po ang mababang tubig o pagkawala ng supply sa oras na ito. Salamat po.',
+      ],
+    },
+  ],
+  recents: [
+    { name: 'Tita Peachy', number: '0908-115-6629', at: 'Sat 7:55 PM', outgoing: true, dial: { transcript: ['Ate! Nakapanood ka ba ng video ni Mike?', 'Alin doon, yung graduation? Bakit?', 'Wala, sabi ng iba parang may off. Nakita mo na ba sa GC?'] } },
+    { name: 'Kuya Renz', number: '0928-771-3345', at: 'Sat 10:14 AM', outgoing: true },
+    { name: '0994-660-3417', number: '0994-660-3417', at: 'Fri 3:29 PM', missed: true, dial: {} },
+  ],
   endFlag: 'dft_done',
 }
 
@@ -394,6 +426,25 @@ const MAYA_DF: CaseOS = {
   evidenceLabels: {
     'ev-mike': 'Watched the deepfake play in the family GC — “Parang totoo mukha”',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '31°',
+    cond: 'Mainit. Mahangin sa may bubong.',
+    hi: '32°',
+    lo: '25°',
+    days: [
+      { day: 'Sun', hi: '32°', lo: '25°' },
+      { day: 'Mon', hi: '31°', lo: '24°' },
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Mama', number: '0917-553-0147', at: 'Sat 8:03 PM', outgoing: true, dial: { transcript: ['Maya, anak, kumusta ang deadline mo?', 'Tapos na po. Rest day ko ngayon.', 'Ay, sige. Magpahinga ka naman. Kumain ka ng maayos.'] } },
+    { name: 'Kuya Renz', number: '0928-771-3345', at: 'Fri 6:45 PM', missed: true },
+    { name: 'Bea 💛', number: '0918-664-2093', at: 'Thu 9:31 PM', outgoing: true },
+  ],
   endFlag: 'dfm_done',
 }
 
@@ -540,6 +591,25 @@ const BEA_DF: CaseOS = {
     'ev-mike': 'Tracked the deepfake from the start',
     'ev-angat': 'Checked the registration page against the SEC',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Manila',
+    now: '30°',
+    cond: 'Hot and hazy. Rain after sunset.',
+    hi: '32°',
+    lo: '25°',
+    days: [
+      { day: 'Sun', hi: '32°', lo: '25°' },
+      { day: 'Mon', hi: '31°', lo: '24°' },
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Maya 💛', number: '0918-226-5590', at: 'Sat 9:22 PM', outgoing: true, dial: { transcript: ['Bea, nakita mo na ba yung video ni Tito Mike sa GC?', 'Oo. Dalawang beses ko nang panoorin.', 'Ano feeling mo, totoo ba?', 'Bukas. Panoorin mo yung kamay sa huli.'] } },
+    { name: '0995-318-0274', number: '0995-318-0274', at: 'Fri 11:48 AM', missed: true, dial: {} },
+    { name: 'Mama', number: '0917-553-0147', at: 'Thu 7:19 PM', outgoing: true },
+  ],
   endFlag: 'bdf_3',
 }
 

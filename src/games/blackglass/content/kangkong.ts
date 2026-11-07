@@ -245,6 +245,25 @@ const MAYA: CaseOS = {
   evidenceLabels: {
     'ev-kk-page': 'Opened healthtruthph.click — the template you have built before',
   },
+  /* P1 ambient: the sky outside + the calls the week left behind */
+  weather: {
+    city: 'Quezon City',
+    now: '25°',
+    cond: 'Partly cloudy. Habagat easing over the metro.',
+    hi: '31°',
+    lo: '24°',
+    days: [
+      { day: 'Sat', hi: '31°', lo: '24°' },
+      { day: 'Sun', hi: '30°', lo: '24°' },
+      { day: 'Mon', hi: '31°', lo: '25°' },
+      { day: 'Tue', hi: '29°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Mama', number: '0917-553-0147', at: 'Fri 9:12 PM', outgoing: true, dial: { transcript: ['Maya? Anak, ang aga-aga. May problema ba?', 'Wala po, Ma. Gising lang ako nang maaga.', 'Sige. Mag-iingat ka sa biyahe mamaya, ha?'] } },
+    { name: 'Kuya Renz', number: '0928-771-3345', at: 'Fri 2:38 PM', missed: true },
+    { name: 'Camille', number: '0906-774-1183', at: 'Thu 6:20 PM', outgoing: true },
+  ],
   endFlag: 'maya_done',
 }
 
@@ -465,6 +484,25 @@ const TITA: CaseOS = {
     'ev-kk-page': 'Opened the link Tita forwarded — worried doctors, red text',
     'ev-kk-ledger': 'Read the maintenance row — the money the link claims to protect',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '24°',
+    cond: 'Maulap. Mahina ang buhos ng ulan sa umaga.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Sat', hi: '30°', lo: '24°' },
+      { day: 'Sun', hi: '30°', lo: '24°' },
+      { day: 'Mon', hi: '31°', lo: '25°' },
+      { day: 'Tue', hi: '29°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Tita Peachy', number: '0908-115-6629', at: 'Fri 8:45 PM', outgoing: true, dial: { transcript: ['Merly! Bakit, may kulang ba sa listahan?', 'Wala! Bago pa ako. Kumusta si Mama dyan?', 'Ayos lang. O, huwag na, mahal ang load. Bukas na lang ulit.'] } },
+    { name: 'Maya', number: '0918-226-5590', at: 'Thu 7:03 PM', missed: true },
+    { name: '0994-772-0185', number: '0994-772-0185', at: 'Thu 11:16 AM', missed: true, dial: {} },
+  ],
   endFlag: 'tita_done',
 }
 
@@ -712,6 +750,25 @@ const BEA: CaseOS = {
     'ev-malunggay': 'Found the malunggay third of the batch',
     'ev-anita': 'Opened Dr. Anita V. — the debunk that agrees with you',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Manila',
+    now: '27°',
+    cond: 'Partly cloudy. Isolated afternoon rains.',
+    hi: '32°',
+    lo: '25°',
+    days: [
+      { day: 'Sat', hi: '32°', lo: '25°' },
+      { day: 'Sun', hi: '31°', lo: '25°' },
+      { day: 'Mon', hi: '32°', lo: '26°' },
+      { day: 'Tue', hi: '30°', lo: '24°' },
+    ],
+  },
+  recents: [
+    { name: 'Maya 💛', number: '0918-226-5590', at: 'Fri 10:40 PM', outgoing: true, dial: { transcript: ['Bea? Gising ka pa?', 'Podcast lang. Bakit, ikaw dapat tulog na.', 'Oo na. Bukas, coffee tayo bago ang shift mo, ha.'] } },
+    { name: '0995-318-0274', number: '0995-318-0274', at: 'Fri 1:05 PM', missed: true, dial: {} },
+    { name: 'Tita Merly', number: '0936-202-8814', at: 'Wed 5:52 PM', outgoing: true },
+  ],
   endFlag: 'bea_done',
 }
 

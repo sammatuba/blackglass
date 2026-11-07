@@ -1273,17 +1273,19 @@ export function GalleryApp({
 }
 
 /* =====================================================================
-   PHONE — voicemails + recents
+   PHONE — voicemails + recents (recents dial back through the call overlay)
    ===================================================================== */
 
 export function PhoneApp({
   caseDef,
   os,
   onInspect,
+  onDial,
 }: {
   caseDef: CaseOS
   os: OSState
   onInspect: (id: string, evidence?: string) => void
+  onDial: (name: string, number: string, transcript?: string[]) => void
 }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const vms = caseDef.voicemails ?? []
@@ -1337,18 +1339,43 @@ export function PhoneApp({
       {(caseDef.recents?.length ?? 0) > 0 && (
         <>
           <h3 className="mt-5 px-4 text-2xs font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Recents</h3>
-          {(caseDef.recents ?? []).map((r, i) => (
-            <div key={i} className="flex items-center gap-3 px-5 py-2.5">
-              <span className={`text-sm ${r.missed ? 'text-[var(--os-danger)]' : 'text-[var(--os-dim)]'}`} aria-hidden="true">
-                {r.missed ? '↙' : r.outgoing ? '↗' : '📞'}
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className={`block truncate text-[13px] font-semibold ${r.missed ? 'text-red-300' : 'text-[var(--os-ink)]'}`}>{r.name}</span>
-                <span className="block text-[10.5px] text-[var(--os-faint)]">{r.number}</span>
-              </span>
-              <span className="text-[10.5px] text-[var(--os-faint)]">{r.at}</span>
-            </div>
-          ))}
+          {(caseDef.recents ?? []).map((r, i) =>
+            r.dial ? (
+              <button
+                key={i}
+                type="button"
+                onClick={() => {
+                  sfx.open()
+                  onDial(r.name, r.number, r.dial?.transcript)
+                }}
+                aria-label={`Call ${r.name} back`}
+                className="flex min-h-11 w-full items-center gap-3 rounded-xl px-5 py-2.5 text-left transition-colors hover:bg-[var(--os-hover)]"
+              >
+                <span className={`text-sm ${r.missed ? 'text-[var(--os-danger)]' : 'text-[var(--os-dim)]'}`} aria-hidden="true">
+                  {r.missed ? '↙' : r.outgoing ? '↗' : '📞'}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-[13px] font-semibold ${r.missed ? 'text-red-300' : 'text-[var(--os-ink)]'}`}>{r.name}</span>
+                  <span className="block text-[10.5px] text-[var(--os-faint)]">{r.number}</span>
+                </span>
+                <span className="text-[10.5px] text-[var(--os-faint)]">{r.at}</span>
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[var(--os-ok)] text-[11px] text-[var(--os-ok-ink)]" aria-hidden="true">
+                  ✆
+                </span>
+              </button>
+            ) : (
+              <div key={i} className="flex items-center gap-3 px-5 py-2.5">
+                <span className={`text-sm ${r.missed ? 'text-[var(--os-danger)]' : 'text-[var(--os-dim)]'}`} aria-hidden="true">
+                  {r.missed ? '↙' : r.outgoing ? '↗' : '📞'}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className={`block truncate text-[13px] font-semibold ${r.missed ? 'text-red-300' : 'text-[var(--os-ink)]'}`}>{r.name}</span>
+                  <span className="block text-[10.5px] text-[var(--os-faint)]">{r.number}</span>
+                </span>
+                <span className="text-[10.5px] text-[var(--os-faint)]">{r.at}</span>
+              </div>
+            ),
+          )}
         </>
       )}
     </div>
@@ -2017,6 +2044,63 @@ function SocialPageBody({ page }: { page: CaseOS['pages'][number] }) {
         <div className="rounded-xl border border-[#e6e9f0] bg-[#f2f4f8] px-3 py-2 text-[11px] text-[#5b6b85]">{page.badge}</div>
       )}
       {page.views && <p className="text-[11px] text-[#8b97ab]">{page.views}</p>}
+    </div>
+  )
+}
+
+/* =====================================================================
+   WEATHER — ambient (P1): the sky outside the phone's window.
+   Authored display strings only; the tile exists when a phone has data.
+   ===================================================================== */
+
+export function WeatherApp({ caseDef }: { caseDef: CaseOS }) {
+  const w = caseDef.weather
+  if (!w) return <EmptyState icon="⛅" title="No weather data" sub="This phone doesn't carry a forecast." />
+  return (
+    <div className="h-full overflow-y-auto px-4 pb-8 pt-1 text-[var(--os-ink)]">
+      <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-5 text-center">
+        <div className="text-[12px] font-semibold tracking-wide text-[var(--os-dim)] uppercase">{w.city}</div>
+        <div className="font-display mt-1 text-5xl font-semibold tracking-tight">{w.now}</div>
+        <div className="mt-1 text-[12.5px] leading-snug text-[var(--os-dim)]">{w.cond}</div>
+        <div className="mt-1.5 text-[12px] tabular-nums text-[var(--os-faint)]">
+          H {w.hi} · L {w.lo}
+        </div>
+      </div>
+      {w.days && w.days.length > 0 && (
+        <div className="mt-3 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-4 py-2">
+          {w.days.map((d) => (
+            <div key={d.day} className="flex min-h-11 items-center justify-between border-b border-[var(--os-hairline)] py-2 last:border-b-0">
+              <span className="w-14 text-[12.5px] font-semibold">{d.day}</span>
+              <span className="flex-1" aria-hidden="true" />
+              <span className="text-[12px] tabular-nums text-[var(--os-faint)]">
+                {d.lo} / <span className="font-semibold text-[var(--os-ink)]">{d.hi}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+      <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">
+        {w.city} · {caseDef.phone.day}
+      </p>
+    </div>
+  )
+}
+
+/* =====================================================================
+   CLOCK — ambient (P1): the phone's own time, kept like a bedside clock.
+   Renders the live story clock once Phase 2 wires it through state.
+   ===================================================================== */
+
+export function ClockApp({ caseDef, os }: { caseDef: CaseOS; os: OSState }) {
+  void os // the live story clock renders here once the clock engine lands (P3)
+  const time = `${caseDef.phone.time} ${caseDef.phone.meridiem}`
+  return (
+    <div className="grid h-full place-items-center px-6 text-center text-[var(--os-ink)]">
+      <div>
+        <div className="text-[12px] font-semibold tracking-wide text-[var(--os-dim)] uppercase">{caseDef.phone.day}</div>
+        <div className="font-display mt-2 text-6xl font-semibold tracking-tight drop-shadow">{time}</div>
+        <p className="mt-4 text-2xs leading-snug text-[var(--os-faint)]">glassOS · this phone keeps its own time</p>
+      </div>
     </div>
   )
 }

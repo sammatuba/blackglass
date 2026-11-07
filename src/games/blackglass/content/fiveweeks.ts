@@ -225,6 +225,25 @@ const BEA_5W: CaseOS = {
   evidenceLabels: {
     'ev-5w-ledger': 'Read the honorarium row — what the job paid vs what the feed paid',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Manila',
+    now: '27°',
+    cond: 'Cloudy. Rain out west, clearing by midnight.',
+    hi: '31°',
+    lo: '24°',
+    days: [
+      { day: 'Mon', hi: '31°', lo: '24°' },
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '30°', lo: '23°' },
+      { day: 'Thu', hi: '31°', lo: '24°' },
+    ],
+  },
+  recents: [
+    { name: 'Maya 💛', number: '0918-226-5590', at: 'Sat 8:30 PM', outgoing: true, dial: { transcript: ['Bea, hindi ka sumagot kahapon.', 'Na-phone ko yung feed, di ko namalayan oras.', 'Yan na nga sinasabi ko eh. Buti tumawag ka.'] } },
+    { name: '0995-318-0274', number: '0995-318-0274', at: 'Thu 12:21 PM', missed: true, dial: {} },
+    { name: 'Tita Merly', number: '0936-202-8814', at: 'Tue 6:02 PM', outgoing: true },
+  ],
   endFlag: 'w5_done',
 }
 

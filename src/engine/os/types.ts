@@ -14,6 +14,8 @@ export type AppId =
   | 'settings'
   | 'calendar'
   | 'wallet'
+  | 'weather'
+  | 'clock'
 
 /** how far the device's chrome has drifted from trustworthy (P4 — the UI is
     the narrative). Moves with story state via rules; renders as data-stage. */
@@ -139,6 +141,17 @@ export interface OSVoicemail {
   secs: number
   transcript: string[]
   evidence?: string
+}
+
+/** P1 ambient: the sky outside the phone's window. Authored display
+    strings only — the engine never computes weather. */
+export interface OSWeather {
+  city: string
+  now: string
+  cond: string
+  hi: string
+  lo: string
+  days?: { day: string; hi: string; lo: string }[]
 }
 
 export interface OSMessage {
@@ -342,7 +355,16 @@ export interface CaseOS {
   photos: OSPhoto[]
   pages: OSPage[]
   voicemails?: OSVoicemail[]
-  recents?: { name: string; number: string; at: string; missed?: boolean; outgoing?: boolean }[]
+  recents?: {
+    name: string
+    number: string
+    at: string
+    missed?: boolean
+    outgoing?: boolean
+    /** dialable — tapping the row calls it back; outcomes are authored
+        (transcript lines connect, or nothing connects at all) */
+    dial?: { transcript?: string[] }
+  }[]
   notes: OSNote[]
   replies: OSReply[]
   rules: OSRule[]
@@ -354,6 +376,8 @@ export interface CaseOS {
   calendar?: OSCalEvent[]
   /** ambient + accusatory ledger: money in and out, authored display strings (P1/P2) */
   wallet?: { balance?: string; rows: OSWalletRow[] }
+  /** ambient: the sky outside (P1) — tile renders only when authored */
+  weather?: OSWeather
   /** P6: screen-time by app, last 7 days (Settings surface; inversion anchor) */
   screentime?: OSScreenRow[]
   /** human labels for evidence ids — Notes app + debrief */

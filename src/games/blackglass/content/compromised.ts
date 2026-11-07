@@ -235,6 +235,25 @@ const OWN: CaseOS = {
     'ev-own-time': 'DRAFT — Read the screen time: 1,904 overnight minutes of “System services”',
     'ev-own-guide': 'DRAFT — The checkup guide: signs, and the first moves',
   },
+  /* P1 ambient — the draft anchor obeys the same inhabited-phone bar */
+  weather: {
+    city: 'Quezon City',
+    now: '25°',
+    cond: 'Partly cloudy. A thin fog over the valley.',
+    hi: '30°',
+    lo: '23°',
+    days: [
+      { day: 'Thu', hi: '30°', lo: '23°' },
+      { day: 'Fri', hi: '31°', lo: '24°' },
+      { day: 'Sat', hi: '31°', lo: '24°' },
+      { day: 'Sun', hi: '30°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Mama', number: '0917-553-0147', at: 'Wed 9:31 PM', outgoing: true, dial: { transcript: ['Anak? Bakit tawag mo?', 'Wala po. Gising pa kasi ako.', 'Tulog ka na. Bukas, ha?'] } },
+    { name: 'Kuya Renz', number: '0928-771-3345', at: 'Wed 4:02 PM', outgoing: true },
+    { name: '0994-220-6613', number: '0994-220-6613', at: 'Thu 3:47 AM', missed: true, dial: {} },
+  ],
   endFlag: 'own_done',
   outcomes: [
     { match: { own_assembled: true, own_guided: true }, title: 'DRAFT — The whole report, signed', text: 'DRAFT — Every anomaly found, every line named, said out loud to the family first. The phone is yours again — and the report stays honest about how easy the ten minutes were.', points: 45 },
@@ -334,6 +353,24 @@ const MAMA_OWN: CaseOS = {
   evidenceLabels: {
     'ev-own-mama-ledger': 'DRAFT — Mama’s ledger: the load she has sent since 2019',
   },
+  /* P1 ambient — the same Thursday, the other bedside table */
+  weather: {
+    city: 'Quezon City',
+    now: '24°',
+    cond: 'Maulap. Mahina ang hangin sa may bintana.',
+    hi: '30°',
+    lo: '23°',
+    days: [
+      { day: 'Thu', hi: '30°', lo: '23°' },
+      { day: 'Fri', hi: '31°', lo: '24°' },
+      { day: 'Sat', hi: '31°', lo: '24°' },
+      { day: 'Sun', hi: '30°', lo: '23°' },
+    ],
+  },
+  recents: [
+    { name: 'Anak', number: 'DRAFT/TBC', at: 'Wed 9:31 PM' },
+    { name: 'Papa', number: '0919-448-7702', at: 'Tue 6:12 PM', outgoing: true, dial: { transcript: ['O, bakit?', 'Wala. Kumusta ang ulan dyan sa probinsya?', 'Mahina lang. Iping mo na yang telepono, gabi na.'] } },
+  ],
   endFlag: 'mo_done',
   outcomes: [
     { match: { mo_reached: true }, title: 'DRAFT — She asked', text: 'DRAFT — One small question at 5:58 AM, and the confession had somewhere to land.', points: 30 },

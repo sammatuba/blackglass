@@ -246,6 +246,38 @@ const TITA_VC: CaseOS = {
     'ev-vc-photo': 'Looked at “the damage” — proof shaped like the voice',
     'ev-vc-ledger': 'Read the send row — the number that received it is not Renz’s',
   },
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '26°',
+    cond: 'Kulimlim. Posibleng bugso ng ulan ngayong gabi.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+    ],
+  },
+  voicemails: [
+    {
+      id: 'vm-clinic',
+      from: 'Malinis Health Center',
+      number: '(02) 8555-2140',
+      at: 'Tue 10:04 AM',
+      secs: 14,
+      transcript: [
+        'Good morning. This is a reminder from Malinis Health Center: your annual check-up is set for Thursday, 9:30 in the morning.',
+        'To confirm or move your schedule, please call the clinic before 5 PM. Thank you.',
+      ],
+    },
+  ],
+  recents: [
+    { name: 'Tita Peachy', number: '0908-115-6629', at: 'Tue 6:31 PM', outgoing: true, dial: { transcript: ['Ate? Kumusta si Mama?', 'Ayos lang daw. Ikaw, kumusta ang bagong schedule mo?', 'Sige, Ate. Bukas ulit.'] } },
+    { name: 'Kuya Renz', number: '0928-771-3345', at: 'Tue 1:52 PM', outgoing: true },
+    { name: '0994-772-0185', number: '0994-772-0185', at: 'Mon 4:07 PM', missed: true, dial: {} },
+  ],
   endFlag: 'vc_done',
 }
 
@@ -441,6 +473,25 @@ const MAYA_VC: CaseOS = {
     { id: 'mv-done', when: { flag: 'dismissed:vc-maya-end' }, set: { mvc_done: true } },
   ],
   evidenceLabels: {},
+  /* P1 ambient */
+  weather: {
+    city: 'Quezon City',
+    now: '26°',
+    cond: 'Kulimlim. Mahina ang buhos ng ulan sa labas.',
+    hi: '30°',
+    lo: '24°',
+    days: [
+      { day: 'Tue', hi: '30°', lo: '24°' },
+      { day: 'Wed', hi: '29°', lo: '23°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+    ],
+  },
+  recents: [
+    { name: 'Papa', number: '0919-448-7702', at: 'Mon 7:44 PM', outgoing: true, dial: { transcript: ['An? Bakit, may kailangan ka?', 'Wala po, Pa. Kumusta ang tubig sa bahay?', 'Ayos na. Bumili na ako ng baon na kape. Ikaw, umuwi nang hindi masyadong late.'] } },
+    { name: 'Mama', number: '0917-553-0147', at: 'Mon 7:02 PM', outgoing: true },
+    { name: 'Bea 💛', number: '0918-664-2093', at: 'Sun 9:15 PM', missed: true },
+  ],
   endFlag: 'mvc_done',
 }
 
@@ -584,6 +635,25 @@ const BEA_VC: CaseOS = {
     { id: 'bv-done', when: { flag: 'dismissed:vc-bea-end' }, set: { bvc_done: true } },
   ],
   evidenceLabels: {},
+  /* P1 ambient */
+  weather: {
+    city: 'Manila',
+    now: '26°',
+    cond: 'Cloudy. Rain bands moving in from the bay.',
+    hi: '31°',
+    lo: '25°',
+    days: [
+      { day: 'Tue', hi: '31°', lo: '25°' },
+      { day: 'Wed', hi: '30°', lo: '24°' },
+      { day: 'Thu', hi: '30°', lo: '24°' },
+      { day: 'Fri', hi: '31°', lo: '25°' },
+    ],
+  },
+  recents: [
+    { name: 'Maya 💛', number: '0918-226-5590', at: 'Tue 5:48 PM', outgoing: true, dial: { transcript: ['Maya, nasa bahay ka na ba?', 'Oo, bagong dating. Bakit?', 'Wala. Kumusta ang Baguio? Umuulan dito eh.'] } },
+    { name: '0995-318-0274', number: '0995-318-0274', at: 'Tue 9:12 AM', missed: true, dial: {} },
+    { name: 'Tita Merly', number: '0936-202-8814', at: 'Sat 4:31 PM', outgoing: true },
+  ],
   endFlag: 'bvc_done',
 }
 

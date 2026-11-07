@@ -12,6 +12,8 @@ export const APP_META: Record<AppId, { name: string; icon: string; tile: string 
   /* ambient surfaces — original iconography, type-only */
   calendar: { name: 'Calendar', icon: '🗓', tile: 'bg-gradient-to-b from-rose-400/90 to-red-600/90' },
   wallet: { name: 'Wallet', icon: '🪙', tile: 'bg-gradient-to-b from-lime-400/90 to-green-700/90' },
+  weather: { name: 'Weather', icon: '⛅', tile: 'bg-gradient-to-b from-sky-300/90 to-cyan-600/90' },
+  clock: { name: 'Clock', icon: '🕒', tile: 'bg-gradient-to-b from-indigo-400/90 to-blue-800/90' },
 }
 
 export function Avatar({ name, hue, size = 'md' }: { name: string; hue: number; size?: 'sm' | 'md' }) {

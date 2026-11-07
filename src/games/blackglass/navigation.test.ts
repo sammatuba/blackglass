@@ -53,6 +53,22 @@ describe('anthology phone navigation', () => {
       }
     }
   })
+
+  it('every shipped phone is inhabited: weather + call log (P1, the Phone app is never empty)', () => {
+    for (const anchor of ANCHORS) {
+      for (const phone of Object.values(anchor.phones)) {
+        expect(phone.weather, `${anchor.id}/${phone.id} has no weather`).toBeDefined()
+        expect(phone.weather?.now.length, `${anchor.id}/${phone.id} weather is empty`).toBeGreaterThan(0)
+        expect(phone.recents?.length, `${anchor.id}/${phone.id} has no call log`).toBeGreaterThan(0)
+        for (const r of phone.recents ?? []) {
+          expect(r.number, `${anchor.id}/${phone.id} recent ${r.name} has no number`).toBeTruthy()
+          // a dialable row either connects with authored dialogue or rings
+          // out — it never carries evidence flags or plot state
+          expect(r.dial && r.dial.transcript ? r.dial.transcript.length : 0, `${anchor.id}/${phone.id} dial transcript is empty`).toBeLessThan(6)
+        }
+      }
+    }
+  })
 })
 
 describe('anchor VI draft navigation (P6 — gated behind ?draft=vi)', () => {
@@ -76,6 +92,8 @@ describe('anchor VI draft navigation (P6 — gated behind ?draft=vi)', () => {
     for (const phone of Object.values(COMPROMISED.phones)) {
       expect(phone.calendar?.length, `${phone.id} has no calendar`).toBeGreaterThan(0)
       expect(phone.wallet?.rows.length, `${phone.id} has no wallet rows`).toBeGreaterThan(0)
+      expect(phone.weather, `${phone.id} has no weather`).toBeDefined()
+      expect(phone.recents?.length, `${phone.id} has no call log`).toBeGreaterThan(0)
     }
   })
 
