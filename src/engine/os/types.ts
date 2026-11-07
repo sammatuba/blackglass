@@ -360,6 +360,9 @@ export interface CaseOS {
   evidenceLabels?: Record<string, string>
   /** when this flag is set (and the chain drains), the case is complete */
   endFlag: string
+  /** the thread footer once the case is over — games with a debrief name it;
+      games that don't, keep the device honest (defaults to "Case complete") */
+  completeLine?: string
   /** initial evidence entries in Notes */
   openingEvidence?: string[]
   checklist?: string[]

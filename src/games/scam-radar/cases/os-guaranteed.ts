@@ -205,6 +205,8 @@ export const GUARANTEED_OS: CaseOS = {
     },
   ],
 
+  // the radar cases have a real debrief — the device may say so
+  completeLine: 'Case complete — the debrief is loading…',
   endFlag: 'case-over',
 
   checklist: [

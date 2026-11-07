@@ -269,4 +269,17 @@ describe('dwell triggers (P5)', () => {
     const old: OSState = { ...initialOSState(dwellCase), idle: undefined }
     expect(pendingRules(dwellCase, old).map((r) => r.id)).not.toContain('dwell2')
   })
+
+  it('reads old saves without the ai record — regen and thumbs never error', () => {
+    // persisted payloads from before the field existed arrive without it
+    const old: OSState = { ...initialOSState(dwellCase), ai: undefined as unknown as OSState['ai'] }
+    const s = aiRegen(old, 'm1')
+    expect(s.ai?.['m1']?.regen).toBe(1)
+    const s2 = aiThumbs(s, 'm1')
+    expect(s2.ai?.['m1']?.thumbs).toBe(true)
+    expect(s2.flags['ai_thumbs']).toBe(true)
+    // and a save with the record but an unseen message still works
+    const s3 = aiThumbs(s2, 'unseen')
+    expect(s3.ai?.['unseen']?.thumbs).toBe(true)
+  })
 })

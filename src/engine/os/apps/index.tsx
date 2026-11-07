@@ -24,6 +24,7 @@ export function MessagesApp({
   caseDef,
   os,
   typingIn,
+  unreadByThread,
   activeThreadId,
   onOpenThread,
   onCloseThread,
@@ -35,6 +36,7 @@ export function MessagesApp({
   caseDef: CaseOS
   os: OSState
   typingIn: string | null
+  unreadByThread: Record<string, number>
   activeThreadId: string | null
   onOpenThread: (id: string) => void
   onCloseThread: () => void
@@ -47,7 +49,7 @@ export function MessagesApp({
   const [query, setQuery] = useState('')
   const [focusMessageId, setFocusMessageId] = useState<string | null>(null)
   if (!activeThreadId) {
-    return <ThreadList caseDef={caseDef} os={os} query={query} onQuery={setQuery}
+    return <ThreadList caseDef={caseDef} os={os} query={query} onQuery={setQuery} typingIn={typingIn} unreadByThread={unreadByThread}
       onOpenThread={(id) => { setFocusMessageId(null); onOpenThread(id) }}
       onOpenMessage={(id, messageId) => { setFocusMessageId(messageId); onOpenThread(id) }} />
   }
@@ -75,6 +77,8 @@ function ThreadList({
   os,
   query,
   onQuery,
+  typingIn,
+  unreadByThread,
   onOpenThread,
   onOpenMessage,
 }: {
@@ -82,6 +86,8 @@ function ThreadList({
   os: OSState
   query: string
   onQuery: (value: string) => void
+  typingIn: string | null
+  unreadByThread: Record<string, number>
   onOpenThread: (id: string) => void
   onOpenMessage: (threadId: string, messageId: string) => void
 }) {
@@ -172,11 +178,14 @@ function ThreadList({
               <Avatar name={t.name} hue={t.hue} />
               <span className="min-w-0 flex-1">
                 <span className="flex items-baseline gap-2">
-                  <span className="truncate text-[14px] font-bold text-[var(--os-ink)]">{t.name}</span>
+                  {(unreadByThread[t.id] ?? 0) > 0 && (
+                    <span className="h-2 w-2 shrink-0 self-center rounded-full bg-[var(--os-accent)]" aria-label={`${unreadByThread[t.id]} unread`} />
+                  )}
+                  <span className={`truncate text-[14px] ${(unreadByThread[t.id] ?? 0) > 0 ? 'font-extrabold' : 'font-bold'} text-[var(--os-ink)]`}>{t.name}</span>
                   {last?.at && <span className="ml-auto shrink-0 text-2xs text-[var(--os-faint)]">{last.at}</span>}
                 </span>
                 <span className={`mt-0.5 line-clamp-1 block text-[12.5px] ${offered ? 'font-semibold text-[var(--os-ink)]' : 'text-[var(--os-dim)]'}`}>
-                  {typingHint(t.id, caseDef, os) ? (
+                  {typingHint(t.id, typingIn) ? (
                     <span className="italic text-[var(--os-accent)]">typing…</span>
                   ) : last ? (
                     `${last.from === 'you' ? 'You: ' : ''}${
@@ -191,7 +200,7 @@ function ThreadList({
                   ) : (' ')}
                 </span>
               </span>
-              {offered && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--os-accent)]" aria-label="Your reply is being asked for" />}
+              {offered && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--os-accent)]" aria-label="Suggested replies waiting" />}
             </button>
           ),
         )
@@ -200,8 +209,10 @@ function ThreadList({
   )
 }
 
-function typingHint(_threadId: string, _caseDef: CaseOS, _os: OSState): boolean {
-  return false // the conversation view shows its own indicator; list hinting stays subtle
+function typingHint(threadId: string, typingIn: string | null): boolean {
+  // the pump's live typing indicator surfaces in the list too — a phone
+  // shows the same "they're typing" everywhere the conversation appears
+  return typingIn === threadId
 }
 
 function Conversation({
@@ -466,7 +477,7 @@ function Conversation({
       <div className="border-t border-[var(--os-hairline)] px-3 pb-5 pt-2.5">
         {caseOver ? (
           <div className="rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-center text-[12px] font-semibold text-[var(--os-ink)]">
-            ⌖ Case complete — the debrief is loading…
+            {`⌖ ${caseDef.completeLine ?? 'Case complete'}`}
           </div>
         ) : offered.length > 0 ? (
           <div className="space-y-2" role="group" aria-label="Suggested replies">
@@ -817,7 +828,7 @@ export function AssistantApp({
       <div className="border-t border-[var(--os-hairline)] px-3 pb-5 pt-2.5">
         {caseOver ? (
           <div className="rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-center text-[12px] font-semibold text-[var(--os-ink)]">
-            ⌖ Case complete — the debrief is loading…
+            {`⌖ ${caseDef.completeLine ?? 'Case complete'}`}
           </div>
         ) : offered.length > 0 ? (
           <div className="space-y-2" role="group" aria-label="What you can ask">

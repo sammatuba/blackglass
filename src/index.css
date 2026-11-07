@@ -283,6 +283,41 @@ body {
   letter-spacing: 0.05em;
 }
 
+/* the home gesture bar — a quiet pill at the bottom of the frame (the
+   button is the hit area; the ::after is the visible pill) */
+.os-gesturebar::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 76px;
+  height: 5px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: var(--os-ink);
+  opacity: 0.32;
+  transition: opacity 150ms ease;
+}
+.os-gesturebar:hover::after,
+.os-gesturebar:focus-visible::after {
+  opacity: 0.55;
+}
+
+/* a rule nudged this app (OSRule.nudgeApp) — the tile glows once, gently,
+   until opened; never a forced jump */
+@keyframes nudge-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--os-accent), 0 0 14px color-mix(in srgb, var(--os-accent) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 2px var(--os-accent), 0 0 4px color-mix(in srgb, var(--os-accent) 18%, transparent);
+  }
+}
+.os-tile-nudge {
+  animation: nudge-glow 1.8s ease-in-out infinite;
+}
+
 /* ---- stage tiers (P4 — the UI is the narrative) ----
    The screen container carries data-stage (clean | uneasy | compromised),
    moved by rules as story state shifts. Nothing explains it. The tier

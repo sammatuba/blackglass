@@ -35,7 +35,12 @@ export interface Banner {
   threadId: string
   /** assistant arrival — taps open the Ask app, not Messages */
   ai?: boolean
+  /** a rule nudge (`OSRule.nudgeApp`) — taps open the app itself, not a thread */
+  appTarget?: AppId
 }
+
+/** one restored view in the back-navigation history */
+type ViewState = { app: AppId; threadId: string | null; browserPage: string | null }
 
 export function GlassOS({
   caseDef,
@@ -57,13 +62,23 @@ export function GlassOS({
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
   const [galleryPhotoId, setGalleryPhotoId] = useState<string | null>(null)
-  const [returnTo, setReturnTo] = useState<{ app: AppId; threadId: string | null; browserPage: string | null } | null>(null)
+  const [backStack, setBackStack] = useState<ViewState[]>([])
   const [os, setOS] = useState<OSState>(() => initialState ?? initialOSState(caseDef))
   const [typingIn, setTypingIn] = useState<string | null>(null)
   const [banners, setBanners] = useState<Banner[]>([])
   const [bannerLog, setBannerLog] = useState<Banner[]>([])
   const [shadeOpen, setShadeOpen] = useState(false)
-  const [unread, setUnread] = useState(0)
+  /** last-read message count per thread — unread is derived from the inbox */
+  const [reads, setReads] = useState<Record<string, number>>(() => {
+    // a resumed run's threads were already read; a fresh phone starts quiet
+    // and accumulates unread as the opening pushes land on the lock screen
+    if (!initialState) return {}
+    const r: Record<string, number> = {}
+    for (const t of caseDef.threads) r[t.id] = (initialState.inbox[t.id] ?? []).length
+    return r
+  })
+  /** app a rule nudged toward — glows on the home grid until opened */
+  const [nudged, setNudged] = useState<AppId | null>(null)
   const [brightness, setBrightness] = useState(100)
   const [pulse, setPulse] = useState(0)
   const [confirmExit, setConfirmExit] = useState(false)
@@ -107,11 +122,26 @@ export function GlassOS({
       const banner: Banner = { id, app: t.service === 'assistant' ? 'ask' : t.service, icon: meta.icon, title: t.name, text, threadId, ai: t.service === 'assistant' }
       setBanners((b) => [...b.slice(-2), banner])
       setBannerLog((log) => [...log.slice(-19), banner])
-      setUnread((n) => Math.min(99, n + 1))
+      // the banner's own two-note identity, distinct from the in-thread blip
+      sfx.banner()
       setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), Math.max(2500, scaled(bannerMs(text))))
     },
     [caseDef],
   )
+
+  /** a rule points at an app (`OSRule.nudgeApp`): a banner-style heads-up
+      and a glow on its tile — never a forced jump. The player decides. */
+  const pushNudge = useCallback((appId: AppId) => {
+    const meta = APP_META[appId]
+    const id = ++bannerId.current
+    const banner: Banner = { id, app: appId, icon: meta.icon, title: meta.name, text: 'New activity', threadId: '', appTarget: appId }
+    setBanners((b) => [...b.slice(-2), banner])
+    setBannerLog((log) => [...log.slice(-19), banner])
+    sfx.banner()
+    setNudged(appId)
+    setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), Math.max(2500, scaled(bannerMs('New activity'))))
+    setTimeout(() => setNudged((cur) => (cur === appId ? null : cur)), 6500)
+  }, [])
 
   /* one pump at a time: a reply that lands mid-burst queues a re-run instead
      of interleaving two storylines into the same thread */
@@ -137,6 +167,7 @@ export function GlassOS({
             let s = applyRule(osRef.current, rule)
             osRef.current = s
             setOS(s)
+            if (rule.nudgeApp) pushNudge(rule.nudgeApp)
             if (rule.push) {
               // typing is derived from the pushes: a burst shows the indicator
               // once, its lines land seconds apart, and prose gets reading air
@@ -228,7 +259,7 @@ export function GlassOS({
     } finally {
       pumping.current = false
     }
-  }, [caseDef, onComplete, pushBanner])
+  }, [caseDef, onComplete, pushBanner, pushNudge])
 
   useEffect(() => {
     cancelledRef.current = false
@@ -266,11 +297,13 @@ export function GlassOS({
     sfx.open()
     vibrate(8)
     const from = viewRef.current
-    // An attachment or link crosses apps, but the way back should lead to
-    // the conversation you were reading, not to an unrelated home screen.
-    if (from.app !== id) {
-      setReturnTo(from.app ? { app: from.app, threadId: from.threadId, browserPage: from.browserPage } : null)
+    // An attachment or link crosses apps, and the way back is a history:
+    // each hop remembers where you came from, not just the last one.
+    if (from.app && from.app !== id) {
+      setBackStack((st) => [...st.slice(-7), { app: from.app!, threadId: from.threadId, browserPage: from.browserPage }])
     }
+    // opening the app a rule nudged clears its glow
+    setNudged((cur) => (cur === id ? null : cur))
     setApp(id)
     setGalleryPhotoId(id === 'gallery' ? opts?.photoId ?? null : null)
     if (opts?.threadId) setThreadId(opts.threadId)
@@ -287,25 +320,26 @@ export function GlassOS({
     setApp(null)
     setThreadId(null)
     setGalleryPhotoId(null)
-    setReturnTo(null)
+    setBackStack([])
     setShadeOpen(false)
   }, [])
 
   const goBack = useCallback(() => {
-    if (!returnTo) { goHome(); return }
+    const last = backStack[backStack.length - 1]
+    if (!last) { goHome(); return }
     sfx.open()
-    setApp(returnTo.app)
-    setThreadId(returnTo.threadId)
-    setBrowserPage(returnTo.browserPage)
+    setApp(last.app)
+    setThreadId(last.threadId)
+    setBrowserPage(last.browserPage)
     setGalleryPhotoId(null)
-    setReturnTo(null)
-  }, [returnTo, goHome])
+    setBackStack((st) => st.slice(0, -1))
+  }, [backStack, goHome])
 
-  /** pull down the notification shade; clears the unread count */
+  /** pull down the notification shade — history only; unread clears when
+      the conversations themselves are read */
   const openShade = useCallback(() => {
     sfx.open()
     setShadeOpen(true)
-    setUnread(0)
   }, [])
 
   /** leave the device: flush the live run first so nothing is lost */
@@ -355,6 +389,41 @@ export function GlassOS({
     const ring = setInterval(() => sfx.callIncoming(), 2600)
     return () => clearInterval(ring)
   }, [os.call?.phase])
+
+  /* reading a conversation clears its unread; anything that lands while the
+     conversation is open is read the moment it arrives */
+  useEffect(() => {
+    if (app === 'messages' && threadId) {
+      const len = (os.inbox[threadId] ?? []).length
+      setReads((r) => (r[threadId] === len ? r : { ...r, [threadId]: len }))
+    } else if (app === 'assistant') {
+      const ask = caseDef.threads.filter((t) => t.service === 'assistant')
+      setReads((r) => {
+        let changed = false
+        const next = { ...r }
+        for (const t of ask) {
+          const len = (os.inbox[t.id] ?? []).length
+          if (next[t.id] !== len) {
+            next[t.id] = len
+            changed = true
+          }
+        }
+        return changed ? next : r
+      })
+    }
+  }, [app, threadId, os, caseDef])
+
+  /* per-thread unread, derived — messages that landed but were never opened */
+  const unreadByThread = useMemo(() => {
+    const m: Record<string, number> = {}
+    for (const t of caseDef.threads) {
+      if (t.service === 'assistant') continue
+      const n = (os.inbox[t.id] ?? []).length - (reads[t.id] ?? 0)
+      if (n > 0) m[t.id] = n
+    }
+    return m
+  }, [caseDef, os, reads])
+  const totalUnread = useMemo(() => Object.values(unreadByThread).reduce((a, b) => a + b, 0), [unreadByThread])
 
   /* a rule can drop the line (the scammer hangs up); sweep it after a beat */
   useEffect(() => {
@@ -430,10 +499,12 @@ export function GlassOS({
         threadId={threadId}
         browserPage={browserPage}
         galleryPhotoId={galleryPhotoId}
-        backApp={returnTo?.app ?? null}
+        backApp={backStack.length > 0 ? backStack[backStack.length - 1].app : null}
         onGoBack={goBack}
         os={os}
         typingIn={typingIn}
+        unreadByThread={unreadByThread}
+        nudgedApp={nudged}
         onOpenApp={openApp}
         onOpenThread={(tid) => openApp('messages', { threadId: tid })}
         onCloseThread={() => setThreadId(null)}
@@ -481,13 +552,13 @@ export function GlassOS({
         onDismissMoment={dismissMoment}
         bannerLog={bannerLog}
         shadeOpen={shadeOpen}
-        unread={unread}
+        unread={totalUnread}
         onOpenShade={openShade}
         onCloseShade={() => setShadeOpen(false)}
         onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, returnTo, goBack, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
+    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, backStack, goBack, os, typingIn, unreadByThread, nudged, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, totalUnread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -527,7 +598,10 @@ export function GlassOS({
                 key={b.id}
                 type="button"
                 data-banner
-                onClick={() => openApp(b.ai ? 'assistant' : 'messages', b.ai ? undefined : { threadId: b.threadId })}
+                onClick={() => {
+                  if (b.appTarget) openApp(b.appTarget)
+                  else openApp(b.ai ? 'assistant' : 'messages', b.ai ? undefined : { threadId: b.threadId })
+                }}
                 className="animate-banner pointer-events-auto block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)] px-4 py-3 text-left text-[var(--os-ink)] shadow-2xl backdrop-blur-md"
               >
                 <span className="flex items-center gap-2">
@@ -600,6 +674,8 @@ function DeviceFrame(props: {
   onGoBack: () => void
   os: OSState
   typingIn: string | null
+  unreadByThread: Record<string, number>
+  nudgedApp: AppId | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void
@@ -641,11 +717,11 @@ function DeviceFrame(props: {
           />
 
           {locked ? (
-            <LockScreen caseDef={caseDef} os={os} onUnlock={props.onUnlock} />
+            <LockScreen caseDef={caseDef} os={os} unreadByThread={props.unreadByThread} onUnlock={props.onUnlock} />
           ) : props.app ? (
             <AppSurface {...props} app={props.app} />
           ) : (
-            <HomeScreen caseDef={caseDef} os={os} onOpenApp={props.onOpenApp} />
+            <HomeScreen caseDef={caseDef} os={os} nudgedApp={props.nudgedApp} onOpenApp={props.onOpenApp} />
           )}
           {/* incoming / live call overlay */}
           {os.call && (
@@ -701,7 +777,8 @@ function DeviceFrame(props: {
                       key={b.id}
                       type="button"
                       onClick={() => {
-                        if (b.ai) props.onOpenApp('assistant')
+                        if (b.appTarget) props.onOpenApp(b.appTarget)
+                        else if (b.ai) props.onOpenApp('assistant')
                         else props.onOpenThread(b.threadId)
                         props.onCloseShade()
                       }}
@@ -837,15 +914,25 @@ function MomentOverlay({
   )
 }
 
-function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; onUnlock: () => void }) {
+function LockScreen({
+  caseDef,
+  os,
+  unreadByThread,
+  onUnlock,
+}: {
+  caseDef: CaseOS
+  os: OSState
+  unreadByThread: Record<string, number>
+  onUnlock: () => void
+}) {
   const preview = caseDef.threads
     .map((t) => {
       const msgs = visibleMessages(os, t.id)
       const last = msgs[msgs.length - 1]
-      return last ? { t, last } : null
+      return last ? { t, last, unread: unreadByThread[t.id] ?? 0 } : null
     })
     .filter(Boolean)
-    .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage }[]
+    .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage; unread: number }[]
 
   return (
     <div className="absolute inset-0 z-20 flex flex-col px-6 pb-6 pt-14 text-[var(--os-ink)]">
@@ -858,15 +945,20 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
       </div>
 
       <div className="mt-auto space-y-2">
-        {preview.map(({ t, last }) => (
+        {preview.map(({ t, last, unread }) => (
           <button
             key={t.id}
             type="button"
             onClick={onUnlock}
             className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
           >
-            <div className="text-[11px] font-bold tracking-wide opacity-75">
+            <div className="flex items-center gap-2 text-[11px] font-bold tracking-wide opacity-75">
               {SERVICE_LABEL[t.service]}
+              {unread > 0 && (
+                <span className="rounded-full bg-[var(--os-accent)] px-1.5 text-[10px] font-black text-[var(--os-accent-ink)]" aria-label={`${unread} unread`}>
+                  {unread}
+                </span>
+              )}
             </div>
             <div className="text-[13px] font-bold">{t.name}</div>
             <div className="line-clamp-1 text-[12.5px] opacity-85">
@@ -894,10 +986,12 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
 function HomeScreen({
   caseDef,
   os,
+  nudgedApp,
   onOpenApp,
 }: {
   caseDef: CaseOS
   os: OSState
+  nudgedApp: AppId | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string }) => void
 }) {
   const newReplies = caseDef.replies.filter((r) => !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires])).length
@@ -921,16 +1015,19 @@ function HomeScreen({
 
   const renderIcon = ({ id, badge }: { id: AppId; badge?: number }) => {
     const meta = APP_META[id]
+    const nudged = nudgedApp === id
     return (
       <button
         key={id}
         type="button"
         onClick={() => onOpenApp(id)}
-        aria-label={`Open ${meta.name}`}
+        aria-label={nudged ? `Open ${meta.name} — new activity` : `Open ${meta.name}`}
         className="group flex flex-col items-center gap-1.5"
       >
         <span
-          className={`relative grid h-14 w-14 place-items-center rounded-2xl text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95 ${meta.tile}`}
+          className={`relative grid h-14 w-14 place-items-center rounded-2xl text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95 ${meta.tile} ${
+            nudged ? 'os-tile-nudge' : ''
+          }`}
         >
           {meta.icon}
           {badge != null && badge > 0 && (
@@ -1006,6 +1103,8 @@ function AppSurface(props: {
   onGoBack: () => void
   os: OSState
   typingIn: string | null
+  unreadByThread: Record<string, number>
+  nudgedApp: AppId | null
   onOpenApp: (id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => void
   onOpenThread: (id: string) => void
   onCloseThread: () => void
@@ -1022,7 +1121,7 @@ function AppSurface(props: {
   const inner = (() => {
     switch (app) {
       case 'messages':
-        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onOpenPhoto={(id) => props.onOpenApp('gallery', { photoId: id })} onForward={props.onForward} />
+        return <MessagesApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} unreadByThread={props.unreadByThread} activeThreadId={props.threadId} onOpenThread={props.onOpenThread} onCloseThread={props.onCloseThread} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onOpenPhoto={(id) => props.onOpenApp('gallery', { photoId: id })} onForward={props.onForward} />
       case 'assistant':
         return <AssistantApp caseDef={props.caseDef} os={props.os} typingIn={props.typingIn} onSendReply={props.onSendReply} onOpenPage={props.onOpenPage} onInspect={props.onInspect} onAiAction={props.onAiAction} />
       case 'gallery':

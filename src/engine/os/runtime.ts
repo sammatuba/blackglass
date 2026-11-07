@@ -178,19 +178,22 @@ export function currentAnswer(
 }
 
 /** regenerate an assistant answer: cycle its regen variants (the citation
-    never improves — it just comes back wearing different confidence) */
+    never improves — it just comes back wearing different confidence).
+    Old saves predate the `ai` record — they read as empty, never error. */
 export function aiRegen(state: OSState, msgId: string): OSState {
-  const applied = state.ai[msgId]?.regen ?? 0
-  return beat({ ...state, ai: { ...state.ai, [msgId]: { ...state.ai[msgId], regen: applied + 1 } } })
+  const ai = state.ai ?? {}
+  const applied = ai[msgId]?.regen ?? 0
+  return beat({ ...state, ai: { ...ai, [msgId]: { ...ai[msgId], regen: applied + 1 } } })
 }
 
 /** thumbs-up an assistant answer: it comes back more confident — and the
     phone remembers you liked being agreed with (flag, so content can hear it) */
 export function aiThumbs(state: OSState, msgId: string): OSState {
+  const ai = state.ai ?? {}
   return beat({
     ...state,
     flags: { ...state.flags, ai_thumbs: true },
-    ai: { ...state.ai, [msgId]: { ...state.ai[msgId], thumbs: true } },
+    ai: { ...ai, [msgId]: { ...ai[msgId], thumbs: true } },
   })
 }
 
