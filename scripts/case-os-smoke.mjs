@@ -13,6 +13,12 @@ const tap = async (name, timeout = 4000) => {
   await page.waitForTimeout(350)
 }
 const settle = (ms) => page.waitForTimeout(ms)
+// the composer: a draft tap fills it; the story moves when Send is pressed
+const sendDraft = async (name, timeout = 4000) => {
+  await tap(name, timeout)
+  await page.locator('[data-reply-send]').first().click({ timeout: 6000 })
+  await settle(500)
+}
 const home = async () => {
   await page.getByRole('button', { name: 'Home', exact: true }).click({ force: true }).catch(() => {})
   await settle(350)
@@ -34,7 +40,7 @@ await settle(300)
 await tap(/VIP Desk/i)
 await settle(400)
 await page.screenshot({ path: '/tmp/g1-vip.png' })
-await tap(/Check the company at the SEC first/i)
+await sendDraft(/Check the company at the SEC first/i)
 await settle(5600)
 await page.screenshot({ path: '/tmp/g2-sec-link.png' })
 await tap(/SEC Memorandum/i)
@@ -49,10 +55,10 @@ await tap(/Messages/i)
 await settle(300)
 await tap(/PHLPost-Express/i)
 await settle(400)
-await tap(/Reply “YES” — hear the agent out first/i)
+await sendDraft(/Reply “YES” — hear the agent out first/i)
 await settle(5600)
 await page.screenshot({ path: '/tmp/p1-agent.png' })
-await tap(/Hang up · block · report/i)
+await sendDraft(/Hang up · block · report/i)
 await settle(2500)
 await page.screenshot({ path: '/tmp/p2-debrief.png' })
 

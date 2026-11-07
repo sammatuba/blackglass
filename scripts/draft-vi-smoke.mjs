@@ -42,6 +42,20 @@ const tryTap = async (name, timeout = 2500) => {
 const assert = (cond, msg) => {
   if (!cond) throw new Error(`ASSERT: ${msg}`)
 }
+// the composer: a draft tap fills it; the story moves when Send is pressed
+const sendDraft = async (name, timeout = 8000) => {
+  await tapWhen(name, timeout)
+  await page.locator('[data-reply-send]').first().click({ timeout: 6000 })
+  await settle(500)
+}
+// completed phones stay open now (free-roam): putting the phone down hands
+// the run back to the rack and wakes the others
+const putDown = async () => {
+  await page.getByText(/⌖ Case complete/).first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {})
+  await tapWhen(/Put the phone down/i, 12000)
+  await tapWhen(/Put it down/i, 6000)
+  await settle(800)
+}
 
 /* ---- 1. gated: no card without the flag ---- */
 let direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
@@ -71,7 +85,7 @@ const stageBefore = await page.locator('.os-skin[data-stage]').getAttribute('dat
 assert(stageBefore === 'clean', `stage starts clean (got ${stageBefore})`)
 
 /* ---- the SPOT loop: reply → home → ghost tile → the page exposes it ---- */
-await tapWhen(/Open System Tools/i)
+await sendDraft(/Open System Tools/i)
 await settle(2500)
 await tapWhen(/^Home$/i, 8000)
 await tapWhen(/Open System Tools/i, 8000) // the ghost tile — native-looking, not native
@@ -102,7 +116,7 @@ await axeCheck(page, 'draft-vi ledger')
 await tapWhen(/^Home$/i, 8000)
 await tapWhen(/Open Messages/i, 8000)
 await tapWhen(/Santos Family GC/i, 8000)
-await tapWhen(/Check the mail rules/i, 8000)
+await sendDraft(/Check the mail rules/i, 8000)
 await settle(2000)
 await tapWhen(/Tap to open in Browser/i, 8000) // the pushed link → the forwarding page
 await settle(800)
@@ -114,7 +128,7 @@ await settle(500)
 await tapWhen(/^Home$/i, 8000)
 await tapWhen(/Open Messages/i, 8000)
 await tapWhen(/Santos Family GC/i, 8000)
-await tapWhen(/Check the screen time/i, 8000)
+await sendDraft(/Check the screen time/i, 8000)
 await settle(2000) // the nudge opens Settings; assembly flips the stage
 assert((await page.locator('.os-skin[data-stage]').getAttribute('data-stage')) === 'compromised', 'full assembly moves the stage to compromised')
 // the guide push + mirror epilogue rise in the same drain — the performed
@@ -123,8 +137,8 @@ await page.getByRole('button', { name: /Sign the report/i }).first().waitFor({ s
 assert((await page.getByText(/field at the bottom of the report/).count()) > 0, 'the performed report renders')
 await tapWhen(/Sign the report/i, 8000)
 
-/* ---- completion → the rack wakes Mama (phone 2) ---- */
-await settle(4500)
+/* ---- completion stays open (free-roam) → put it down, the rack wakes Mama ---- */
+await putDown()
 await tapWhen(/Mama \(DRAFT\)/i, 12000)
 await settle(4500)
 await tapWhen(/Swipe up to open/i)
@@ -137,7 +151,7 @@ await tryTap(/^Home$/i)
 await tryTap(/^Home$/i)
 await tryTap(/Open Messages/i)
 await tryTap(/Anak/i)
-await tapWhen(/okay ka lang ba talaga/i, 12000)
+await sendDraft(/okay ka lang ba talaga/i, 12000)
 await settle(2500)
 // the mirror text is on screen before you put the phone down
 await page.getByRole('button', { name: /Put the phone down/i }).first().waitFor({ state: 'visible', timeout: 12000 })

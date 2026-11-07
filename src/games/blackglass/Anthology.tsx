@@ -651,6 +651,7 @@ function PhoneRun({
       onStateChange={handleStateChange}
       onExit={handleExit}
       onComplete={handleComplete}
+      freeRoam
     />
   )
 }

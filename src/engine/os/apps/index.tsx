@@ -215,6 +215,136 @@ function typingHint(threadId: string, typingIn: string | null): boolean {
   return typingIn === threadId
 }
 
+/* =====================================================================
+   REPLY COMPOSER — decisions stop being menu buttons.
+   The suggested replies sit above a composer that looks and behaves like
+   the one a phone actually has: tapping a draft types it in character by
+   character (instant under reduced motion), and the message sends the way
+   a message sends — with a send key the player presses themselves.
+   ===================================================================== */
+
+function ReplyComposer({
+  offered,
+  onSend,
+  placeholder,
+  glyph,
+}: {
+  offered: CaseOS['replies']
+  onSend: (reply: CaseOS['replies'][number]) => void
+  placeholder: string
+  glyph: string
+}) {
+  const [draft, setDraft] = useState<CaseOS['replies'][number] | null>(null)
+  const [typed, setTyped] = useState('')
+  const timer = useRef<ReturnType<typeof setInterval> | null>(null)
+  const reduced = useRef<boolean | null>(null)
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearInterval(timer.current)
+    },
+    [],
+  )
+
+  const pick = (r: CaseOS['replies'][number]) => {
+    if (timer.current) clearInterval(timer.current)
+    timer.current = null
+    setDraft(r)
+    if (reduced.current == null) reduced.current = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
+    if (reduced.current) {
+      setTyped(r.label)
+      return
+    }
+    setTyped('')
+    let i = 0
+    timer.current = setInterval(() => {
+      i++
+      setTyped(r.label.slice(0, i))
+      if (i >= r.label.length) {
+        if (timer.current) clearInterval(timer.current)
+        timer.current = null
+      }
+    }, 24)
+  }
+
+  const cancel = () => {
+    if (timer.current) clearInterval(timer.current)
+    timer.current = null
+    setDraft(null)
+    setTyped('')
+  }
+
+  const send = () => {
+    if (!draft) return
+    if (timer.current) clearInterval(timer.current)
+    timer.current = null
+    onSend(draft)
+    setDraft(null)
+    setTyped('')
+  }
+
+  const done = draft != null && typed === draft.label
+
+  if (draft) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-end gap-2">
+          <div className="min-h-11 flex-1 rounded-3xl rounded-br-md border border-[var(--os-hairline)] bg-[var(--os-bub-out)] px-4 py-2.5 text-[13.5px] leading-relaxed text-[var(--os-bub-out-ink)]">
+            {typed}
+            {!done && <span className="ml-0.5 inline-block h-3.5 w-[2px] animate-pulse bg-current align-middle" aria-hidden="true" />}
+          </div>
+          <button
+            type="button"
+            onClick={send}
+            disabled={!done}
+            data-reply-send
+            aria-label={`Send: ${draft.label}`}
+            className={`grid h-11 w-11 shrink-0 place-items-center rounded-full text-base transition-transform active:scale-95 ${done ? 'bg-[var(--os-accent)] text-[var(--os-accent-ink)]' : 'bg-[var(--os-chip)] text-[var(--os-faint)]'}`}
+          >
+            <span aria-hidden="true">➤</span>
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={cancel}
+          className="min-h-11 px-1 text-[11.5px] font-semibold text-[var(--os-faint)] transition-colors hover:text-[var(--os-dim)]"
+        >
+          ✕ Not sending this
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-2">
+      {offered.length > 0 && (
+        <div className="space-y-1.5" role="group" aria-label="Draft replies">
+          {offered.map((r) => (
+            <button
+              key={r.id}
+              type="button"
+              onClick={() => pick(r)}
+              className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-3.5 py-2 text-left text-[13px] leading-snug text-[var(--os-dim)] transition-colors hover:bg-[var(--os-hover)] hover:text-[var(--os-ink)]"
+            >
+              <span aria-hidden="true" className="mr-1.5 opacity-70">{glyph}</span>
+              {r.label}
+              {r.sub && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-faint)]">{r.sub}</span>}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="flex items-end gap-2">
+        <div className="min-h-11 flex-1 rounded-3xl border border-[var(--os-hairline)] bg-[var(--os-chip)] px-4 py-2.5 text-[13px] text-[var(--os-faint)]">
+          {placeholder}
+        </div>
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[var(--os-chip)] text-base text-[var(--os-faint)]" aria-hidden="true">
+          ➤
+        </span>
+      </div>
+    </div>
+  )
+}
+
 function Conversation({
   caseDef,
   os,
@@ -479,24 +609,8 @@ function Conversation({
           <div className="rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-center text-[12px] font-semibold text-[var(--os-ink)]">
             {`⌖ ${caseDef.completeLine ?? 'Case complete'}`}
           </div>
-        ) : offered.length > 0 ? (
-          <div className="space-y-2" role="group" aria-label="Suggested replies">
-            {offered.map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => onSendReply(r)}
-                className="block w-full rounded-2xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-left transition-colors hover:bg-[var(--os-chip-bg-hover)]"
-              >
-                <span className="block text-[13.5px] font-semibold text-[var(--os-ink)]">{r.label}</span>
-                {r.sub && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-dim)]">{r.sub}</span>}
-              </button>
-            ))}
-          </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-4 py-2.5 text-[12.5px] text-[var(--os-faint)]">
-            <span aria-hidden="true">✎</span> Reply with a suggested message…
-          </div>
+          <ReplyComposer offered={offered} onSend={onSendReply} placeholder="✎ Reply with a suggested message…" glyph="✎" />
         )}
       </div>
 
@@ -830,24 +944,8 @@ export function AssistantApp({
           <div className="rounded-xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-center text-[12px] font-semibold text-[var(--os-ink)]">
             {`⌖ ${caseDef.completeLine ?? 'Case complete'}`}
           </div>
-        ) : offered.length > 0 ? (
-          <div className="space-y-2" role="group" aria-label="What you can ask">
-            {offered.map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                onClick={() => onSendReply(r)}
-                className="block w-full rounded-2xl border border-[var(--os-chip-border)] bg-[var(--os-chip-bg)] px-4 py-2.5 text-left transition-colors hover:bg-[var(--os-chip-bg-hover)]"
-              >
-                <span className="block text-[13.5px] font-semibold text-[var(--os-ink)]">{r.label}</span>
-                {r.sub && <span className="mt-0.5 block text-[11px] leading-snug text-[var(--os-dim)]">{r.sub}</span>}
-              </button>
-            ))}
-          </div>
         ) : (
-          <div className="flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-4 py-2.5 text-[12.5px] text-[var(--os-faint)]">
-            <span aria-hidden="true">✦</span> Ask anything…
-          </div>
+          <ReplyComposer offered={offered} onSend={onSendReply} placeholder="✦ Ask anything…" glyph="✦" />
         )}
       </div>
     </div>

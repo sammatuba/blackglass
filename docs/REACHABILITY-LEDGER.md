@@ -9,7 +9,7 @@ Every ending must have a drivable flag path; every authored reference must resol
 ### kk-maya — Maya ✅
 
 - endFlag `maya_done`: ✅ reachable — maya_done←may-done(dismissed:maya-end←dismiss(may-coda raises it; needs maya_decided←may-tap))
-- refs: threads 19 · photos 0 · pages 0 · moments 2 · replies 4 · evidence 1 · artifact files 1 · voicenotes 0
+- refs: threads 18 · photos 0 · pages 0 · moments 2 · replies 4 · evidence 1 · artifact files 1 · voicenotes 0
 - ℹ️ artifact: artifact "ampalaya-clickbait" is synced but unused by kk-maya (informational)
 - ℹ️ artifact: artifact "clone-accident-photo" is synced but unused by kk-maya (informational)
 - ℹ️ artifact: artifact "dr-anita-outro" is synced but unused by kk-maya (informational)

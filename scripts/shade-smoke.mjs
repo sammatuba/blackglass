@@ -75,7 +75,15 @@ await page.getByRole('button', { name: /Salamat po Ate/ }).first().click()
 await settle(600)
 assert((await page.getByRole('dialog', { name: 'Notifications' }).count()) === 0, 'shade closed after opening a thread')
 assert((await page.getByText('Santos Family GC 🏠').count()) > 0, 'shade row opened the GC thread')
-assert((await bell.getAttribute('aria-label')) === 'Notifications', 'unread cleared after opening the shade')
+// new unread contract: reading the thread clears ITS unread — the GC row
+// shows no unread dot (the shade opening itself never cleared anything)
+await tapWhen(/^Home$/i, 5000)
+await tapWhen(/Open Messages/i, 8000)
+const gcRow = page.getByRole('button', { name: /Santos Family GC/ }).first()
+await gcRow.waitFor({ state: 'visible', timeout: 5000 })
+assert((await gcRow.locator('[aria-label$="unread"]').count()) === 0, 'reading the thread cleared its unread dot')
+await gcRow.click() // back into the thread for the forward step
+await settle(600)
 
 // forward the link: the sheet offers the other threads, and the copy is marked
 await tapWhen(/↪ Forward/i, 6000)

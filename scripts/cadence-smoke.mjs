@@ -30,6 +30,12 @@ const tapWhen = async (name, timeout = 15000) => {
 const assert = (cond, msg) => {
   if (!cond) throw new Error(`ASSERT: ${msg}`)
 }
+// the composer: a draft tap fills it; the story moves when Send is pressed
+const sendDraft = async (name, timeout = 15000) => {
+  await tapWhen(name, timeout)
+  await page.locator('[data-reply-send]').first().click({ timeout: 6000 })
+  await settle(500)
+}
 
 // the deep link is expected to 404 where the host has no SPA fallback; never
 // wait for networkidle on it — a 404 document can leave the request hung
@@ -59,7 +65,7 @@ await settle(9000) // the listen chain (narr, aside, narr) gets its reading air
 
 const countThem = () => page.locator('[data-from="them"]').count()
 const beforeThem = await countThem()
-await tapWhen(/Ask him where he is/i)
+await sendDraft(/Ask him where he is/i)
 const tReply = Date.now()
 
 // watch the reaction: the indicator comes first, then the line lands

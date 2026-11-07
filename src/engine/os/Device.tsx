@@ -53,6 +53,7 @@ export function GlassOS({
   onStateChange,
   onExit,
   onComplete,
+  freeRoam = false,
 }: {
   caseDef: CaseOS
   /** resume a saved run — the device opens unlocked, world as it was left */
@@ -61,6 +62,10 @@ export function GlassOS({
   onStateChange?: (state: OSState) => void
   onExit: () => void
   onComplete: (state: OSState) => void
+  /** true = after the end flag the phone stays in the player's hands and
+      onComplete fires only when they put it down (the anthology's free-roam);
+      false = completion hands over immediately (the radar cases' debrief) */
+  freeRoam?: boolean
 }) {
   const [locked, setLocked] = useState(!initialState)
   const [app, setApp] = useState<AppId | null>(null)
@@ -258,7 +263,9 @@ export function GlassOS({
             await sleep(scaled(settleMs()))
           }
         }
-        // the end flag settles the case: close any call, hand state to the debrief
+        // the end flag settles the case: close any call, mark it complete,
+        // and leave the phone in the player's hands — the exploration after
+        // the curtain is theirs; "Put the phone down" hands the run back
         if (osRef.current.flags[caseDef.endFlag] && !completedRef.current) {
           completedRef.current = true
           if (osRef.current.call) {
@@ -266,8 +273,20 @@ export function GlassOS({
             osRef.current = s
             setOS(s)
           }
-          await sleep(700)
-          if (!cancelledRef.current) onComplete(osRef.current)
+          if (!freeRoam) {
+            await sleep(700)
+            if (!cancelledRef.current) onComplete(osRef.current)
+            return
+          }
+          const s = { ...osRef.current, done: true }
+          osRef.current = s
+          setOS(s)
+          const id = ++bannerId.current
+          const doneBanner: Banner = { id, app: 'Case complete', icon: '⌖', title: caseDef.title, text: 'You can keep looking around — or put the phone down.', threadId: '' }
+          setBanners((b) => [...b.slice(-2), doneBanner])
+          setBannerLog((log) => [...log.slice(-19), doneBanner])
+          sfx.banner()
+          setTimeout(() => setBanners((b) => b.filter((x) => x.id !== id)), 6000)
         }
       } while (rerun.current && !cancelledRef.current)
     } finally {
@@ -361,11 +380,17 @@ export function GlassOS({
     setShadeOpen(true)
   }, [])
 
-  /** leave the device: flush the live run first so nothing is lost */
+  /** leave the device: a completed phone returns its run to the anthology
+      on the way down; an open one just flushes the live save so nothing is
+      lost and the run can be resumed */
   const exitNow = useCallback(() => {
-    if (!completedRef.current) changeRef.current?.(osRef.current)
+    if (freeRoam && completedRef.current) {
+      onComplete(osRef.current)
+      return
+    }
+    changeRef.current?.(osRef.current)
     onExit()
-  }, [onExit])
+  }, [freeRoam, onComplete, onExit])
 
   const unlock = useCallback(() => {
     sfx.unlock()
@@ -1061,6 +1086,9 @@ function LockScreen({
   const dragStart = useRef<number | null>(null)
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    // buttons own their taps: starting the drag on a preview or the unlock
+    // pill must not capture the pointer away from their click
+    if ((e.target as HTMLElement).closest('button,a,input')) return
     dragStart.current = e.clientY
     setDragging(true)
     try {
@@ -1234,7 +1262,7 @@ function HomeScreen({
 
       <div className="mt-auto">
         <div className="mx-auto mb-4 w-max rounded-full bg-[var(--os-chip)] px-4 py-1 text-2xs text-[var(--os-dim)]">
-          {os.evidence.length > 0 ? `${os.evidence.length} saved in Notes` : 'glassOS 4.0'}
+          {os.done ? '⌖ Case complete' : os.evidence.length > 0 ? `${os.evidence.length} saved in Notes` : 'glassOS 4.0'}
         </div>
         <div className="flex items-center justify-around rounded-3xl bg-[var(--os-chip)] px-4 py-3 backdrop-blur-md">
           {dockApps.map(({ id, badge }) => {

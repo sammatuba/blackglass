@@ -23,6 +23,12 @@ const tap = async (name, timeout = 4000) => {
   await page.waitForTimeout(400)
 }
 const settle = (ms) => page.waitForTimeout(ms)
+// the composer: a draft tap fills it; the story moves when Send is pressed
+const sendDraft = async (name, timeout = 8000) => {
+  await tap(name, timeout)
+  await page.locator('[data-reply-send]').first().click({ timeout: 6000 })
+  await settle(500)
+}
 
 // deep links 404 on hosts without SPA rewrites — fall in through the hub card
 const direct = await gotoWithRetry(page, `${BASE}/blackglass/scam-radar`, { attempts: 2 }).catch(() => null)
@@ -56,7 +62,7 @@ await settle(600)
 await page.screenshot({ path: '/tmp/os-4-convo.png' })
 
 // decision 1: probe → escalation + photo
-await tap(/Ask something only the real Renz knows/i)
+await sendDraft(/Ask something only the real Renz knows/i)
 await settle(4200)
 await page.screenshot({ path: '/tmp/os-5-escalation.png' })
 
@@ -89,7 +95,7 @@ await tap(/Messages/i)
 await settle(300)
 await tap(/Renz\?/i)
 await settle(400)
-await tap(/Call the saved number anyway/i)
+await sendDraft(/Call the saved number anyway/i)
 await settle(900)
 await page.screenshot({ path: '/tmp/os-9-call.png' })
 

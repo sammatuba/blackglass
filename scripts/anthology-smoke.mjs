@@ -61,6 +61,21 @@ const tryTap = async (name, timeout = 2000) => {
   }
 }
 
+// the composer: a draft tap fills it; the story moves when Send is pressed
+const sendDraft = async (name, timeout = 8000) => {
+  await tap(name, timeout)
+  await page.locator('[data-reply-send]').first().click({ timeout: 6000 })
+  await settle(500)
+}
+// completed phones stay open now (free-roam): putting the phone down hands
+// the run back to the rack and wakes the others
+const putDown = async () => {
+  await page.getByText(/⌖ Case complete/).first().waitFor({ state: 'visible', timeout: 20000 }).catch(() => {})
+  await tap(/Put the phone down/i, 12000)
+  await tap(/Put it down/i, 6000)
+  await settle(800)
+}
+
 // enter the game (deep link locally; hub fallback where the host 404s a route)
 const gotoGame = async () => {
   auditing = false
@@ -97,7 +112,7 @@ await capture('voiceclone · the listen chain')
 await axeCheck(page, 'anthology vc thread')
 
 // the choice — and the clone calls live
-await tap(/Ask him where he is/i)
+await sendDraft(/Ask him where he is/i)
 await settle(800)
 await shot('/tmp/bg-4-vc-call.png')
 await tap(/Accept/i, 5000)
@@ -118,7 +133,7 @@ await tap(/Send Money/i, 8000)
 await settle(2500)
 await shot('/tmp/bg-6-vc-gcash.png')
 await capture('voiceclone · the send')
-await tap(/Send it — he needs you right now/i)
+await sendDraft(/Send it — he needs you right now/i)
 await settle(2200) // success + the GC reveal starts landing
 // at fast test pace the case can drain before the script follows it into the
 // GC; if the phone handed back early, that completion is the thing we wanted
@@ -127,7 +142,8 @@ if (await page.getByRole('button', { name: /^Home$/i }).first().isVisible().catc
   await tryTap(/Open Messages/i)
   await tryTap(/Santos Family GC/i)
 }
-await settle(8000) // drain → completion → rack, the others wake
+await settle(8000) // drain → completion (the phone stays open — free-roam)
+await putDown()
 await shot('/tmp/bg-8-vc-rack-awake.png')
 
 /* ============ ANCHOR IV — FIVE WEEKS (full run) ============ */
@@ -139,19 +155,20 @@ await settle(700)
 await tap(/Swipe up to open/i)
 await tap(/Open the feed/i, 12000) // the Week 1 moment opens the feed
 await settle(800)
-await tap(/Cut the caveats/i)
+await sendDraft(/Cut the caveats/i)
 await settle(3500)
-await tap(/Cut the hedges/i)
+await sendDraft(/Cut the hedges/i)
 await settle(3500)
-await tap(/Quote-post the correction/i)
+await sendDraft(/Quote-post the correction/i)
 await settle(3500)
-await tap(/Leave them muted/i)
+await sendDraft(/Leave them muted/i)
 await settle(2000)
 await tap(/Open the Wallet/i, 8000) // the ledger moment (P2) rises before the webinar — dismiss it
 await settle(5000) // the webinar chain drains → completion
 await shot('/tmp/bg-9-5w-webinar.png')
 await axeCheck(page, 'anthology 5w webinar')
 await settle(2500)
+await putDown() // completed phones stay open — put down to reach the wake screen
 await tap(/What five weeks did/i, 8000)
 await settle(1200)
 await shot('/tmp/bg-10-5w-timeline.png')
@@ -167,13 +184,13 @@ await tap(/Swipe up to open/i)
 await tap(/Open Viber/i, 12000) // the Sunday moment opens the thread
 await settle(5500) // the watch chain
 await shot('/tmp/bg-11-df-linda.png')
-await tap(/Forward to the family GC/i)
+await sendDraft(/Forward to the family GC/i)
 await settle(2000)
 await tap(/Open the Wallet/i, 8000) // the ledger moment (P2) rises before the registration branch
 await tryTap(/^Home$/i)
 await tryTap(/Open Messages/i)
 await tryTap(/Auntie Linda/i)
-await tap(/Reserve a slot/i, 8000)
+await sendDraft(/Reserve a slot/i, 8000)
 await settle(1500)
 await shot('/tmp/bg-12-df-register.png')
 await tap(/Lock the phone/i, 12000) // the "what you do not see" coda
@@ -190,7 +207,7 @@ await settle(8200)
 await tap(/Swipe up to open/i)
 await tap(/Open the family GC/i, 12000) // opens the GC
 await settle(9000)
-await tap(/❤️ and scroll past/i)
+await sendDraft(/❤️ and scroll past/i)
 await tap(/Lock the phone/i, 10000)
 await settle(2500)
 await shot('/tmp/bg-14-kangkong-awake.png')
@@ -207,7 +224,7 @@ await settle(400)
 await shot('/tmp/bg-15-av-home.png')
 await settle(600)
 await shot('/tmp/bg-16-av-ask.png')
-await tap(/Papa’s maintenance/i) // the first prompt
+await sendDraft(/Papa’s maintenance/i) // the first prompt
 await settle(9000) // compose beat + streaming answer
 await shot('/tmp/bg-17-av-answer.png')
 await capture('assistant · the dosage answer')
@@ -219,7 +236,7 @@ await tap(/↻ Regenerate/i, 4000)
 await settle(5000) // the regen composes in fresh
 await shot('/tmp/bg-19-av-regen.png')
 await capture('assistant · regenerated')
-await tap(/So I give him the 10 tonight/i, 8000) // the follow prompt
+await sendDraft(/So I give him the 10 tonight/i, 8000) // the follow prompt
 await settle(2500)
 await tryTap(/Open the Wallet/i, 6000) // the ledger moment (P2) rises before the correction — dismiss it
 await settle(1500)

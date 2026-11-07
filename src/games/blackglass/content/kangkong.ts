@@ -16,8 +16,8 @@ import type { AnthologyAnchor } from '../types'
 
 const KK_TELLS: OSTell[] = [
   { label: 'EXPOSED is a lever', detail: 'Not a word — a mechanism. It grabs the reader by the collar and turns their head: look here, not there, something was hidden from you.' },
-  { label: '.click, not .com', detail: 'The domain is healthtruthph.click. You register it the way you register a word misspelled in a client’s deck — automatically, without having decided to look.' },
-  { label: 'A doctor with no name', detail: '“Filipino doctors are staying silent” — a silence that, by virtue of being in the headline, is already broken. No institution, no person, nothing to check.' },
+  { label: '.click, not .com', detail: 'The domain is healthtruthph.click. Not .com. Not .ph. You register it the way you register a word misspelled in a client’s deck — automatically, without having decided to look.' },
+  { label: 'A doctor with no name', detail: '“Filipino doctors are staying silent” — a silence that, by virtue of being in the headline, is already broken. No institution, no person, nothing to check. “Doctor” is the word that turns care into authority — and authority into permission to stop asking questions.' },
 ]
 
 const kkPage = (): OSPage => ({
@@ -181,11 +181,12 @@ const MAYA: CaseOS = {
       when: { flag: 'dismissed:maya-wake' },
       set: { maya_seen: true },
       push: [
-        { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'You stop. Not at the article. You stop at the word EXPOSED, because you have designed enough thumbnails to know what EXPOSED is doing. It is not a word. It is a lever. The visual equivalent of grabbing someone by the collar and turning their head: look here, not there, something was hidden from you.' } },
-        { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'The domain is healthtruthph.click. Not .com. Not .ph. You register this the way you register a word misspelled in a client’s deck — automatically, professionally, without having decided to look.' } },
+        // V2 (flow naturalization): the tell-analysis moved to the page's
+        // examine layer (KK_TELLS) — the burst keeps only the felt lines
+        { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'You stop. Not at the article. At the word EXPOSED. You have designed enough thumbnails to feel what it is doing — look here, not there, something was hidden from you.' } },
+        { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'The domain ends in .click. Your own work stares back at you from the URL bar.' } },
         { threadId: 'gc', msg: { from: 'them', text: 'Salamat po Ate 🙏 Share ko rin sa bible study group. Lalo na para kay Papa, may altapresyon pa naman sya', at: '6:21 AM' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'The link has Mama’s name on it now.' } },
-        { threadId: 'gc', msg: { from: 'sys', kind: 'aside', text: 'Tita Merly sent it because she loves her family. Her officemate sent it because that officemate loves her. The source is described as a doctor not because anyone verified this but because doctor is the word that turns care into authority — and authority into permission to stop asking questions.' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'Mama has already thanked it and already assigned it a destination: Papa, who has high blood pressure, who eats kangkong almost every morning in his sinigang, who will read whatever Mama puts in front of him because he trusts her the way you trust Mama, which is completely and without thinking about it.' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'The link has been in this family for nine minutes and it has already moved two stops along a chain that ends at your father’s breakfast. You know what the link is. You have built versions of this template, for clients who wanted urgency without facts.' } },
       ],
@@ -685,6 +686,14 @@ const BEA: CaseOS = {
       ],
     },
     {
+      /* a soft bounce toward the clip if the player stalls before it — the
+         video is the evidence, but nothing forces the door open */
+      id: 'bea-clip-nudge',
+      when: { flag: 'bea_watching', notFlag: 'bea_convinced' },
+      dwell: 3,
+      nudgeApp: 'browser',
+    },
+    {
       id: 'bea-won',
       /* the chain holds here until the player actually opens the Dr. Anita
          clip — the video is the evidence, not an optional detour */
@@ -693,7 +702,10 @@ const BEA: CaseOS = {
       push: [
         { threadId: 'foryou', msg: { from: 'sys', kind: 'narr', text: 'She’s saying everything you just said to Maya. The .click domains. The fill-in-the-blank template. The supplement funnel. And then some things you hadn’t included — how health misinformation travels faster through family groups because it arrives pre-vouched, how “Filipino doctors staying silent” is built to weaponize national distrust of institutions.' } },
         { threadId: 'foryou', msg: { from: 'sys', kind: 'narr', text: 'It’s clean. It’s accurate. It’s exactly right.' } },
-        { threadId: 'foryou', msg: { from: 'sys', kind: 'aside', text: 'You do not notice, because you are not looking for it, that her lips are forty milliseconds behind her voice in the bridge. That the “Dr.” has no institution attached — just a specialty. That the lower-third font weight is slightly off, as if added in post. That the last ten seconds pivot, gently, to a newsletter — MediaLitPH Weekly — a Linktree, “subscribe for weekly debunks, it’s free.”' } },
+        // V2 (flow naturalization): the full tell breakdown lives on the
+        // video's examine layer — the player just watched it. What this
+        // beat performs now is complicity: they saw the tells, and shared anyway.
+        { threadId: 'foryou', msg: { from: 'sys', kind: 'aside', text: 'You watched it twice before you saved it. You saw the tells — the lips, the “Dr.” with nothing behind it, the last ten seconds selling a newsletter. You kept watching anyway, because she is right, and being right feels like being warm.' } },
         { threadId: 'foryou', msg: { from: 'sys', kind: 'narr', text: 'What you notice is that she is right about everything. She is packaging it better than you could in ninety seconds. You feel the particular warmth of being understood before you spoke.' } },
       ],
     },
