@@ -45,6 +45,30 @@ provenance (`play/blackglass-phones/voice/PROVENANCE.md`).
 **The only placeholder left in the game:** the Tito Mike deepfake *clip* (anchor 3's
 video page plays the still + tells until it lands).
 
+### Overnight immersion build (2026-11-08, branch `immersion-pass-2` — NOT merged)
+
+The immersion framework (`docs/IMMERSION-FRAMEWORK.md`, P1–P10) executed as an
+autonomous overnight run. **Branch-only: never merged, never deployed.** Full
+evidence in `docs/OVERNIGHT-REPORT-2026-11-08.md`. What the branch adds:
+
+- **Staged theming (P4):** `phone.stage` (clean/uneasy/compromised) driven by rules
+  → `data-stage` on the device; per-anchor signature distortions (feed shimmer /
+  wave stutter / glass flicker), reduced-motion safe.
+- **Silence beats (P8) + dwell pushes (P5):** `silenceMs` pacing primitive,
+  `kind:'silence'` bubbles with never-arriving receipts; `OSRule.dwell` unprompted
+  pushes after N idle player beats. Retrofitted additively into all five anchors.
+- **Ambient surfaces (P1):** Calendar + Wallet apps (original, type-only icons),
+  authored week/money data for all 13 phones; the wallet is the accusatory ledger
+  (vc-tita's gated −₱18,500 send row).
+- **Data-horror cross-references (P2):** photo metadata panels (+ location→Browser
+  chip), contact xref lines, ledger meta rows, one `openApp` moment per anchor.
+- **Reachability ledger (P9):** `npm run reachability` — every ending has a drivable
+  flag path, every reference resolves (`docs/REACHABILITY-LEDGER.md`, generated).
+- **Anchor VI draft (P6/P7):** "THE COMPROMISED PHONE" / SPOT — fear: exposure —
+  **flag-gated behind `?draft=vi`**, never in the live season. 2 phones + performed
+  mirror epilogue, brief at `craft/maya/_meta/anchor-vi-brief.md` (two framings,
+  6 canon questions, V1→V2 record). Canon review pending.
+
 ## 4. How to build, test, deploy (plain commands)
 
 ```bash
@@ -98,9 +122,12 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
    → add `at:` timestamps to the tells in `src/games/blackglass/content/deepfake.ts`
    (only once the clip exists — the tells layer renders `at` unconditionally) →
    extend `scripts/anita-video-shot.mjs` as `mike-video-shot.mjs`.
-3. **Optional Anchor VI+** — candidates in the architecture doc's axes (AI recruiter,
-   election audio, romance scam); each needs a brief like Anchor V's and a writing
-   session.
+3. **Review the Anchor VI draft** (branch `immersion-pass-2`, `?draft=vi`): answer the
+   6 canon questions in `craft/maya/_meta/anchor-vi-brief.md` §5 (framing A or B,
+   holder identity, the access event, the 3:47 channel, convergence seeding,
+   "System Tools" name). On approval: merge the branch, promote the anchor into the
+   live season, wire the convergence echo. On veto: the branch's engine work
+   (P1–P4) stands on its own and can merge without the draft anchor.
 4. **Optional:** pair the legit-baseline clip into a deepfake content page; extend
    E2 capture to moment text.
 
@@ -116,6 +143,16 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
   every new anchor.
 
 ## 8. Session log (recent, newest first)
+
+- **2026-11-08 (overnight, `immersion-pass-2`)** — the immersion framework (P1–P10)
+  executed autonomously per `docs/OVERNIGHT-BUILD-2026-11-07.md`: staged theming,
+  silence beats + dwell pushes, Calendar/Wallet ambient surfaces with per-phone data,
+  gallery metadata + contact xrefs + ledger meta, a generated reachability ledger
+  (P9), and Anchor VI drafted flag-gated behind `?draft=vi` with the V1→V2 doctrine
+  loop recorded. Branch-only (never merged/deployed). Gates on the final tree:
+  68/68 tests, build clean (precache 1845.54 KiB, dist 7970 KB ≤ 8076 budget),
+  budget Σ 3.7 MB, ledger GREEN, 9 smokes exit 0 with axe serious/critical clean.
+  Report: `docs/OVERNIGHT-REPORT-2026-11-08.md`.
 
 - **2026-11-03 (b)** — integrated the parallel `main` line (glassOS navigation, photo
   attachments, searchable history, Glassbox, Cloudflare deploys) with Anchor V:

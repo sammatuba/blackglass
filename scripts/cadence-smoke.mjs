@@ -8,7 +8,7 @@ import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await chromium.launch({ channel: 'chrome' }) // system Chrome, same as the other host smokes
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 // this audit must feel the real thing: undo any smoke fast-pace override
@@ -43,18 +43,16 @@ await settle(500)
 
 /* ---- voiceclone, Tita: every reply is a human on the other end ---- */
 await tapWhen(/IT’S ME/i)
-/* the cold open lands at human pace; the full card holds until you begin */
+/* the cold open landed at human pace; the rack holds until you pick up */
 await page.getByText(/Anchor II/i).first().waitFor({ state: 'visible', timeout: 5000 })
 await settle(2100) // step 5 at 1× — auto-clears at 3.4s
-const begin = page.getByRole('button', { name: /tap to begin/i })
 await page.screenshot({ path: '/tmp/bg-boot.png' })
-await begin.click()
-await settle(300)
-await tapWhen(/pick up/i)
+await tapWhen(/Tita Merly/i) // the rack (845dd57: cards open straight to the rack)
 // the opening previews drip in; wait for the last one (the photo)
 await page.getByText('📷 Photo').first().waitFor({ state: 'visible', timeout: 15000 })
 await tapWhen(/Swipe up to open/i)
-await tapWhen(/Open Viber/i, 15000) // the kitchen moment
+await tapWhen(/Open Viber/i, 15000) // the kitchen moment — opens the thread (845dd57)
+await tapWhen(/^Home$/i, 10000)
 await tapWhen(/Open Messages/i)
 await tapWhen(/Kuya Renz/i)
 await settle(9000) // the listen chain (narr, aside, narr) gets its reading air

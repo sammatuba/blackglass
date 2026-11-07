@@ -1,40 +1,63 @@
 {
   "work_id": "immersion-pass-2",
-  "phase": "implement",
-  "status": "in-progress",
-  "intent": "Autonomous overnight immersion build (docs/OVERNIGHT-BUILD-2026-11-07.md): staged theming (P4), silence beats + dwell pushes (P8/P5), ambient Calendar+Wallet surfaces with per-phone data (P1), data-horror cross-references (P2), reachability ledger (P9), and Anchor VI (the compromised phone, fear: exposure, verb: SPOT) drafted flag-gated behind ?draft=vi for canon review. Branch-only: commit + push immersion-pass-2, never merge to main, never deploy.",
+  "phase": "wrapup",
+  "status": "complete-pending-user-review",
+  "intent": "Autonomous overnight immersion build (docs/OVERNIGHT-BUILD-2026-11-07.md): staged theming (P4), silence beats + dwell pushes (P8/P5), ambient Calendar+Wallet surfaces with per-phone data (P1), data-horror cross-references (P2), reachability ledger (P9), and Anchor VI (the compromised phone, fear: exposure, verb: SPOT) drafted flag-gated behind ?draft=vi for canon review. Branch-only: committed + pushed immersion-pass-2; never merged to main; never deployed.",
   "scope": [
-    "src/engine/os/types.ts - phone.stage, silence beat, dwell rule, ambient data types",
-    "src/engine/os/pacing.ts, runtime.ts, Device.tsx - engine primitives",
-    "src/engine/os/apps/ - calendar + wallet surfaces, gallery metadata, contacts xref",
-    "src/index.css - stage tiers + per-anchor signature effects",
-    "src/games/blackglass/content/*.ts - additive moments + ambient data for 13 phones",
-    "src/games/blackglass/content/compromised.ts - Anchor VI draft (flag-gated)",
-    "scripts/reachability.mjs - generated docs/REACHABILITY-LEDGER.md",
-    "craft/maya/_meta/anchor-vi-brief.md - P10 brief with framings + guardrail note",
-    "docs/OVERNIGHT-REPORT-2026-11-08.md, docs/HANDOFF.md, docs/GAME-PLAN.md"
+    "src/engine/os/types.ts, pacing.ts, runtime.ts, Device.tsx - stage/silence/dwell/ghost-tile/screentime/xref/photo-meta/openApp-moment primitives (all additive, optional fields)",
+    "src/engine/os/apps/index.tsx, shared.tsx - CalendarApp, WalletApp, gallery metadata panel, contacts xrefs, silence bubbles",
+    "src/index.css - stage tiers, signature effects (feed shimmer / wave stutter / glass flicker), os-silence, theme-own",
+    "src/games/blackglass/content/{kangkong,voiceclone,deepfake,fiveweeks,assistant}.ts - additive ambient data, silence/dwell/xref/moment retrofits for all 13 phones (no prose rewritten)",
+    "src/games/blackglass/content/compromised.ts - Anchor VI draft (2 phones + performed mirror epilogue, DRAFT/TBC labeled)",
+    "src/games/blackglass/index.tsx - ?draft=vi flag-gated registration",
+    "src/games/blackglass/reachability.ts + test, navigation.test.ts, compromised.test.ts - P9 analyzer + extended contracts",
+    "scripts/reachability.mjs, draft-vi-smoke.mjs; smokes artifact/shade/anthology/cadence updated to the shipped flow + axe checks",
+    "craft/maya/_meta/anchor-vi-brief.md - P10 brief, two framings, 6 canon questions, V1-to-V2 record",
+    "docs/OVERNIGHT-REPORT-2026-11-08.md, docs/REACHABILITY-LEDGER.md, docs/HANDOFF.md, docs/GAME-PLAN.md"
   ],
   "constraints": [
-    "Branch isolation: only immersion-pass-2; no merges to main, no PRs, no force-push, no deploy, no external services.",
-    "Depict never enable (world/guardrails.md): detection/recovery only in Anchor VI; no actionable tradecraft, tools, or reproducible scripts.",
-    "Additive edits to shipped anchors: existing prose never rewritten; canon decisions in craft/maya/_meta/anchor-v-brief.md section 8 untouched.",
-    "Draft labeling: every Anchor VI canon-bearing fact marked DRAFT/TBC in code and brief.",
-    "Local-first: cgAI_ storage only; old cgAI_blackglass_v2 saves degrade to zeros, never error.",
-    "A11y: keyboard-playable, SR-labeled, 44px controls, 11px text floor, reduced-motion paths, axe serious+critical 0.",
-    "Budget: no new npm deps, no new binary assets, dist <= current x 1.02, initial JS unchanged.",
-    "Honest verification: never claim a gate passed without running it; quote verbatim outputs.",
-    "Per-phase gate fails twice: commit [wip], record failure, move on. Hard stop 07:00 before P5/P6 finish: skip to P7."
+    "Branch isolation held: only immersion-pass-2; no merges to main, no PRs, no force-push, no deploy, no external services.",
+    "Depict never enable held: Anchor VI is detection/recovery only; access event off-screen; no tools, platforms, or tradecraft named.",
+    "Additive-only on shipped anchors held: no existing prose rewritten (rule objects gained single theming-hook fields: stage/stageSig only); anchor-v-brief section 8 untouched.",
+    "Draft labeling held: every canon-bearing line in compromised.ts + the brief is DRAFT/TBC; guards in npm test enforce the labeling and the flag gating.",
+    "Local-first held: cgAI_ storage only; new OSState fields (stage, idle) are optional and old saves degrade to defaults.",
+    "A11y: new surfaces keyboard-playable, SR-labeled, 11px text floor, 44px targets, reduced-motion paths for all new effects; axe serious+critical 0 in every smoke.",
+    "Budget held: no new npm deps, no new binary assets; dist 7970 KB <= 8076 (baseline 7918 x 1.02); budget gate 3.7 MB unchanged.",
+    "Honest verification: every gate quoted verbatim in the report; the P6 hard-stop exceedance (07:54 commit vs 07:00 stop) is disclosed.",
+    "Per-phase gates: all green on the final tree; the two pre-existing red smokes (artifact, shade) plus cadence were stale from 845dd57 and were repaired to the shipped flow."
   ],
   "acceptance_checks": [
-    "P0: baseline npm test, npm run build, npm run assets:budget all green on main before any change.",
-    "P1: unit tests for stage transitions, silence timing, dwell once-only; npm test + build green; smokes unaffected.",
-    "P2: calendar + wallet surfaces render authored data for all 13 phones; navigation contract test extended; budget gate green.",
-    "P3: gallery metadata panel, contact xref lines, ledger meta with verdict-bearing rows; artifact/shade/anthology smokes axe-clean.",
-    "P4: reachability ledger green for all anchors, wired into npm test.",
-    "P5: Anchor VI brief + inversion engine behind ?draft=vi; unit tests + flag-gated smoke axe-clean.",
-    "P6: 2 draft phones + mirror-moment epilogue from recorded flags; navigation contract extended; budget green.",
-    "P7: full gates + all runnable smokes green; HANDOFF/GAME-PLAN updated; branch pushed."
+    "npm test: 68/68 across 9 files (baseline 45) incl. stage/dwell/silence unit tests, ambient-data contract, P9 reachability, draft gating guards",
+    "npm run build: tsc clean, built in 6.01s, PWA 44 precache entries (1845.54 KiB)",
+    "npm run assets:budget: 9 artifacts within ceilings, Sigma 3.7 MB, no dist duplication",
+    "dist 7970 KB <= 8076 KB ceiling (baseline 7918 x 1.02)",
+    "npm run reachability + ledger: Season status GREEN - every ending reachable, every reference resolves (13 phones + draft audited in tests)",
+    "9 smokes exit 0 on the final tree: os, case-os, radar, exam, glassbox, feed-dial, anthology, draft-vi, cadence; axe serious/critical clean in every state checked",
+    "cadence at real 1x pace: typing beat 3146ms, reaction 3620ms (human band)",
+    "?draft=vi gating: card absent without flag, present with flag (smoke step 1)"
   ],
   "blockers": [],
-  "next_action": "Execute phases P0-P7 per docs/OVERNIGHT-BUILD-2026-11-07.md with per-phase commits and gates."
+  "next_action": "User morning review: read docs/OVERNIGHT-REPORT-2026-11-08.md, play ?draft=vi (review URL below), answer the 6 canon questions in craft/maya/_meta/anchor-vi-brief.md section 5, then either merge the branch (git checkout main && git merge --no-ff immersion-pass-2 && git push - Cloudflare auto-deploys main) or keep it unmerged; the engine work (P1-P4) merges cleanly without the draft anchor if vetoed.",
+  "verification": [
+    "npm test - 68/68 across 9 files, quoted verbatim in the report",
+    "npm run build - tsc clean; built in 6.01s; precache 44 entries (1845.54 KiB)",
+    "npm run assets:budget - 9 artifacts in budget, Sigma 3.7 MB, no dist duplication; dist 7970 KB",
+    "npm run reachability - 6/6 tests; docs/REACHABILITY-LEDGER.md Season status GREEN",
+    "node scripts/os-smoke.mjs - exit 0, axe 2 states clean, console errors none",
+    "node scripts/case-os-smoke.mjs - exit 0, console errors none",
+    "node scripts/radar-smoke.mjs - exit 0, axe clean, console errors none",
+    "node scripts/exam-smoke.mjs - exit 0, console errors none",
+    "node scripts/glassbox-smoke.mjs - exit 0, axe 2 states clean",
+    "node scripts/feed-dial-smoke.mjs - exit 0, axe 2 states clean",
+    "node scripts/anthology-smoke.mjs - exit 0, axe 2 states clean, console errors none (moment-aware flow incl. the new P2 ledger moments)",
+    "node scripts/draft-vi-smoke.mjs - exit 0, axe 4 states clean, console errors none (two-phone draft play: gating, SPOT loop, stage assertions clean-to-uneasy-to-compromised, performed report, Mama mirror)",
+    "node scripts/cadence-smoke.mjs - exit 0 at real 1x pace: reactionMs 3620, typingBeatMs 3146",
+    "Two genuine content gaps caught and fixed by the P9 walk: df-maya ev-mike and av-tita ev-journal had no evidence labels",
+    "Three pre-existing stale smokes (artifact, shade, cadence) repaired to the shipped flow - they were red on main since 845dd57 (moment openThread navigation) and were not in the 2026-11-03 green set"
+  ],
+  "artifacts": [
+    "docs/OVERNIGHT-REPORT-2026-11-08.md - the morning report (per-phase table, verbatim gates, draft inventory, canon questions, risks, review commands)",
+    "docs/REACHABILITY-LEDGER.md - generated P9 evidence, committed",
+    "craft/maya/_meta/anchor-vi-brief.md - Anchor VI brief with framings + V1/V2 record"
+  ]
 }

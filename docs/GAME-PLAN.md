@@ -151,6 +151,22 @@ Alternatives from the architecture doc's axes (AI recruiter, election audio,
 romance scam) remain candidates for Anchor VI+. "Recovered messages" forensic
 mode stays reserved for a future anchor.
 
+### M8 — The immersion pass ✅ built 2026-11-08 on branch `immersion-pass-2` (not merged)
+The immersion framework (`docs/IMMERSION-FRAMEWORK.md`, P1–P10) executed as an
+overnight build. The convention extends: **new story = new failure mode + new
+verb + new UI posture + new data surface to distrust**. Landed: staged theming
+(P4 — `phone.stage` clean→uneasy→compromised via rules, per-anchor signature
+distortions), silence beats (P8 — `silenceMs`, never-arriving receipts), dwell
+pushes (P5 — `OSRule.dwell` after N idle beats), ambient Calendar + Wallet with
+authored per-phone data (P1 — the wallet is the accusatory ledger), data-horror
+cross-references (P2 — photo metadata, contact xrefs, ledger meta, `openApp`
+moments), and the reachability ledger (P9 — `npm run reachability`, generated
+`docs/REACHABILITY-LEDGER.md`, wired into `npm test`). Anchor VI ("THE
+COMPROMISED PHONE", verb SPOT, fear exposure) is **drafted flag-gated behind
+`?draft=vi`** — brief at `craft/maya/_meta/anchor-vi-brief.md`, 2 phones +
+performed mirror epilogue, canon review pending (6 questions in §5). Report:
+`docs/OVERNIGHT-REPORT-2026-11-08.md`.
+
 ### M7 — External assets (placeholders in place)
 See register. None block play.
 
