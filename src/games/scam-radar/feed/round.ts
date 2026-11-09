@@ -70,3 +70,18 @@ export function judge(item: FeedItem, answer: FeedItem['verdict'], streak: numbe
   }
   return { quality: 'miss', points: 0, hitFamilies: [], banner: 'Missed read' }
 }
+
+/* ---- the round's /100 signal ----
+   The desk grade measures the reads you made, so the denominator is
+   the maximum still available at the moment each read was answered —
+   streak bonus included on both sides. A perfect round reads 100. */
+
+/** most points one read can earn at the current streak */
+export function readMax(streak: number): number {
+  return 10 + 2 * Math.min(streak, 5)
+}
+
+/** the round signal: earned points over the honest maximum, as /100 */
+export function signalFor(points: number, max: number): number {
+  return max > 0 ? Math.min(100, Math.round((points / max) * 100)) : 0
+}

@@ -197,6 +197,33 @@ channel, pause, protect, stay human — never the story outcome. Pure logic is
 unit-tested in `score.test.ts`; the anthology smoke now asserts the verdict
 dossier and the rack's signal stamp.
 
+### M6.6 — One desk across the suite ✅ built 2026-11-10
+The signal desk's language pulled out of the anthology and made the suite's
+shared interface (`src/games/shared/grade.ts` pure + `shared/desk.tsx` UI;
+`score.ts` re-exports, so anthology imports hold):
+
+- **Feed Triage is a shift at the desk** (`FeedGame.tsx`): a case-file header
+  (THE FEED DESK · shift N), a live desk block — signal /100 with grade chip,
+  the signal meter, reads count, pts + streak — graded as you go, and a desk
+  sound on every verdict (scam→protect, verify→verify, legit→neutral,
+  half-read→drift, miss→risk), each tied to the visible ledger. The debrief is
+  the anthology's verdict dossier: count-up, grade stamp slam, fanfare sized to
+  the grade, clean/half/missed tiles, red-flag mastery bars, a STILL SLIPPING
+  PAST list (families under 60%), WHAT THE SHIFT TAUGHT. The round signal is
+  honest: `readMax` counts the streak bonus in the denominator too
+  (`round.test.ts`).
+- **Radar case debrief joins the dossier**: case signal = (outcome + evidence)
+  / `CASE_MAX` 60, the shared stamp + fanfare, verdict/clues tiles — the old
+  corner chip is gone. Case cards stamp `✓ worked · signal N` (best points
+  persisted as a number; old boolean saves still read as worked).
+- **Tell Exam results carry the same hero**: exam signal with the shared stamp.
+- **The Hub shows YOUR SEASON across the suite** (anthology total + rank, radar
+  score + streak, exam best) — reading the persisted stores directly so the
+  games stay lazy-loaded; silent for fresh visitors. The radar menu threads back
+  to the anthology ("Where these flags live"), and the feed card shows the best
+  shift signal.
+- exam/hub smokes gained the `SMOKE_CHANNEL` override (Chrome-less hosts).
+
 ### M7 — External assets (placeholders in place)
 See register. None block play.
 

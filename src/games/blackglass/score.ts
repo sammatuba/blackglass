@@ -1,5 +1,10 @@
 import type { CaseOS, FlagValue, OSState } from '../../engine/os/types'
 import { evidenceIds } from '../../engine/os/runtime'
+import { gradeFor, type Grade } from '../shared/desk'
+
+/* the grade language is the suite's shared desk (src/games/shared/desk.tsx) —
+   one scale, one stamp, one fanfare across anthology, radar, and exam */
+export { GRADE_COLOR, GRADE_NAME, gradeFor, rankFor, RANKS, type Grade } from '../shared/desk'
 
 /* =====================================================================
    THE SIGNAL DESK — the anthology's game layer.
@@ -51,35 +56,12 @@ export interface CaseGame {
   outcomeFallback: string
 }
 
-export type Grade = 'S' | 'A' | 'B' | 'C'
-
-export const GRADE_NAME: Record<Grade, string> = {
-  S: 'CRYSTAL',
-  A: 'CLEAR',
-  B: 'HAZY',
-  C: 'FOGGED',
-}
-
-export const GRADE_COLOR: Record<Grade, string> = {
-  S: '#22d3ee',
-  A: '#6ee7b7',
-  B: '#f5b942',
-  C: '#94a3b8',
-}
-
 export const MOVE_COLOR: Record<MoveKind, string> = {
   verify: '#22d3ee',
   protect: '#6ee7b7',
   risk: '#f87171',
   drift: '#f5b942',
   neutral: '#94a3b8',
-}
-
-export function gradeFor(total: number): Grade {
-  if (total >= 85) return 'S'
-  if (total >= 70) return 'A'
-  if (total >= 50) return 'B'
-  return 'C'
 }
 
 export interface RunMove {
@@ -504,19 +486,4 @@ export interface PhoneScore {
   best: number
   grade: Grade
   plays: number
-}
-
-export const RANKS: { at: number; name: string }[] = [
-  { at: 0, name: 'NEW SIGNAL' },
-  { at: 1, name: 'WATCHER' },
-  { at: 300, name: 'PATTERN READER' },
-  { at: 600, name: 'SEER' },
-  { at: 900, name: 'CLEAR-EYED' },
-]
-
-export function rankFor(total: number, lived: number): string {
-  if (lived === 0) return RANKS[0].name
-  let name = RANKS[1].name
-  for (const r of RANKS) if (total >= r.at && r.at > 0) name = r.name
-  return name
 }

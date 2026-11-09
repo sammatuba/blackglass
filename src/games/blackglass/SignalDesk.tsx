@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CaseOS, OSState } from '../../engine/os/types'
 import { gameSfx } from '../../engine/os/sound'
+import { DeskMeter } from '../shared/desk'
 import { MOVE_COLOR, clueLabel, gradeFor, GRADE_COLOR, scoreRun, tensionLevel, type CaseGame, type MoveKind } from './score'
 
 /* =====================================================================
@@ -91,17 +92,7 @@ export function SignalDesk({ caseDef, game, state }: { caseDef: CaseOS; game: Ca
         <p className="signal-rail-label">AT STAKE</p>
         <p className="signal-rail-copy">{game.stakes}</p>
         <div className="signal-tension">
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="signal-rail-label">{game.tensionName}</span>
-            <span className="signal-tension-step">{tension.label}</span>
-          </div>
-          <div className="signal-meter" role="meter" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(tension.ratio * 100)} aria-label={game.tensionName}>
-            <span
-              className="signal-meter-fill"
-              style={{ width: `${tension.ratio * 100}%`, background: tension.ratio >= 0.8 ? '#f87171' : tension.ratio >= 0.5 ? '#f5b942' : '#818cf8' }}
-            />
-          </div>
-          <p className="signal-tension-note">It rises no matter who holds the phone.</p>
+          <DeskMeter ratio={tension.ratio} label={game.tensionName} step={tension.label} note="It rises no matter who holds the phone." />
         </div>
       </aside>
 

@@ -138,6 +138,17 @@ Examples of the range: Maya (near-black, amber ink #f0c46f, minimal), Tita (warm
 - The verdict (`Verdict.tsx`) keeps two ledgers apart: the grade stamps what you SAW (clues) and the reflexes you practiced (moves, kind-annotated); WHAT HAPPENED tells the story outcome. The stamp animates from a dashed ghost to a solid slam; reduced motion gets the stamp and fanfare immediately and the total without the count-up.
 - Every desk sound (`gameSfx`) is tied to a visible event, and the status-bar mute (broadcast through `glassos-mute`, consumed by Settings) silences desk and OS in one tap.
 
+## One desk across the suite — the shared game layer
+
+The anthology's desk language is the suite's language. One grade scale, one stamp,
+one fanfare, one meter — extracted so every scored surface speaks them:
+
+- **Where the primitives live:** `src/games/shared/grade.ts` is the pure logic (Grade, `gradeFor`, GRADE_NAME/GRADE_COLOR, RANKS/`rankFor`) with no UI and no engine imports — anything can pull it in, including the Hub. `src/games/shared/desk.tsx` is the UI voice over it (`useCountUp` — ticks, stamp slam, grade-sized fanfare, reduced-motion safe; `GradeStamp`; `DeskMeter`). `blackglass/score.ts` re-exports the grade logic, so the anthology's existing imports hold.
+- **Who speaks it:** the anthology verdict dossier; the Scam Radar feed triage (the live desk block above the reads, the shift debrief as a dossier); the radar case debrief (case signal = outcome + evidence over `CASE_MAX` 60); the Tell Exam results (exam signal = tells spotted); and the Hub's season strip. The rack, the radar case cards, and the feed menu all stamp `✓ … · signal N` in the same voice.
+- **The Hub season strip reads persisted records directly** (`cgAI_blackglass_v2`, `cgAI_scamradar_v1`, `cgAI_tellExam_best` localStorage) — never a game module import. The games stay lazy-loaded; the strip stays silent until something has been played.
+- **Round/case/exam signals are all `/100` with honest denominators:** the feed round's max includes the streak bonus on both sides (`readMax`), the case divides by 60, the exam by the planted-tell count. `gradeFor` thresholds are shared, so a B means the same thing everywhere.
+- **The grade still measures what you saw and practiced** — reads made, flags caught, clues seen, reflexes practiced — never what the scam did. Glassbox stays deliberately scoreless; its paper language is its own.
+
 ## Wallpapers — CSS only, scene-set by gradient
 
 `.wall-*` classes paint scenes in pure CSS (dusk, dawn, leaf, grid, mtpulag, lastsupper, tweet): layered linear/radial gradients, optional ::before/::after for light shafts or oversized serif punctuation. No raster backgrounds for walls; diegetic imagery arrives as content artifacts, not decoration.

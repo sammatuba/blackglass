@@ -1,79 +1,60 @@
 {
-  "work_id": "blackglass-signal-desk",
+  "work_id": "blackglass-suite-desk",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": {
-    "commit": "7d5ab3e (main, pushed 2026-11-10 with explicit user authorization)",
-    "workers_primary": "Workers Builds published the push; live CSS verified to carry the new rules (.signal-rail-left, .verdict-stamp-grade, ink-500 #6f83a8)",
-    "pages_secondary": "scripts/deploy.sh force-pushed dist to gh-pages; live asset hash index-gAS8-bEu.css matches the new build",
-    "live_verification": "anthology smoke against https://blackglass.sammatuba.workers.dev - exit 0, zero console errors, full 5-anchor playthrough including the verdict beats (with the base-aware gotoGame fix below)"
-  },
-  "intent": "Make the anthology play like a game (modeled on Beyond Megawatts: visible meters, grade stamps, best-score season progression) without breaking the canon: the grade measures what you SAW and the reflexes you practiced, never what you saved. Resumed and completed the stalled session's in-flight pass.",
+  "intent": "Two user asks, in order: (1) make the Scam Radar feed triage a game interface and immersive, like the anthology's signal desk; (2) evaluate how to make the whole BLACKGLASS suite share one interface, then apply it, leveraging creative navigation and presentation. The evaluation found M6.5's desk language (case files, live signal + grade, move ledger, verdict dossier, season ranks) existed only inside the anthology: Feed Triage was a bare quiz, the case debrief had a private stamp dialect, exam results were plain tiles, and the Hub showed no record of a player's season. The applied unification: one grade language (S/A/B/C + CRYSTAL/CLEAR/HAZY/FOGGED), one stamp, one fanfare, one meter, extracted to src/games/shared/ and adopted by every scored surface; Feed Triage rebuilt as a shift at the feed desk; the Hub reads one season across the suite. The grade still measures what you saw and practiced, never what you saved; Glassbox stays deliberately scoreless.",
   "scope": [
-    "src/games/blackglass/score.ts - pure scoring layer: CASE_GAMES per phone (objective, stakes, tension meter named for the episode, move weights, outcome lines), gradeFor/scoreRun/tensionLevel, season RANKS; unit-tested",
-    "src/games/blackglass/score.test.ts - 13 tests: weights, scaling, outcome matching, tension ratchet, best-score persistence, rank thresholds",
-    "src/games/blackglass/SignalDesk.tsx - desk rails (case file + signal desk, >=1200px) and POV toasts (clue/move/pressure, 3s TTL, quiet during moments/calls)",
-    "src/games/blackglass/Verdict.tsx - case-closed dossier: count-up, grade stamp with fanfare, move feed, clues still out there, WHAT HAPPENED kept separate from the grade",
-    "src/games/blackglass/state.ts - scores: Record<phoneId, PhoneScore> with recordScore (best kept, plays counted); old saves read through defaults",
-    "src/games/blackglass/Anthology.tsx - completion lands on the verdict (recordScore then dossier), rack stamps 'lived - signal N - grade', boot states the case, anchor select shows season total/rank/next-rank gap",
-    "src/engine/os/sound.ts - gameSfx (verify/protect/risk/drift/clue/tension/stamp/tick/fanfare) + master-mute broadcast (glassos-mute) so the status bar and Settings stay in sync",
-    "src/engine/os/Stage.tsx - MuteToggle in the status bar; unused stage footer prop removed",
-    "src/engine/os/Device.tsx, apps/index.tsx - status bar mute + power controls, Settings subscribes to mute changes (POV pass, this tree)",
-    "src/index.css - the signal desk + verdict styles (rails, meters, chips, toasts, stamp), --color-ink-500 defined (was referenced by existing utilities but never defined)",
-    "src/games/blackglass/content/voiceclone.ts - vc-accident photo now carries ev-vc-photo (was an orphaned clue)",
-    "scripts/anthology-smoke.mjs - verdict-aware: asserts CASE CLOSED, Back to the rack, and the rack's signal stamp; 5w beat goes through the dossier",
-    "scripts/shade-smoke.mjs - fixed stale flow: the wake moment opens the GC thread (moment-to-thread contract), so the smoke returns home for the off-screen banner",
-    "scripts/finale-smoke.mjs - seed widened to the 13-phone season (Anchor V was added after this smoke was written; 10/13 left the finale locked)",
-    "scripts/os-smoke.mjs, radar-smoke.mjs, anthology-smoke.mjs - SMOKE_CHANNEL env override so the smokes run on bundled Chromium where system Chrome is absent",
-    "docs/GAME-PLAN.md - M6.5 milestone record; docs/design-system.md - the signal desk contract (desk palette, two display channels, pressure meter, verdict ledgers)"
+    "src/games/shared/grade.ts (new) - the suite's pure grade logic: Grade, gradeFor, GRADE_NAME/GRADE_COLOR, RANKS/rankFor; no UI, no engine imports (the Hub can pull it)",
+    "src/games/shared/desk.tsx (new) - the desk's UI voice: useCountUp (ticks, stamp slam, grade-sized fanfare, reduced-motion safe), GradeStamp, DeskMeter",
+    "src/games/blackglass/score.ts - grade logic re-exported from shared (existing imports/tests hold); RANKS/rankFor moved",
+    "src/games/blackglass/Verdict.tsx, SignalDesk.tsx - now consume the shared useCountUp/GradeStamp/DeskMeter (behavior unchanged, one implementation)",
+    "src/games/scam-radar/feed/FeedGame.tsx - rebuilt as a shift at the feed desk: case-file header (objective + stakes), live desk block (signal /100 + grade chip + DeskMeter + reads + pts/streak), desk sound on every verdict (scam→protect, verify→verify, legit→neutral, half→drift, miss→risk), shift debrief as the verdict dossier (count-up, stamp, fanfare, clean/half/missed tiles, red-flag mastery, STILL SLIPPING PAST, WHAT THE SHIFT TAUGHT, best-shift continuity)",
+    "src/games/scam-radar/feed/round.ts - readMax/signalFor: the round's honest /100 (streak bonus in the denominator too); +round.test.ts (6 tests)",
+    "src/games/scam-radar/state.ts - bestRoundSignal persisted; cases hold best points as numbers (legacy true reads as worked); completeCase awards lifetime points once and always keeps the best; +state.test.ts (4 tests)",
+    "src/games/scam-radar/cases/CaseGame.tsx - OsDebrief on the shared dossier (case signal = outcome + evidence over CASE_MAX 60, stamp, fanfare, verdict/clues tiles); exports CASE_MAX; every run records its best",
+    "src/games/scam-radar/index.tsx - case cards stamp '✓ worked · signal N' (isWorked handles 0-point completions + legacy booleans), feed card shows best shift, 'Where these flags live' cross-link to the anthology",
+    "src/games/tell-exam/index.tsx - results carry the shared dossier hero (ExamVerdict: stamp, count-up %, tells/best tiles)",
+    "src/app/pages/Hub.tsx - YOUR SEASON strip between hero and pillars: anthology total + rank + phones lived, radar score + streak, exam best — reads the three persisted stores directly (localStorage parse, no game module import; lazy boundaries hold; silent for fresh visitors)",
+    "scripts/exam-smoke.mjs, scripts/hub-smoke.mjs - SMOKE_CHANNEL override; exam now plays the full deck to the results and asserts the shared stamp; hub seeds a season and asserts the strip (numbers + rank) with axe over it",
+    "docs/design-system.md - 'One desk across the suite' contract; docs/GAME-PLAN.md - M6.6 milestone; docs/HANDOFF.md - current state + session log"
   ],
   "constraints": [
-    "Depict deception, never enable it: scores reward verification reflexes (ask, cross-check, call, protect), never the story outcome - Tita's money moves on every path.",
-    "The POV contract holds: no desk chrome inside the full-bleed phone; rails are >=1200px desk furniture, toasts are pointer-transparent and quiet during moments/calls.",
-    "No new dependency, no new external asset; desk palette lives outside the skin-variable rule (that rule governs phone screens).",
-    "11px minimum text, keyboard/SR paths preserved (meter has role=meter + valuenow, stamp has an aria-label, toasts announce via aria-live container).",
+    "Depict deception, never enable it: the grade measures reads made, flags caught, clues seen — never what the scam did; the WHAT THE SHIFT TAUGHT line teaches the pause.",
+    "No new dependency, no new external asset; sounds reuse the existing WebAudio gameSfx; the desk palette stays on --color-* game tokens.",
+    "11px minimum text on all new copy (two 10px labels caught and bumped), AA contrast on the shared tokens, keyboard paths preserved (1/2/3 + Enter; exam Enter/arrows/Backspace), reduced-motion gets the stamp without the count-up.",
+    "Lazy-loading boundaries hold: the Hub parses persisted localStorage; it imports only shared/grade.ts (pure).",
+    "Existing smoke assertions kept passing (anthology CASE CLOSED / rack stamps; radar 10-read loop; exam flow; hub hero).",
     "Do not commit, push, or deploy without explicit authorization."
   ],
   "acceptance_checks": [
-    "Closing a phone lands on the verdict dossier (count-up to the total, grade stamp slam, fanfare sized to the grade), then Back to the rack / Live it again both work.",
-    "The rack stamps completed phones with 'lived - signal N - grade'; the anchor select shows the season total, rank, and the gap to the next rank; best scores survive reload (zustand persist).",
-    "At >=1200px the case file and signal desk rails flank the phone; below 1200px they hide and toasts carry the channel; 390px viewport has zero horizontal overflow.",
-    "The pressure meter rises only on authored story flags and is labeled in text as well as color.",
-    "MuteToggle in the status bar and the Settings switch stay in sync; gameSfx respects the master mute.",
-    "tsc clean; 58/58 unit tests; production build + asset budget green; all six smokes exit 0 with zero console errors; axe 0 serious/critical on the phone run and the desk rails."
+    "Feed Triage plays as a desk shift: the case file states the objective and stakes, the live signal meter + grade chip move with every read, every verdict lands a desk sound tied to the visible ledger, and the debrief is the verdict dossier (count-up, stamp slam, grade-sized fanfare, mastery bars, still-slipping list).",
+    "The radar case debrief and the Tell Exam results show the same grade stamp language as the anthology verdict; the rack, case cards, and feed menu all stamp '✓ … · signal N'.",
+    "The Hub shows one season record across anthology/radar/exam without importing any game module (hub smoke seeds and asserts it; budgets hold).",
+    "tsc clean; 70/70 unit tests (66 → 70 with round-signal + store rework tests); build + assets budget green; all eight smokes exit 0 zero console errors; axe 0 serious/critical on the new debrief, hub strip, os surfaces."
   ],
   "blockers": [],
-  "next_action": "Both hosts are deployed and live-verified (Workers smoke exit 0 zero console errors; Pages serving the new bundle). Next: user review of the game feel on the live hosts (desk rails at >=1200px, POV toasts on mobile, verdict dossier after closing a phone); content follow-ups (real deepfake clip) stay on the M7 register.",
   "review": {
-    "mode": "independent reviewer via ./meos review (report: .meos/reviews/20261109T154859Z.md) — VERDICT: rework — all five findings addressed in the rework pass below; author self-review of the original pass also recorded",
-    "verdict": "rework -> reworked (fixes verified; see verification)",
+    "mode": "independent reviewer via ./meos review (report: .meos/reviews/20261109T231606Z.md) — VERDICT: rework",
+    "verdict": "rework -> reworked (all findings addressed; gates re-run green)",
     "findings": [
-      "important | score.ts via engine/os/runtime.ts evidenceIds | assistant citation sources earned no clue points — 18 authored Ask clues were invisible to scoring (reviewer probe) | evidenceIds now sweeps message sources incl. regen/thumbs alternates; unit fixture + authored-content sweep tests added (>=18 source clues asserted collectible)",
-      "important | Device.tsx lock/call swipe surfaces | touch-action:auto let native panning cancel swipe pointer streams | touch-none declared on both surfaces; CDP touch-stream probe unlocks the phone for real (lock touch-action: none asserted, swipe unlock passes)",
-      "important | index.css ink-500 | #64789e measured 4.27-4.44:1 under AA at 11px | lightened to #6f83a8; computed 4.98-5.56:1 and pixel-sampled on the rendered rails at 5.11-5.13:1",
-      "important | index.css toasts | fixed toasts covered the reply dock (choice unreadable behind them) | toasts now live compact (single newest event) inside the empty strip the app body reserves above the gesture bar; probe screenshot shows every choice button fully readable",
-      "minor | SignalDesk quiet mode | move/tension sounds played while a moment or call owned the screen (visuals only were silenced) | sounds now gate on the same quiet flag, matching the component's own contract",
-      "author self-review of the original pass | --color-ink-500 was referenced by existing utilities but never defined | defined (then AA-corrected per review)",
-      "author self-review | per-toast role=status collided with the OS forward-confirmation locator (shade smoke strict-mode failure) and duplicated the aria-live container | role removed",
-      "author self-review | stale smokes red on clean HEAD before this pass: finale seed lived 10 phones of the 13-phone season (finale locked), shade expected an off-screen banner that the moment-to-thread contract no longer produces | finale seed widened to 13 with Anchor V choices, 10/10 -> 13/13; shade returns home before the banner beat",
-      "note | toasts skip neutral moves by design (the desk does not celebrate the story's default); the move still scores in the feed and the verdict",
-      "note | os-smoke proved timing-flaky at the 'Call the saved number anyway' beat (4s window vs rule-pumped reply; reproduced on reruns unrelated to rework) | that tap's window widened to 12s; 4 consecutive green runs recorded",
-      "important | scripts/anthology-smoke.mjs gotoGame (found at live verification) | the smoke probed only the Pages-style deep link; on the root-base Workers host that URL falls through the catch-all to the hub, so the first live run timed out before the game rendered | gotoGame now probes /blackglass/blackglass, /blackglass and / and confirms the anchor select rendered ('Season signal' marker) before tapping; live Workers smoke exit 0, local Pages-base smoke exit 0"
+      "important | CaseGame.tsx finish | completed cases never updated their record on replay (first-completion guard kept both the best stale and lifetime points double-counted on rework paths) | completeCase now always records Math.max as the best while awarding lifetime points exactly once (legacy true saves already earned theirs — no re-award); replay worse/better/legacy covered in state.test.ts",
+      "important | index.tsx case cards | a 0-point completion recorded {id: 0} and rendered as unplayed ('Pick up', excluded from the worked count) | isWorked treats record presence as worked (true | number), the stats count uses it too",
+      "important | exam/hub smokes | the gates never demonstrated the new surfaces (exam advanced once and left; hub ran without progress so the strip never rendered under axe) | exam-smoke plays the full deck and asserts the results hero carries the shared stamp; hub-smoke seeds the three stores, asserts the strip's numbers + rank, and axes over it; both gained the SMOKE_CHANNEL override",
+      "minor | FeedGame case file | the packet required the case file to state the objective; the header had only shift + stats | objective + stakes line added under the THE FEED DESK kicker",
+      "minor | docs/work/current.json | packet left in intent phase while HANDOFF declared done | this wrapup packet",
+      "reviewer sandbox note | tests/build/smokes could not execute under the read-only sandbox (EROFS) | re-run in the working session after the rework: tsc clean, 70/70, build + budget green, 8/8 smokes exit 0"
     ]
   },
   "verification": [
     "npx tsc --noEmit - clean",
-    "npm test - 60/60 across 8 files (score.test.ts 15, incl. the citation-clue fixture and the authored source-clue sweep)",
+    "npm test - 70/70 across 10 files (round.test.ts 6: honest max incl. streak, judge pairs, desk mix; state.test.ts 4: award-once, best-on-replay, 0-point worked, legacy upgrade)",
     "npm run build - tsc clean, PWA precache 44 entries; npm run assets:budget - 3.7 MB, no artifact duplication",
-    "node scripts/anthology-smoke.mjs (SMOKE_CHANNEL=chromium) - exit 0, zero console errors; asserts the verdict dossier (CASE CLOSED, Back to the rack) and the rack signal stamp; verdict screenshot /tmp/bg-7-vc-verdict.png reviewed",
-    "node scripts/resume-smoke.mjs - exit 0; shade-smoke - exit 0 after the stale-flow fix; finale-smoke - exit 0 after the 13-phone seed; radar-smoke - exit 0",
-    "node scripts/os-smoke.mjs (SMOKE_CHANNEL=chromium) - 4 consecutive exit 0 after widening the pump-bound tap window",
-    "touch probe (CDP touch streams, hasTouch context) - lock surface computed touch-action: none; a real touch swipe unlocks the phone; no page errors",
-    "contrast - #6f83a8 computed 4.98-5.56:1 against rail backgrounds; pixel-sampled on the rendered screenshot: CLUES/case-id/MOVES labels 5.11-5.13:1",
-    "axe (scripts/lib/axe.mjs) - 0 serious/critical on a live phone run (390px) and the desk rails (1440px); moderate-only findings are pre-existing patterns",
-    "toast probe - VERIFY +50 renders in the reserved strip with every reply button fully readable (/tmp/toast-live.png); desk probe - rails block >=1200px, none at 390px, no horizontal overflow"
+    "smokes (SMOKE_CHANNEL=chromium) all exit 0 zero console errors: radar (10-read loop + axe on the dossier debrief), os (full case + axe), exam (full deck → results stamp asserted), hub (season strip asserted 159/184/73%/WATCHER + axe), anthology (5-anchor playthrough incl. verdict beats), resume, shade, finale",
+    "visual probes reviewed: /tmp/probe-hub.png (season strip at 1200px), /tmp/probe-exam.png + exam-4b-results.png (exam dossier), /tmp/probe-radar-menu.png ('✓ worked · signal 78' card + best-shift line), /tmp/radar-debrief.png (shift dossier mid-slam), /tmp/os-11-debrief.png (case dossier: S CRYSTAL · 88/100), /tmp/header-fix.png (feed desk at 420px, nothing clipped)",
+    "11px floor: two new 10px labels found in self-review and bumped (shift debrief tiles, hub season cells)"
   ],
   "artifacts": [
-    "Screenshots reviewed in /tmp: bg-7-vc-verdict.png, rails-live.png, rails-mobile.png, toast-live.png"
-  ]
+    "Screenshots in /tmp listed under verification; review report .meos/reviews/20261109T231606Z.md"
+  ],
+  "next_action": "Working tree verified and complete but NOT committed — commit+push+deploy wait on explicit user authorization (Workers Builds publishes on push; Pages via bash scripts/deploy.sh). After that: user plays the suite — the feed desk shift, a case debrief, the exam stamp, the Hub season strip — and reviews the shared feel; M7 content register (Tito Mike clip) unchanged."
 }

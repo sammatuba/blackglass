@@ -3,6 +3,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 import { Link } from 'react-router-dom'
 import { EXAM_ITEMS, type ExamItem } from './exam-data'
 import { artifactUrl } from '../blackglass/artifacts'
+import { GradeStamp, gradeFor, useCountUp } from '../shared/desk'
 import { FadeIn } from '../../ui/FadeIn'
 
 /* =====================================================================
@@ -273,6 +274,39 @@ function clamp(v: number): number {
   return Math.min(1, Math.max(0, v))
 }
 
+/* the results hero — the suite's shared grade stamp: the exam grade
+   measures the tells you spotted, never the images themselves */
+function ExamVerdict({ pct, found, total, best }: { pct: number; found: number; total: number; best: number }) {
+  const grade = gradeFor(pct)
+  const { count, stamped } = useCountUp(pct, grade)
+  return (
+    <div className="verdict-hero mt-6 rounded-2xl border border-ink-700 bg-ink-800/60 p-6">
+      <div className="flex flex-wrap items-center gap-6">
+        <GradeStamp grade={grade} stamped={stamped} />
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold tracking-[0.25em] text-ink-400 uppercase">Exam signal</p>
+          <p className="mt-1 flex items-baseline gap-1.5">
+            <span className="font-display text-5xl font-semibold tabular-nums text-ink-100">{count}</span>
+            <span className="text-lg text-ink-500">%</span>
+          </p>
+        </div>
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
+          <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">Tells spotted</p>
+          <p className="mt-1 text-[15px] font-bold tabular-nums text-ink-100">
+            {found}/{total}
+          </p>
+        </div>
+        <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
+          <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">Personal best</p>
+          <p className="mt-1 text-[15px] font-bold tabular-nums text-ink-100">{best}%</p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function TellExam() {
   const [deck, setDeck] = useState<ExamItem[]>([])
   const [round, setRound] = useState(0)
@@ -339,22 +373,7 @@ export default function TellExam() {
 
             {done ? (
               <div className="mt-6">
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-xl border border-ink-700 bg-ink-800/70 p-3">
-                    <div className="font-display text-3xl font-semibold text-ink-100 tabular-nums">{pct}%</div>
-                    <div className="mt-0.5 text-[10px] tracking-wide text-ink-400 uppercase">This run</div>
-                  </div>
-                  <div className="rounded-xl border border-ink-700 bg-ink-800/70 p-3">
-                    <div className="font-display text-3xl font-semibold text-ok tabular-nums">
-                      {totals.found}/{totals.total}
-                    </div>
-                    <div className="mt-0.5 text-[10px] tracking-wide text-ink-400 uppercase">Tells found</div>
-                  </div>
-                  <div className="rounded-xl border border-ink-700 bg-ink-800/70 p-3">
-                    <div className="font-display text-3xl font-semibold text-train tabular-nums">{best}%</div>
-                    <div className="mt-0.5 text-[10px] tracking-wide text-ink-400 uppercase">Best</div>
-                  </div>
-                </div>
+                <ExamVerdict pct={pct} found={totals.found} total={totals.total} best={best} />
                 <p className="mt-4 rounded-xl border border-ink-700 bg-ink-800/70 p-4 text-sm leading-relaxed text-ink-300">
                   {pct >= 80
                     ? 'You see clearly. Most people never look twice — you looked twice at everything.'

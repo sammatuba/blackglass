@@ -5,7 +5,7 @@ import { chromium } from 'playwright-core'
 import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: 'chrome' })
+const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
@@ -55,6 +55,28 @@ await page.getByRole('button', { name: /Next artifact|See results/i }).click()
 await page.waitForTimeout(600)
 await page.screenshot({ path: '/tmp/exam-4-next.png' })
 
+// play the deck out to the results — the shared dossier stamp (the suite's
+// one desk language) is part of the gate, so the smoke must reach it
+let resultsHero = ''
+for (let guard = 0; guard < 24; guard++) {
+  const reveal = page.getByRole('button', { name: /Reveal the tells/i })
+  if (await reveal.isVisible().catch(() => false)) {
+    await reveal.click()
+    await page.waitForTimeout(200)
+  }
+  const nextBtn = page.getByRole('button', { name: /Next artifact|See results/i })
+  const label = await nextBtn.textContent().catch(() => '')
+  if (!label) break
+  await nextBtn.click()
+  await page.waitForTimeout(250)
+  if (/See results/i.test(label ?? '')) break
+}
+await page.waitForTimeout(1300) // the count-up lands, the stamp slams
+resultsHero = await page.evaluate(() => document.querySelector('.verdict-hero')?.textContent ?? '')
+await page.screenshot({ path: '/tmp/exam-4b-results.png' })
+const stampOk = /EXAM SIGNAL/i.test(resultsHero) && /CRYSTAL|CLEAR|HAZY|FOGGED/i.test(resultsHero)
+if (!stampOk) throw new Error(`ASSERT: the exam results never showed the shared grade stamp: ${resultsHero.slice(0, 120)}`)
+
 // ——— legacy iframe dedupe check (the app lives inside the viewer's iframe;
 //      the viewer route is reached through the hub — deep links 404 live) ———
 await gotoWithRetry(page, `${BASE}/blackglass/`)
@@ -89,7 +111,7 @@ const legacyImg = await page.evaluate(async () => {
 })
 await page.screenshot({ path: '/tmp/exam-5-legacy.png' })
 
-console.log(JSON.stringify({ reveals, legacyImg, errors }, null, 2))
+console.log(JSON.stringify({ reveals, resultsHero: resultsHero.slice(0, 140), legacyImg, errors }, null, 2))
 await browser.close()
-const ok = reveals >= 1 && errors.length === 0 && legacyImg?.loaded === true
+const ok = reveals >= 1 && stampOk && errors.length === 0 && legacyImg?.loaded === true
 process.exit(ok ? 0 : 1)

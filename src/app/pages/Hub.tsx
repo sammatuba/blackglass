@@ -4,6 +4,7 @@ import { GAMES, PILLAR_META, type GameEntry, type Pillar } from '../registry'
 import { GameCard } from '../../ui/GameCard'
 import { FadeIn } from '../../ui/FadeIn'
 import GlassHero from '../../three/GlassHero'
+import { rankFor } from '../../games/shared/grade'
 import { EXPLORABLES, type ExplorableEntry } from '../../games/glassbox/catalog'
 import { PRESETS, computeScam } from '../../games/glassbox/model'
 import { DEFAULT_DIAL, simulateFeed } from '../../games/glassbox/feed-model'
@@ -93,6 +94,12 @@ export default function Hub() {
           </div>
         </section>
 
+        {/* YOUR SEASON — one record across the scored surfaces. Read from
+            each game's persisted store directly: importing a game module
+            would break the lazy-loading boundary, so this strip parses
+            localStorage and stays silent until something has been played. */}
+        <SeasonStrip />
+
         {/* PILLARS */}
         {PILLAR_ORDER.map((pillar) => {
           const meta = PILLAR_META[pillar]
@@ -153,6 +160,97 @@ export default function Hub() {
 /* The explorable is the pillar; the legacy card games remain playable as
    reference, collapsed so their separate visual language doesn't compete
    with the flagship work. */
+
+/* ——— YOUR SEASON: the cross-suite record strip ——— */
+
+interface SeasonRecord {
+  anthology: { lived: number; total: number; rank: string } | null
+  radar: { score: number; streak: number } | null
+  exam: number | null
+}
+
+function readSeason(): SeasonRecord | null {
+  const rec: SeasonRecord = { anthology: null, radar: null, exam: null }
+  try {
+    const bg = JSON.parse(localStorage.getItem('cgAI_blackglass_v2') ?? 'null') as
+      | { state?: { scores?: Record<string, { best?: number }> } }
+      | null
+    const scores = bg?.state?.scores
+    if (scores) {
+      const lived = Object.keys(scores).length
+      const total = Object.values(scores).reduce((n, r) => n + (r.best ?? 0), 0)
+      if (lived > 0) rec.anthology = { lived, total, rank: rankFor(total, lived) }
+    }
+    const rd = JSON.parse(localStorage.getItem('cgAI_scamradar_v1') ?? 'null') as
+      | { state?: { totalScore?: number; bestStreak?: number; rounds?: number } }
+      | null
+    const rs = rd?.state
+    if (rs && ((rs.totalScore ?? 0) > 0 || (rs.rounds ?? 0) > 0)) {
+      rec.radar = { score: rs.totalScore ?? 0, streak: rs.bestStreak ?? 0 }
+    }
+    const ex = Number(localStorage.getItem('cgAI_tellExam_best') ?? '')
+    if (Number.isFinite(ex) && ex > 0) rec.exam = ex
+  } catch {
+    /* private mode or a partial write: the strip stays quiet */
+  }
+  if (!rec.anthology && !rec.radar && !rec.exam) return null
+  return rec
+}
+
+function SeasonStrip() {
+  const rec = readSeason()
+  if (!rec) return null
+  const cells = [
+    {
+      to: '/blackglass',
+      label: 'The anthology',
+      value: rec.anthology ? String(rec.anthology.total) : null,
+      sub: rec.anthology ? `${rec.anthology.lived} phones lived · ${rec.anthology.rank}` : 'not started yet',
+    },
+    {
+      to: '/scam-radar',
+      label: 'Scam Radar',
+      value: rec.radar ? String(rec.radar.score) : null,
+      sub: rec.radar ? `best streak ${rec.radar.streak}×` : 'not started yet',
+    },
+    {
+      to: '/tell-exam',
+      label: 'Tell Exam',
+      value: rec.exam != null ? `${rec.exam}%` : null,
+      sub: rec.exam != null ? 'tells spotted, best run' : 'not started yet',
+    },
+  ]
+  return (
+    <section
+      data-od-id="season"
+      aria-labelledby="season-title"
+      className="relative z-10 rounded-card border border-ink-700 bg-ink-800/40 p-5 sm:p-6"
+    >
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 id="season-title" className="text-2xs font-semibold tracking-[0.22em] text-play uppercase">
+          Your season across the suite
+        </h2>
+        <p className="text-2xs text-ink-400">stays on this device</p>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-3">
+        {cells.map((c) => (
+          <Link
+            key={c.to}
+            to={c.to}
+            className="group rounded-xl border border-ink-700 bg-ink-900/50 px-4 py-3.5 transition-colors hover:border-ink-400"
+          >
+            <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">{c.label}</p>
+            <p className="font-display mt-1 text-3xl font-semibold tabular-nums text-ink-100">
+              {c.value ?? <span className="text-ink-500">—</span>}
+            </p>
+            <p className="mt-0.5 text-[11.5px] text-ink-400 transition-colors group-hover:text-ink-300">{c.sub}</p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
   return (
     <Link

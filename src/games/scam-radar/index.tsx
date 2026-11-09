@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { FAMILIES } from './families'
 import { useRadar } from './state'
 import { FeedGame } from './feed/FeedGame'
-import { CASE_PLAYABLE, CaseOSGame } from './cases/CaseGame'
+import { CASE_MAX, CASE_PLAYABLE, CaseOSGame } from './cases/CaseGame'
 import { wallpaperHue } from '../../engine/os/Stage'
 import { FadeIn } from '../../ui/FadeIn'
 
@@ -30,10 +30,17 @@ function MiniDevice({ wallpaper, done }: { wallpaper: string; done?: boolean }) 
 
 type Mode = 'menu' | 'feed' | { caseId: string }
 
+/* a worked case is any record present — including a 0-point completion
+   (legacy saves hold `true`, new saves hold the best points) */
+function isWorked(rec: boolean | number | undefined): boolean {
+  return rec === true || typeof rec === 'number'
+}
+
 export default function ScamRadar() {
   const [mode, setMode] = useState<Mode>('menu')
   const totalScore = useRadar((s) => s.totalScore)
   const bestStreak = useRadar((s) => s.bestStreak)
+  const bestSignal = useRadar((s) => s.bestRoundSignal)
   const casesDone = useRadar((s) => s.cases)
   const reset = useRadar((s) => s.reset)
 
@@ -90,7 +97,7 @@ export default function ScamRadar() {
               </div>
               <div className="flex-1 rounded-xl border border-ink-700 bg-ink-800/70 p-3">
                 <div className="font-display text-2xl font-semibold text-ink-100 tabular-nums">
-                  {Object.values(casesDone).filter(Boolean).length}/{CASE_PLAYABLE.length}
+                  {Object.values(casesDone).filter(isWorked).length}/{CASE_PLAYABLE.length}
                 </div>
                 <div className="mt-0.5 text-[10px] tracking-wide text-ink-400 uppercase">Cases worked</div>
               </div>
@@ -114,7 +121,7 @@ export default function ScamRadar() {
                 Streaks multiply — wrong reads teach the flags.
               </p>
               <span className="mt-2 text-xs text-ink-400">
-                ~4 min · keyboard-friendly (1 / 2 / 3)
+                {bestSignal > 0 ? `Best shift · signal ${bestSignal} · ` : ''}~4 min · keyboard-friendly (1 / 2 / 3)
               </span>
             </button>
           </FadeIn>
@@ -123,7 +130,11 @@ export default function ScamRadar() {
             <h2 className="mt-8 text-xs font-semibold tracking-[0.3em] text-ink-400 uppercase">Case files</h2>
             <div className="mt-3 space-y-3">
               {CASE_PLAYABLE.map((c) => {
-                const done = casesDone[c.id]
+                const rec = casesDone[c.id]
+                const done = isWorked(rec)
+                /* the unified stamp: best points over the case maximum —
+                   the same /100 signal the whole suite grades on */
+                const signal = typeof rec === 'number' ? Math.round((rec / CASE_MAX) * 100) : null
                 return (
                   <button
                     key={c.id}
@@ -142,7 +153,7 @@ export default function ScamRadar() {
                             done ? 'bg-emerald-500/15 text-emerald-300' : 'bg-train/15 text-train'
                           }`}
                         >
-                          {done ? '✓ worked' : 'Pick up'}
+                          {done ? (signal != null ? `✓ worked · signal ${signal}` : '✓ worked') : 'Pick up'}
                         </span>
                       </span>
                       <h3 className="font-display mt-1.5 text-xl font-semibold text-ink-100">{c.title}</h3>
@@ -170,6 +181,24 @@ export default function ScamRadar() {
                 </li>
               ))}
             </ul>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            {/* the thread back to the stories — every flag here is a
+                moment in the anthology, lived from the inside */}
+            <div className="mt-10 rounded-2xl border border-play/30 bg-play/8 p-4">
+              <p className="text-[11px] font-bold tracking-[0.25em] text-play uppercase">Where these flags live</p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-ink-300">
+                Every flag on this desk is a moment in the anthology — the cloned voice, the deepfake
+                pitch, the drift. Live them from the inside, then come back and read them cold.
+              </p>
+              <Link
+                to="/blackglass"
+                className="mt-2 inline-block text-sm font-semibold text-play underline-offset-4 hover:underline"
+              >
+                Play the anthology →
+              </Link>
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.22}>

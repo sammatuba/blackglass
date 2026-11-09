@@ -1,17 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
 import type { FlagValue } from '../../engine/os/types'
-import { gameSfx } from '../../engine/os/sound'
+import { GradeStamp, useCountUp } from '../shared/desk'
 import { FadeIn } from '../../ui/FadeIn'
 import type { AnthologyAnchor } from './types'
-import { GRADE_COLOR, GRADE_NAME, MOVE_COLOR, caseGame, tensionLevel, type RunScore } from './score'
+import { MOVE_COLOR, caseGame, tensionLevel, type RunScore } from './score'
 
 /* =====================================================================
    THE VERDICT — the case-closed dossier. The grade stamps what you SAW
    and the reflexes you practiced; the outcome line tells what HAPPENED.
    They are deliberately separate: Tita's money moves on every path.
    ===================================================================== */
-
-const FANFARE_NOTES = { S: 5, A: 4, B: 3, C: 2 } as const
 
 export function Verdict({
   anchor,
@@ -33,47 +30,7 @@ export function Verdict({
   const phone = anchor.phones[phoneId]
   const game = caseGame(phone.id)
   const tension = game ? tensionLevel(game, flags) : null
-  const color = GRADE_COLOR[score.grade]
-
-  const reduced =
-    typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const [count, setCount] = useState(reduced ? score.total : 0)
-  const [stamped, setStamped] = useState(reduced)
-  const sounded = useRef(false)
-
-  useEffect(() => {
-    if (reduced) {
-      if (!sounded.current) {
-        sounded.current = true
-        gameSfx.stamp()
-        gameSfx.fanfare(FANFARE_NOTES[score.grade])
-      }
-      return
-    }
-    const DURATION = 950
-    const t0 = performance.now()
-    let raf = 0
-    let lastTick = 0
-    const step = (t: number) => {
-      const k = Math.min(1, (t - t0) / DURATION)
-      const eased = 1 - Math.pow(1 - k, 3)
-      setCount(Math.round(eased * score.total))
-      if (t - lastTick > 90 && k < 1) {
-        lastTick = t
-        gameSfx.tick()
-      }
-      if (k < 1) {
-        raf = requestAnimationFrame(step)
-      } else if (!sounded.current) {
-        sounded.current = true
-        setStamped(true)
-        gameSfx.stamp()
-        gameSfx.fanfare(FANFARE_NOTES[score.grade])
-      }
-    }
-    raf = requestAnimationFrame(step)
-    return () => cancelAnimationFrame(raf)
-  }, [reduced, score.total, score.grade])
+  const { count, stamped } = useCountUp(score.total, score.grade)
 
   return (
     <div className="desk-scene animate-screen min-h-dvh">
@@ -89,14 +46,7 @@ export function Verdict({
         <FadeIn delay={0.08}>
           <div className="verdict-hero mt-6 rounded-2xl border border-ink-700 bg-ink-800/60 p-6">
             <div className="flex flex-wrap items-center gap-6">
-              <div
-                className={`verdict-stamp${stamped ? ' is-stamped' : ''}`}
-                style={{ color, borderColor: `${color}88`, background: `${color}0f` }}
-                aria-label={`Grade ${score.grade}, ${GRADE_NAME[score.grade]}`}
-              >
-                <span className="verdict-stamp-grade">{score.grade}</span>
-                <span className="verdict-stamp-name">{GRADE_NAME[score.grade]}</span>
-              </div>
+              <GradeStamp grade={score.grade} stamped={stamped} />
               <div className="min-w-0">
                 <p className="text-[11px] font-bold tracking-[0.25em] text-ink-400 uppercase">SIGNAL</p>
                 <p className="mt-1 flex items-baseline gap-1.5">

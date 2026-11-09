@@ -43,7 +43,12 @@ pressure meters (SPREAD/URGENCY/THE PITCH/THE DRIFT/CONFIDENCE), move-weighted
 reflex scoring, live desk rails on wide desktops, POV toasts on mobile, a
 verdict dossier with grade stamp and fanfare, and season bests + ranks on the
 rack and hub (`score.ts`, `SignalDesk.tsx`, `Verdict.tsx`; the grade measures
-what you saw and practiced, never what you saved). Tell Exam (E6 pedagogy
+what you saw and practiced, never what you saved). And since 2026-11-10 the
+desk is **one across the suite** (`src/games/shared/grade.ts` + `desk.tsx`):
+Feed Triage plays as a shift at the feed desk (live signal meter + grade, desk
+sounds, a verdict-dossier debrief), the radar case debrief and Tell Exam
+results carry the same grade stamp, the Hub shows YOUR SEASON across the
+suite, and case cards stamp `✓ worked · signal N`. Tell Exam (E6 pedagogy
 measure), Scam Radar drills, Glassbox 01–02 (transparency scrollytelling + feed
 model), PWA offline, voice notes with recorded provenance
 (`play/blackglass-phones/voice/PROVENANCE.md`).
@@ -56,16 +61,17 @@ video page plays the still + tells until it lands).
 ```bash
 npm install                # once
 npm run build              # tsc + vite build (base /blackglass/ unless CF_PAGES/WORKERS_CI set)
-npm test                   # vitest (60 tests incl. scoring, glassbox + navigation contract)
+npm test                   # vitest (66 tests incl. scoring, round signal, glassbox + navigation contract)
 npm run assets:budget      # dist weight gate (~3.7 MB budget)
 npm run assets:sync        # regenerate artifact/voice manifests from play/ + public/
 npm run preview            # serve dist at localhost:4173 (Pages base)
 
 # smokes (Playwright, need `npm run preview` running; SHOT_BASE=<host> targets live)
+# on hosts without system Chrome: SMOKE_CHANNEL=chromium picks the bundled one
 node scripts/anthology-smoke.mjs            # plays all 5 anchors end-to-end
 node scripts/av-e2-capture.mjs              # Anchor V full capture + transcript (E2)
 node scripts/case-os-smoke.mjs              # Case 01 on the OS engine
-node scripts/{exam,radar,os}-smoke.mjs      # Tell Exam / radar / Case 01 spot checks
+node scripts/{exam,radar,os,hub}-smoke.mjs  # Tell Exam / radar / Case 01 / hub spot checks
 node scripts/cadence-smoke.mjs              # chat pacing at real 1×
 
 # deploys
@@ -123,6 +129,16 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
 
 ## 8. Session log (recent, newest first)
 
+- **2026-11-10 (b)** — one desk across the suite (M6.6): the anthology's grade
+  language extracted to `src/games/shared/` (grade.ts pure / desk.tsx UI),
+  Feed Triage rebuilt as a shift at the feed desk (live signal meter + grade,
+  verdict-tone desk sounds, debrief as the verdict dossier), radar case debrief
+  + Tell Exam results onto the same stamp, Hub YOUR SEASON strip (localStorage
+  reads only — lazy boundaries hold), radar ⇄ anthology cross-links, unified
+  `✓ worked · signal N` case stamps. Gates: tsc clean, 66/66 tests, build +
+  3.7 MB budget, all eight smokes exit 0 (radar/os/exam/hub/anthology/resume/
+  shade/finale), axe 0 serious/critical on the new debrief + hub strip. Visual
+  probes: /tmp/probe-hub.png, probe-exam.png, probe-radar-menu.png, header-fix.png.
 - **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
   committed `7d5ab3e`, pushed `main` → Workers Builds published, `deploy.sh`
   refreshed gh-pages. Verified live: anthology smoke exit 0 with zero console

@@ -8,6 +8,7 @@ import {
 import type { CaseOS, OSState } from '../../../engine/os/types'
 import { useRadar } from '../state'
 import { FAMILY_BY_ID } from '../families'
+import { GradeStamp, gradeFor, useCountUp } from '../../shared/desk'
 import { FadeIn } from '../../../ui/FadeIn'
 import { VOICE_OS } from './os-voice'
 import { Vignette } from './Vignette'
@@ -25,12 +26,15 @@ const SCENE_BY_CASE: Record<string, 'sala' | 'desk' | 'street'> = {
   'on-hold': 'street',
 }
 
+/** the case maximum: a top outcome is 50 points, the evidence bonus
+    caps at 10 — the /100 case signal divides by this */
+export const CASE_MAX = 50 + EVIDENCE_BONUS_CAP
+
 /* =====================================================================
    glassOS case
    ===================================================================== */
 
 export function CaseOSGame({ caseDef, onExit }: { caseDef: CaseOS; onExit: () => void }) {
-  const casesDone = useRadar((s) => s.cases)
   const completeCase = useRadar((s) => s.completeCase)
   const [finalState, setFinalState] = useState<OSState | null>(null)
   const [runKey, setRunKey] = useState(0)
@@ -47,8 +51,9 @@ export function CaseOSGame({ caseDef, onExit }: { caseDef: CaseOS; onExit: () =>
   function finish(state: OSState) {
     const out = resolveOutcome(caseDef, state.flags)
     const ev = evidenceBonus(caseDef, state)
-    const total = out.points + ev.bonus
-    if (!casesDone[caseDef.id]) completeCase(caseDef.id, total)
+    /* every completed run records its best — the store awards lifetime
+       points once and keeps the maximum on replays */
+    completeCase(caseDef.id, out.points + ev.bonus)
     setFinalState(state)
   }
 
@@ -88,16 +93,15 @@ function OsDebrief({
 }) {
   const total = useRadar((s) => s.totalScore)
   const points = outcome.points + evidence.bonus
+  /* the case signal: outcome + evidence over the case maximum — the
+     same /100 the desk grades everywhere in the suite */
+  const signal = Math.round((points / CASE_MAX) * 100)
+  const grade = gradeFor(signal)
+  const { count: shown, stamped } = useCountUp(signal, grade)
   /* scam-radar cases always define these; the type allows their absence */
   const families = caseDef.families ?? []
   const tells = caseDef.tells ?? []
   const checklist = caseDef.checklist ?? []
-  const stamp =
-    points >= 40
-      ? { text: 'Scam detected', cls: 'border-ok/70 text-ok' }
-      : points >= 20
-        ? { text: 'Close call', cls: 'border-warn/70 text-warn' }
-        : { text: 'Taken in', cls: 'border-danger/70 text-danger' }
   return (
     <div className="mx-auto w-full max-w-md px-4 pt-8 pb-12">
       <FadeIn>
@@ -117,9 +121,43 @@ function OsDebrief({
         </div>
       </FadeIn>
 
+      {/* the dossier hero — the suite's shared grade stamp */}
       <FadeIn delay={0.05}>
+        <div className="verdict-hero mt-5 rounded-2xl border border-ink-700 bg-ink-800/60 p-6">
+          <div className="flex flex-wrap items-center gap-6">
+            <GradeStamp grade={grade} stamped={stamped} />
+            <div className="min-w-0">
+              <p className="text-[11px] font-bold tracking-[0.25em] text-ink-400 uppercase">Case signal</p>
+              <p className="mt-1 flex items-baseline gap-1.5">
+                <span className="font-display text-5xl font-semibold tabular-nums text-ink-100">{shown}</span>
+                <span className="text-lg text-ink-500">/100</span>
+              </p>
+            </div>
+          </div>
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
+              <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">Verdict</p>
+              <p className="mt-1 text-[15px] font-bold tabular-nums text-ink-100">
+                {outcome.points} <span className="font-semibold text-learn">pts</span>
+              </p>
+            </div>
+            <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
+              <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">Clues</p>
+              <p className="mt-1 text-[15px] font-bold tabular-nums text-ink-100">
+                {evidence.found}/{evidence.total}{' '}
+                <span className="font-semibold text-learn">+{evidence.bonus}🧩</span>
+              </p>
+            </div>
+          </div>
+          <p className="mt-4 text-[12px] leading-relaxed text-ink-400">
+            The grade measures what you saw and how you moved — the outcome tells what happened.
+          </p>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.08}>
         <div
-          className={`relative mt-5 rounded-2xl border p-4 ${
+          className={`mt-4 rounded-2xl border p-4 ${
             points >= 40
               ? 'border-ok/35 bg-ok/8'
               : points >= 20
@@ -127,12 +165,6 @@ function OsDebrief({
                 : 'border-danger/35 bg-danger/8'
           }`}
         >
-          <span
-            className={`absolute -top-2.5 right-4 -rotate-6 rounded border-2 bg-ink-950/90 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.18em] ${stamp.cls}`}
-            aria-hidden="true"
-          >
-            {stamp.text}
-          </span>
           <div className="flex items-baseline justify-between gap-3">
             <h3 className="text-sm font-bold text-ink-100">{outcome.title}</h3>
             <span className="shrink-0 text-sm font-bold text-train tabular-nums">
