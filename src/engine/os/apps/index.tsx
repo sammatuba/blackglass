@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CaseOS, OSMessage, OSState, OSSource } from '../types'
 import { currentAnswer, visibleMessages } from '../runtime'
-import { isMuted, setMuted, sfx } from '../sound'
+import { isMuted, onMuteChange, setMuted, sfx } from '../sound'
 import { paceSpeed, setPaceSpeed } from '../pacing'
 import { Avatar, EmptyState } from './shared'
 /* The glassOS apps. Every app is an evidence surface. */
@@ -1602,6 +1602,7 @@ export function SettingsApp({
   onBrightness: (n: number) => void
 }) {
   const [muted, setM] = useState(isMuted())
+  useEffect(() => onMuteChange(setM), [])
   const [bright, setBright] = useState(100)
   const [pace, setPace] = useState(paceSpeed())
   return (

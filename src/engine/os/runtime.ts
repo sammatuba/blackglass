@@ -193,14 +193,31 @@ export function resolveOutcome(caseDef: CaseOS, flags: Record<string, FlagValue>
   )
 }
 
-/** every collectible evidence id in a case, deduped */
+/** citation chips carry evidence too — checking a source is seeing a clue */
+function sourceEvidence(
+  msg: { sources?: OSSource[]; variants?: { regen?: { sources?: OSSource[] }[]; thumbs?: { sources?: OSSource[] } } } | undefined,
+  clues: string[],
+): void {
+  if (!msg) return
+  for (const s of msg.sources ?? []) if (s.evidence) clues.push(s.evidence)
+  for (const v of msg.variants?.regen ?? []) for (const s of v.sources ?? []) if (s.evidence) clues.push(s.evidence)
+  for (const s of msg.variants?.thumbs?.sources ?? []) if (s.evidence) clues.push(s.evidence)
+}
+
+/** every collectible evidence id in a case, deduped — photos, pages,
+    contacts, voicemails, rules, and every assistant citation source
+    (including regen/thumbs alternates) */
 export function evidenceIds(caseDef: CaseOS): string[] {
   const clues: string[] = []
   for (const p of caseDef.photos) if (p.evidence) clues.push(p.evidence)
   for (const pg of caseDef.pages) if (pg.evidence) clues.push(pg.evidence)
   for (const c of caseDef.contacts) if (c.evidence) clues.push(c.evidence)
   for (const v of caseDef.voicemails ?? []) if (v.evidence) clues.push(v.evidence)
-  for (const r of caseDef.rules) for (const e of r.evidence ?? []) clues.push(e)
+  for (const r of caseDef.rules) {
+    for (const e of r.evidence ?? []) clues.push(e)
+    for (const push of r.push ?? []) sourceEvidence(push.msg, clues)
+  }
+  for (const o of caseDef.opening ?? []) sourceEvidence(o.msg, clues)
   return [...new Set(clues)]
 }
 

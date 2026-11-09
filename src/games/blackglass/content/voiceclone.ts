@@ -50,7 +50,7 @@ const TITA_VC: CaseOS = {
     { threadId: 'renz', msg: { from: 'them', kind: 'photo', photoId: 'vc-accident', caption: 'eto yung damage', at: '8:04 PM' } },
   ],
   photos: [
-    { id: 'vc-accident', title: 'IMG from “Renz” · the damage', kind: 'photo', emoji: '🚗', src: artifactUrl('clone-accident-photo') },
+    { id: 'vc-accident', title: 'IMG from “Renz” · the damage', kind: 'photo', emoji: '🚗', src: artifactUrl('clone-accident-photo'), evidence: 'ev-vc-photo' },
   ],
   pages: [],
   notes: [

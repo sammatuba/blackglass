@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { isMuted, onMuteChange, setMuted } from './sound'
 
 /* PhoneStage — the world around the device. A desk at night: the phone
    rests on the surface, emits its wallpaper's light, and leans toward the
@@ -46,7 +47,6 @@ export function PhoneStage({
   pulse = 0,
   ringing = false,
   header,
-  footer,
   children,
 }: {
   hue: number
@@ -56,7 +56,6 @@ export function PhoneStage({
   pulse?: number
   ringing?: boolean
   header?: ReactNode
-  footer?: ReactNode
   children: ReactNode
 }) {
   const bodyRef = useRef<HTMLDivElement>(null)
@@ -108,8 +107,33 @@ export function PhoneStage({
           <div className="stage-sheen" aria-hidden="true" />
         </div>
       </div>
-      {footer}
     </div>
+  )
+}
+
+/** the one master mute — lives at the top of the glass, shows its state,
+    silences every OS and desk cue in a single tap */
+export function MuteToggle() {
+  const [muted, setM] = useState(isMuted())
+  useEffect(() => onMuteChange(setM), [])
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const next = !muted
+        setMuted(next)
+        setM(next)
+      }}
+      aria-pressed={muted}
+      aria-label={muted ? 'Unmute sound' : 'Mute sound'}
+      title={muted ? 'Unmute sound' : 'Mute sound'}
+      className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
+    >
+      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M11 5 6 9H3v6h3l5 4z" />
+        {muted ? <path d="m16 9 5 6m0-6-5 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12" />}
+      </svg>
+    </button>
   )
 }
 

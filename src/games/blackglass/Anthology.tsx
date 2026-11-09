@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { GlassOS } from '../../engine/os/Device'
+import { initialOSState } from '../../engine/os/runtime'
 import { scaled } from '../../engine/os/pacing'
 import type { FlagValue, OSState } from '../../engine/os/types'
 import type { AnthologyAnchor } from './types'
 import { useBlackglass } from './state'
 import { allPhonesLived, anchorStats, choiceText, findChoice, globalStats } from './progress'
+import { RANKS, caseGame, rankFor, scoreRun, type RunScore } from './score'
+import { SignalDesk } from './SignalDesk'
+import { Verdict } from './Verdict'
 import { Convergence } from './Convergence'
 import { FadeIn } from '../../ui/FadeIn'
 
@@ -13,6 +17,7 @@ type Screen =
   | 'anchors'
   | 'rack'
   | { phone: string; resume?: boolean }
+  | { verdict: { phoneId: string; score: RunScore; flags: Record<string, FlagValue>; newBest: boolean } }
   | 'timeline'
   | 'reflection'
 
@@ -93,6 +98,7 @@ const BOOT_TOTAL = 3400
 
 function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index: number; onDone: () => void }) {
   const entry = anchor.phones[anchor.entry]
+  const game = caseGame(entry.id)
   const accent = PHONE_THEME_ACCENT[entry.phone.theme ?? ''] ?? '#8b8b8b'
   const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][index] ?? String(index + 1)
   const phones = anchor.order.length === 1 ? 'one phone' : `${anchor.order.length} phones`
@@ -144,6 +150,12 @@ function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index:
       </p>
       <h1 className={`${line(2)} font-display mt-2 text-5xl font-semibold`}>{anchor.subtitle}</h1>
       <p className={`${line(3)} font-display mt-4 max-w-md text-lg italic text-ink-300`}>{anchor.question}</p>
+      {game && (
+        <p className={`${line(4)} mt-5 max-w-md text-[13px] leading-relaxed text-ink-300`}>
+          <span className="mr-2 text-[11px] font-bold tracking-[0.2em] text-play uppercase">The case</span>
+          {game.objective}
+        </p>
+      )}
       <p className={`${line(4)} mt-8 font-mono text-[11.5px] tracking-wide text-ink-400`}>glassOS 4.0 · signal acquired</p>
       <p className={`${line(4)} mt-1 font-mono text-[11.5px] tracking-wide text-ink-400`}>
         {entry.phone.time} {entry.phone.meridiem} · {phones}
@@ -182,6 +194,12 @@ function AnchorSelect({
   const progress = useBlackglass((s) => s.anchors)
   const global = globalStats(anchors, progress)
   const unlocked = allPhonesLived(anchors, progress)
+  const seasonTotal = Object.values(progress).reduce(
+    (n, p) => n + Object.values(p?.scores ?? {}).reduce((m, s) => m + s.best, 0),
+    0,
+  )
+  const rank = rankFor(seasonTotal, global.lived)
+  const nextRank = RANKS.find((r) => r.at > 0 && r.at > seasonTotal)
   return (
     <div className="desk-scene animate-screen min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
@@ -202,6 +220,30 @@ function AnchorSelect({
               <span className="font-semibold text-ink-100">{global.clues}/{global.cluesTotal}</span> clues found
             </p>
           )}
+          <div className="mt-5 rounded-2xl border border-ink-700 bg-ink-800/60 p-4">
+            <div className="flex items-baseline justify-between gap-3">
+              <span className="text-[11px] font-bold tracking-[0.25em] text-play uppercase">Season signal</span>
+              <span className="text-[12px] font-black tracking-[0.15em] text-ink-100 uppercase">{rank}</span>
+            </div>
+            <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
+              <span className="font-display text-2xl font-semibold tabular-nums text-ink-100">{seasonTotal}</span>
+              <span className="text-[12px] text-ink-400">
+                best signal across {global.phones} phones
+                {global.lived > 0 && (nextRank ? ` · ${nextRank.at - seasonTotal} to ${nextRank.name}` : ' · highest rank')}
+              </span>
+            </div>
+            <div className="signal-meter mt-2.5" aria-hidden="true">
+              <span
+                className="signal-meter-fill"
+                style={{ width: `${global.lived === 0 ? 0 : nextRank ? Math.min(100, (seasonTotal / nextRank.at) * 100) : 100}%` }}
+              />
+            </div>
+            {global.lived === 0 && (
+              <p className="mt-2 text-[12px] leading-relaxed text-ink-400">
+                Every phone is a case. See the clues, practice the reflexes — the desk grades what you saw, not what you saved.
+              </p>
+            )}
+          </div>
         </FadeIn>
         <div className="mt-8 space-y-3">
           {anchors.map((a, i) => {
@@ -300,6 +342,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
   const [wakeNote, setWakeNote] = useState<string | null>(null)
   const progress = useBlackglass((s) => s.anchors[anchor.id])
   const completePhone = useBlackglass((s) => s.completePhone)
+  const recordScore = useBlackglass((s) => s.recordScore)
   const clearLive = useBlackglass((s) => s.clearLive)
 
   const completed = progress?.completed ?? {}
@@ -320,7 +363,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
   }
 
   /* ---- a phone run ---- */
-  if (typeof screen === 'object') {
+  if (typeof screen === 'object' && 'phone' in screen) {
     const phoneId = screen.phone
     return (
       <PhoneRun
@@ -340,8 +383,32 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
             else if (names.length > 1)
               setWakeNote(`${names.slice(0, -1).join(', ')} and ${names[names.length - 1]} have woken up.`)
           }
-          setScreen('rack')
+          const game = caseGame(anchor.phones[phoneId].id)
+          if (game) {
+            const score = scoreRun(anchor.phones[phoneId], game, state)
+            const prevBest = progress?.scores?.[phoneId]?.best ?? 0
+            recordScore(anchor.id, phoneId, score.total, score.grade)
+            setScreen({ verdict: { phoneId, score, flags: state.flags, newBest: prevBest > 0 && score.total > prevBest } })
+          } else {
+            setScreen('rack')
+          }
         }}
+      />
+    )
+  }
+
+  /* ---- the verdict — the case-closed dossier before the rack ---- */
+  if (typeof screen === 'object' && 'verdict' in screen) {
+    const v = screen.verdict
+    return (
+      <Verdict
+        anchor={anchor}
+        phoneId={v.phoneId}
+        score={v.score}
+        flags={v.flags}
+        newBest={v.newBest}
+        onRack={() => setScreen('rack')}
+        onReplay={() => startPhone(v.phoneId, false)}
       />
     )
   }
@@ -516,7 +583,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
               const p = anchor.phones[id]
               const done = !!completed[id]
               const resumable = !!live[id] && !done
-              const clues = progress?.evidence?.[id]?.length ?? 0
+              const score = progress?.scores?.[id]
               const open = id === anchor.entry || !!completed[anchor.entry]
               const accent = PHONE_THEME_ACCENT[p.phone.theme ?? ''] ?? '#8b8b8b'
               return (
@@ -552,10 +619,18 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
                       ? `Locked — live ${anchor.phones[anchor.entry].title}’s story first.`
                       : resumable
                         ? 'You left this one mid-conversation.'
-                        : p.blurb.split('. ')[0] + '.'}
+                        : done
+                          ? p.blurb.split('. ')[0] + '.'
+                          : (caseGame(p.id)?.objective ?? p.blurb.split('. ')[0] + '.')}
                   </span>
                   <span className="mt-2 text-2xs font-bold uppercase tracking-wide" style={{ color: done ? '#6ee7b7' : accent }}>
-                    {done ? `✓ lived${clues ? ` · ${clues} clues` : ''}` : resumable ? '▸ continue' : open ? 'pick up' : 'asleep'}
+                    {done
+                      ? `✓ lived · signal ${score?.best ?? 0}${score ? ` · ${score.grade}` : ''}`
+                      : resumable
+                        ? '▸ continue'
+                        : open
+                          ? 'pick up'
+                          : 'asleep'}
                   </span>
                 </button>
               )
@@ -639,19 +714,27 @@ function PhoneRun({
   completeRef.current = onComplete
   const handleExit = useCallback(() => exitRef.current(), [])
   const handleComplete = useCallback((state: OSState) => completeRef.current(state), [])
+  const [liveState, setLiveState] = useState<OSState>(() => initial ?? initialOSState(caseDef))
   const handleStateChange = useCallback(
-    (state: OSState) => useBlackglass.getState().saveLive(anchor.id, phoneId, state),
+    (state: OSState) => {
+      useBlackglass.getState().saveLive(anchor.id, phoneId, state)
+      setLiveState(state)
+    },
     [anchor.id, phoneId],
   )
+  const game = caseGame(caseDef.id)
 
   return (
-    <GlassOS
-      caseDef={caseDef}
-      initialState={initial}
-      onStateChange={handleStateChange}
-      onExit={handleExit}
-      onComplete={handleComplete}
-    />
+    <>
+      <GlassOS
+        caseDef={caseDef}
+        initialState={initial}
+        onStateChange={handleStateChange}
+        onExit={handleExit}
+        onComplete={handleComplete}
+      />
+      {game && <SignalDesk caseDef={caseDef} game={game} state={liveState} />}
+    </>
   )
 }
 

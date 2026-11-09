@@ -20,7 +20,7 @@ deception, never enable it.
 | Thing | Where |
 |---|---|
 | Source repo | `github.com/sammatuba/blackglass`, branch `main` @ `1212814` (2026-11-03) |
-| Primary live host | **https://blackglass.jansammat26.workers.dev/** — Cloudflare Worker, auto-builds on every push to `main` (CI runs `npm test && npm run build`) |
+| Primary live host | **https://blackglass.sammatuba.workers.dev/** — Cloudflare Worker, auto-builds on every push to `main` (CI runs `npm test && npm run build`) |
 | Secondary live host | **https://sammatuba.github.io/blackglass/** — GitHub Pages, manual deploy only |
 | Repo layout | `docs/` (plans, evals, reports) · `src/engine/os/` (glassOS runtime) · `src/games/blackglass/` (the anthology + content) · `src/games/scam-radar/` (drills) · `src/games/glassbox/` (data transparency scrollytelling) · `craft/` (writing canon) · `world/guardrails.md` · `play/` (legacy vanilla mirrors + asset worksheets) |
 

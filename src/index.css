@@ -7,6 +7,7 @@
   --color-ink-800: #0e1526;
   --color-ink-700: #1c2740;
   --color-ink-600: #31405f;
+  --color-ink-500: #6f83a8;
   --color-ink-400: #8fa0bd;
   --color-ink-300: #c3cde0;
   --color-ink-200: #dce4f0;
@@ -182,7 +183,7 @@ body {
   --os-bub-out: #7b54c4;
   --os-bub-out-ink: #ffffff;
   --os-accent: #b27a2e;
-  --os-accent-ink: #fffdf7;
+  --os-accent-ink: #201806;
   --os-chip-border: rgba(178, 122, 46, 0.5);
   --os-chip-bg: rgba(178, 122, 46, 0.1);
   --os-chip-bg-hover: rgba(178, 122, 46, 0.2);
@@ -204,7 +205,7 @@ body {
   --os-bub-out: #1d9bf0;
   --os-bub-out-ink: #ffffff;
   --os-accent: #1d9bf0;
-  --os-accent-ink: #ffffff;
+  --os-accent-ink: #06121c;
   --os-chip-border: rgba(29, 155, 240, 0.45);
   --os-chip-bg: rgba(29, 155, 240, 0.08);
   --os-chip-bg-hover: rgba(29, 155, 240, 0.16);
@@ -398,6 +399,432 @@ body {
     animation: none;
     opacity: 1;
   }
+}
+
+/* ---- POV safe areas ----
+   env() is zero on desktop, so these preserve the old geometry while
+   lifting chrome clear of notches, home indicators, and browser bars. */
+.os-safe-status {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 0.875rem);
+}
+.os-safe-lock {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
+}
+.os-safe-home {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+}
+.os-safe-app {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 2.25rem);
+}
+.os-safe-call {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 4rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
+}
+.os-safe-shade {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
+}
+.os-safe-shade-list {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
+}
+.os-safe-moment {
+  padding-top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
+}
+.os-safe-banners {
+  top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+}
+.os-safe-gesturebar {
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 0.375rem);
+  background: rgba(255, 255, 255, 0.32);
+}
+.os-gesturebar:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+.os-app-body {
+  padding-bottom: 0;
+}
+.pov-only {
+  display: none;
+}
+
+/* ---- POV: the phone is the page on small screens ----
+   No desk, bezel, or web chrome: the glassOS screen fills the viewport.
+   The desktop keeps the object-on-a-desk framing. */
+@media (max-width: 899px) {
+  .stage-root {
+    height: 100dvh;
+    min-height: 100dvh;
+    padding: 0;
+    background: #04060c;
+    overscroll-behavior-y: none;
+  }
+  .stage-root::before,
+  .stage-root::after,
+  .stage-surface,
+  .stage-shadow,
+  .stage-sheen,
+  .stage-glow {
+    display: none;
+  }
+  .stage-tilt {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    perspective: none;
+  }
+  .stage-body {
+    height: 100%;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+  .stage-body .device-frame {
+    box-shadow: none;
+  }
+  .device-shell {
+    max-width: none;
+    height: 100%;
+  }
+  .device-frame {
+    width: 100%;
+    height: 100dvh;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .device-frame .os-skin {
+    height: 100dvh;
+    max-height: none;
+    min-height: 0;
+    border-radius: 0;
+  }
+  .pov-chrome {
+    display: none !important;
+  }
+  .pov-only {
+    display: flex;
+  }
+  /* the home indicator sits over the glass: keep controls above it */
+  .os-safe-home,
+  .os-safe-lock,
+  .os-safe-call,
+  .os-safe-moment {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 3.5rem);
+  }
+  .os-app-body {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 3rem);
+  }
+}
+
+/* ---- the signal desk — the anthology's game layer ----
+   Desk furniture around the glass, never chrome inside it. The rails are
+   the wide-desktop reading of the case file and the live score; below
+   1200px the desk speaks in short pointer-transparent toasts instead.
+   Palette: the desk-scene's own game colors (the skin-variable rule
+   governs phone screens; the desk is the world outside them). */
+.signal-rail {
+  display: none;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 20rem;
+  padding: 1.1rem 1.2rem 1.25rem;
+  border: 1px solid rgba(28, 39, 64, 0.55);
+  border-radius: 16px;
+  background: rgba(7, 11, 20, 0.58);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 18px 50px -24px rgba(0, 0, 0, 0.85);
+}
+.signal-rail-left {
+  left: max(1.5rem, calc(50% - 200px - 22.5rem));
+}
+.signal-rail-right {
+  right: max(1.5rem, calc(50% - 200px - 22.5rem));
+}
+@media (min-width: 1200px) {
+  .signal-rail {
+    display: block;
+  }
+}
+.signal-rail-kicker {
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-play);
+}
+.signal-rail-id {
+  margin-top: 0.4rem;
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
+}
+.signal-rail-label {
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
+}
+.signal-rail-copy {
+  margin-top: 0.3rem;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--color-ink-300);
+}
+.signal-rail p + .signal-rail-label {
+  margin-top: 1rem;
+}
+.signal-tension {
+  margin-top: 1.1rem;
+  border-top: 1px solid rgba(28, 39, 64, 0.7);
+  padding-top: 0.9rem;
+}
+.signal-tension-step {
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  color: var(--color-ink-200);
+}
+.signal-tension-note {
+  margin-top: 0.45rem;
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--color-ink-500);
+}
+.signal-meter {
+  display: block;
+  height: 6px;
+  margin-top: 0.45rem;
+  border-radius: 9999px;
+  background: rgba(28, 39, 64, 0.8);
+  overflow: hidden;
+}
+.signal-meter-fill {
+  display: block;
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--color-play);
+  transition: width 0.45s var(--ease-glass);
+}
+.signal-total {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-ink-100);
+}
+.signal-total-max {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-ink-500);
+}
+.signal-grade-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+.signal-rows {
+  margin-top: 0.75rem;
+  border-top: 1px solid rgba(28, 39, 64, 0.7);
+}
+.signal-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid rgba(28, 39, 64, 0.45);
+  font-size: var(--text-2xs);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-500);
+}
+.signal-row .tabular-nums {
+  color: var(--color-ink-200);
+}
+.signal-moves {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.signal-move {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.signal-move-kind {
+  padding: 0.05rem 0.4rem;
+  border: 1px solid;
+  border-radius: 6px;
+  font-size: var(--text-2xs);
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.signal-move-label {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-ink-300);
+}
+.signal-move-pts {
+  font-size: var(--text-2xs);
+  font-weight: 800;
+}
+
+/* the POV channel: one compact toast living in the empty strip the app
+   body reserves above the gesture bar — never over the reply dock.
+   Pointer-transparent, gone in three seconds, newest event only, and
+   hidden wherever the desk rails already speak. */
+.signal-toasts {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 0.95rem);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  width: min(92vw, 24rem);
+  pointer-events: none;
+}
+@media (min-width: 1200px) {
+  .signal-toasts {
+    display: none;
+  }
+}
+.signal-toast {
+  display: none;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(28, 39, 64, 0.7);
+  border-left-width: 2px;
+  border-radius: 10px;
+  background: rgba(7, 11, 20, 0.85);
+  backdrop-filter: blur(8px);
+  animation: signal-toast-in 0.28s var(--ease-glass) both;
+}
+.signal-toast:last-child {
+  display: flex;
+}
+@keyframes signal-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.signal-toast-title {
+  font-size: var(--text-2xs);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.signal-toast-body {
+  font-size: 11.5px;
+  line-height: 1.35;
+  color: var(--color-ink-300);
+}
+.signal-toast-clue,
+.signal-toast-verify {
+  border-left-color: #22d3ee;
+}
+.signal-toast-clue .signal-toast-title,
+.signal-toast-verify .signal-toast-title {
+  color: #22d3ee;
+}
+.signal-toast-protect {
+  border-left-color: #6ee7b7;
+}
+.signal-toast-protect .signal-toast-title {
+  color: #6ee7b7;
+}
+.signal-toast-risk {
+  border-left-color: #f87171;
+}
+.signal-toast-risk .signal-toast-title {
+  color: #f87171;
+}
+.signal-toast-drift {
+  border-left-color: #f5b942;
+}
+.signal-toast-drift .signal-toast-title {
+  color: #f5b942;
+}
+.signal-toast-neutral {
+  border-left-color: #94a3b8;
+}
+.signal-toast-neutral .signal-toast-title {
+  color: #94a3b8;
+}
+.signal-toast-tension {
+  border-left-color: #f87171;
+  background: rgba(30, 10, 14, 0.82);
+}
+.signal-toast-tension .signal-toast-title {
+  color: #f87171;
+}
+
+/* ---- the verdict — the case-closed dossier ---- */
+.verdict-hero {
+  background:
+    radial-gradient(120% 100% at 18% 0%, rgba(129, 140, 248, 0.1), transparent 58%),
+    rgba(14, 21, 38, 0.35);
+}
+.verdict-stamp {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 112px;
+  height: 112px;
+  border: 2.5px dashed currentColor;
+  border-radius: 9999px;
+  opacity: 0.16;
+  transform: rotate(-8deg);
+}
+.verdict-stamp.is-stamped {
+  border-style: solid;
+  animation: verdict-stamp-in 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes verdict-stamp-in {
+  from {
+    opacity: 0;
+    transform: rotate(-8deg) scale(1.7);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-8deg) scale(1);
+  }
+}
+.verdict-stamp-grade {
+  font-family: var(--font-display);
+  font-size: 2.7rem;
+  font-weight: 800;
+  line-height: 0.95;
+}
+.verdict-stamp-name {
+  margin-top: 0.2rem;
+  font-size: var(--text-2xs);
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }
 
 /* anthology screen transition */

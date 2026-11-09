@@ -4,7 +4,7 @@ import { axeCheck } from './lib/axe.mjs'
 import { gotoWithRetry } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: 'chrome' })
+const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
@@ -82,14 +82,21 @@ await tap(/Renz Santos/i)
 await settle(500)
 await page.screenshot({ path: '/tmp/os-8-contact.png' })
 
-// back to the thread; decision 2: verify
-await tap('Home', { timeout: 3000 }).catch(() => {})
-await page.getByRole('button', { name: 'Home', exact: true }).click({ force: true }).catch(() => {})
-await tap(/Messages/i)
-await settle(300)
-await tap(/Renz\?/i)
-await settle(400)
-await tap(/Call the saved number anyway/i)
+// back to the thread; decision 2: verify. The thread list reorders live as
+// GC beats land, so re-enter deterministically and confirm the Renz thread
+// actually shows the decision before tapping it — a mis-landed click into
+// another thread must heal, not fail the smoke.
+for (let attempt = 0; attempt < 3; attempt++) {
+  await tap('Home', { timeout: 3000 }).catch(() => {})
+  await page.getByRole('button', { name: 'Home', exact: true }).click({ force: true }).catch(() => {})
+  await tap(/Messages/i)
+  await settle(400)
+  await page.getByRole('button', { name: /Renz\?/i }).first().click({ timeout: 6000 }).catch(() => {})
+  await settle(800)
+  if ((await page.getByRole('button', { name: /Call the saved number anyway/i }).count()) > 0) break
+  if (attempt === 2) throw new Error('ASSERT: the verify decision never rendered in the Renz thread')
+}
+await tap(/Call the saved number anyway/i, 8000)
 await settle(900)
 await page.screenshot({ path: '/tmp/os-9-call.png' })
 

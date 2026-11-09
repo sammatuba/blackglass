@@ -66,6 +66,17 @@ const anchors = {
     inspected: {},
     live: {},
   },
+  assistant: {
+    completed: { tita: true, maya: true, bea: true },
+    runs: {
+      tita: { av_tita: 'asked', avt_act: 'clinic' },
+      maya: { avm_act: 'rewrite' },
+      bea: { avb_human: true },
+    },
+    evidence: {},
+    inspected: {},
+    live: {},
+  },
 }
 
 await page.addInitScript((seed) => {
@@ -103,7 +114,7 @@ for (const line of expected) {
 }
 
 // signal report totals: 10/10 phones, some clues
-assert((await page.getByText('10/10').count()) > 0, 'signal report shows 10/10 phones lived')
+assert((await page.getByText('13/13').count()) > 0, 'signal report shows 13/13 phones lived')
 assert((await page.getByText(/clues found/i).count()) > 0, 'signal report shows clues found')
 assert((await page.getByText('Verification is a practice, not a verdict. The pause is the point.').count()) > 0, 'closing line present')
 

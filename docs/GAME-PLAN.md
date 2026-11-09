@@ -124,6 +124,14 @@ question, then the glassOS signal line with the entry phone's clock and phone
 count. Tap anywhere, Enter/Space, or Escape begins now; otherwise it clears at
 3.4s at 1× (a blink at 8×), and reduced motion reveals all lines at once
 (audited by `scripts/cadence-smoke.mjs`).
+**The inhabited shell** (2026-10-22): on phones the desk, bezel and browser
+chrome drop away — the glass is the page (full-bleed `100dvh`, safe-area
+insets). The status bar gains a diegetic power control; a returning run wakes
+on the lock screen with "While you were away" instead of replaying the opening
+beats. Gestures are layered over visible controls: swipe up to unlock, pull
+down for the shade, swipe up to answer a call (the buttons remain). "Put the
+phone down" exits from the lock screen; the conversation is where you left it
+(`scripts/resume-smoke.mjs`, contract in `docs/design-system.md`).
 
 ### M5 — Interaction depth ✅ shipped 2026-09-11/12
 Shipped: voice-note play/pause (waveform + length chrome); artifact zoom in the
@@ -151,6 +159,44 @@ Alternatives from the architecture doc's axes (AI recruiter, election audio,
 romance scam) remain candidates for Anchor VI+. "Recovered messages" forensic
 mode stays reserved for a future anchor.
 
+### M6.5 — The signal desk ✅ built 2026-11-09
+The game layer that makes the anthology play like a case-file season (modeled
+on Beyond Megawatts: visible meters, grade stamps, best-score progression —
+rebuilt for a story about verification, not resources). Every phone is now a
+scored case:
+
+- **The case file** (`score.ts` `CASE_GAMES`): objective + stakes stated at
+  boot, and a pressure meter named for the episode (SPREAD, URGENCY, THE
+  PITCH, THE DRIFT, CONFIDENCE) that ratchets on authored story flags — it
+  rises no matter what you choose; the pressure was never yours to stop, only
+  to see. That separation is the lesson, made visible.
+- **The signal desk** (`SignalDesk.tsx`): wide desktop (≥1200px) gets two
+  desk rails flanking the phone — objective, stakes, the live pressure meter,
+  clues, reflex moves with kind/points. Below 1200px the POV shell forbids
+  chrome, so the desk speaks in pointer-transparent toasts above the gesture
+  bar (clue found / move landed / pressure ratchet), silent while a moment or
+  call owns the screen.
+- **The verdict** (`Verdict.tsx`): closing a phone lands on a case-closed
+  dossier — count-up to the signal total, a grade stamp (S CRYSTAL / A CLEAR /
+  B HAZY / C FOGGED) that slams in with a grade-sized fanfare, the move feed
+  annotated with what each reflex was worth, the clues still out there, and
+  WHAT HAPPENED kept deliberately separate from the grade (Tita's money moves
+  on every path).
+- **Season progression** (`state.ts` `recordScore`): best signal per phone
+  persists (old saves read through defaults), the rack stamps `✓ lived ·
+  signal N · grade`, and the anchor select shows the season total, rank
+  (NEW SIGNAL → WATCHER → PATTERN READER → SEER → CLEAR-EYED) and the gap to
+  the next rank — every replay that sees more counts.
+- **Desk sound** (`sound.ts` `gameSfx`): the same gentle synth voice tuned a
+  fifth apart so the desk sounds like the case file, not the phone; every cue
+  tied to something visible; one master mute now lives in the status bar
+  (synced with Settings through a mute-change broadcast).
+
+Weights reward the reflex the episode teaches — verify through another
+channel, pause, protect, stay human — never the story outcome. Pure logic is
+unit-tested in `score.test.ts`; the anthology smoke now asserts the verdict
+dossier and the rack's signal stamp.
+
 ### M7 — External assets (placeholders in place)
 See register. None block play.
 
@@ -167,7 +213,7 @@ See register. None block play.
 
 ## 8. Verification (no analytics by design)
 
-- **Unit:** pure progress/finale logic in `progress.test.ts`; engine rule tests stay green.
+- **Unit:** pure progress/finale logic in `progress.test.ts`; the scoring layer in `score.test.ts`; engine rule tests stay green.
 - **Smoke:** `scripts/anita-video-shot.mjs` (artifact + anchor flow), `scripts/resume-smoke.mjs` (continuity), `scripts/finale-smoke.mjs` (seeded convergence), `scripts/compare-smoke.mjs` (seeded batch compare), existing anthology smoke; `npm run build` + Lighthouse budgets.
 - **Playtest signal:** qualitative — where do players stop, what do they re-open, what do they quote back. No instrumentation; feedback is conversation.
 

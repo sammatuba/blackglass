@@ -33,6 +33,14 @@ export function setMuted(m: boolean): void {
   } catch {
     /* private mode */
   }
+  window.dispatchEvent(new CustomEvent('glassos-mute', { detail: m }))
+}
+
+/** subscribe to master-mute changes (status bar toggle ↔ Settings switch) */
+export function onMuteChange(fn: (m: boolean) => void): () => void {
+  const handler = (e: Event) => fn((e as CustomEvent<boolean>).detail)
+  window.addEventListener('glassos-mute', handler)
+  return () => window.removeEventListener('glassos-mute', handler)
 }
 
 function tone(
@@ -100,6 +108,52 @@ export const sfx = {
     // composed, a little too smooth. Distinct from a human message.
     tone(1046, 0.12, { type: 'sine', gain: 0.04 })
     tone(1318, 0.16, { type: 'sine', gain: 0.034, delay: 0.1 })
+  },
+}
+
+/* THE SIGNAL DESK — game-layer feedback. Same gentle synth voice as the
+   OS, tuned a fifth apart so the desk sounds like the case file, not the
+   phone. Every cue is tied to something visible: a move landing, a clue
+   found, the pressure ratchet, the grade stamp. */
+export const gameSfx = {
+  verify() {
+    tone(587, 0.09, { type: 'triangle', gain: 0.05 })
+    tone(880, 0.16, { type: 'triangle', gain: 0.045, delay: 0.07 })
+  },
+  protect() {
+    tone(440, 0.1, { type: 'triangle', gain: 0.045 })
+    tone(659, 0.14, { type: 'triangle', gain: 0.04, delay: 0.08 })
+  },
+  risk() {
+    tone(220, 0.16, { type: 'sine', gain: 0.05, slideTo: 165 })
+  },
+  drift() {
+    tone(330, 0.12, { type: 'sine', gain: 0.035, slideTo: 294 })
+  },
+  neutral() {
+    tone(523, 0.07, { type: 'sine', gain: 0.03 })
+  },
+  clue() {
+    tone(1174, 0.08, { type: 'triangle', gain: 0.04 })
+    tone(1568, 0.14, { type: 'triangle', gain: 0.035, delay: 0.06 })
+  },
+  tension() {
+    tone(196, 0.06, { type: 'square', gain: 0.02 })
+    tone(147, 0.09, { type: 'square', gain: 0.016, delay: 0.05 })
+  },
+  stamp() {
+    tone(165, 0.1, { type: 'triangle', gain: 0.07, slideTo: 110 })
+    tone(82, 0.18, { type: 'sine', gain: 0.06, delay: 0.02 })
+  },
+  tick() {
+    tone(1046 + Math.random() * 200, 0.02, { type: 'sine', gain: 0.014 })
+  },
+  /** the verdict fanfare — its arpeggio grows with the grade */
+  fanfare(notes: number) {
+    const scale = [523, 659, 784, 1046, 1318]
+    for (let i = 0; i < Math.min(notes, scale.length); i++) {
+      tone(scale[i], i === notes - 1 ? 0.26 : 0.11, { type: 'triangle', gain: 0.05, delay: i * 0.1 })
+    }
   },
 }
 

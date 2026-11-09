@@ -42,7 +42,8 @@ await tapWhen(/THREE PHONES/i)
 await tapWhen(/pick up/i)
 await settle(8200)
 await tapWhen(/Swipe up to open/i)
-await tapWhen(/Open the family GC/i, 15000) // dismiss the wake moment; stay on home
+await tapWhen(/Open the family GC/i, 15000) // the wake moment opens the GC thread
+await tapWhen(/^Home$/i, 5000) // later messages land off-screen → a banner drops
 
 // messages land off-screen → a banner drops
 const banner = page.getByRole('button', { name: /Salamat po Ate/ }).first()

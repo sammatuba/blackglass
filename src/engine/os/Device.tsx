@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import type { AppId, CaseOS, OSMessage, OSMoment, OSState } from './types'
 import {
   applyPushAt,
@@ -16,7 +17,7 @@ import { sfx, vibrate } from './sound'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
-import { FullscreenToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
+import { FullscreenToggle, MuteToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
 import { aiRegen, aiThumbs } from './runtime'
 
 /* glassOS Device — the found-phone shell. Lock → home → apps, with a
@@ -44,14 +45,15 @@ export function GlassOS({
   onComplete,
 }: {
   caseDef: CaseOS
-  /** resume a saved run — the device opens unlocked, world as it was left */
+  /** resume a saved run — the phone wakes on the lock screen, world as it was left */
   initialState?: OSState
   /** called with the live state as it changes (debounced); enables resume */
   onStateChange?: (state: OSState) => void
   onExit: () => void
   onComplete: (state: OSState) => void
 }) {
-  const [locked, setLocked] = useState(!initialState)
+  const returning = useRef(!!initialState).current
+  const [locked, setLocked] = useState(true)
   const [app, setApp] = useState<AppId | null>(null)
   const [threadId, setThreadId] = useState<string | null>(null)
   const [browserPage, setBrowserPage] = useState<string | null>(null)
@@ -225,6 +227,8 @@ export function GlassOS({
 
   useEffect(() => {
     cancelledRef.current = false
+    // a returning phone is already mid-conversation — unlocking restarts the pump
+    if (returning) return () => { cancelledRef.current = true }
     void (async () => {
       // deliver the opening messages (you're on the lock screen; the phone buzzes)
       for (let i = 0; i < caseDef.opening.length; i++) {
@@ -296,6 +300,14 @@ export function GlassOS({
     setUnread(0)
   }, [])
 
+  /** the power control: screen off, the world held exactly where it is */
+  const lockPhone = useCallback(() => {
+    sfx.open()
+    vibrate(8)
+    setShadeOpen(false)
+    setLocked(true)
+  }, [])
+
   /** leave the device: flush the live run first so nothing is lost */
   const exitNow = useCallback(() => {
     if (!completedRef.current) changeRef.current?.(osRef.current)
@@ -331,11 +343,12 @@ export function GlassOS({
         // without accidentally leaving the whole app behind it.
         if (document.querySelector('.device-frame [role="dialog"]')) return
         if (app) goBack()
+        else lockPhone()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [locked, unlock, goBack, app, os.call, confirmExit, shadeOpen])
+  }, [locked, unlock, goBack, app, os.call, confirmExit, shadeOpen, lockPhone])
 
   /* ---------- call sound loop ---------- */
   useEffect(() => {
@@ -407,9 +420,12 @@ export function GlassOS({
       <DeviceFrame
         caseDef={caseDef}
         locked={locked}
+        returning={returning}
         brightness={brightness}
         onBrightness={setBrightness}
         onUnlock={unlock}
+        onLock={lockPhone}
+        onExitRequest={() => setConfirmExit(true)}
         app={app}
         threadId={threadId}
         browserPage={browserPage}
@@ -471,7 +487,7 @@ export function GlassOS({
         onClearLog={() => setBannerLog([])}
       />
     ),
-    [caseDef, locked, brightness, unlock, app, threadId, browserPage, galleryPhotoId, returnTo, goBack, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
+    [caseDef, locked, returning, brightness, unlock, lockPhone, app, threadId, browserPage, galleryPhotoId, returnTo, goBack, os, typingIn, openApp, goHome, onExit, acceptCall, endCall, dismissMoment, bump, pushBanner, bannerLog, shadeOpen, unread, openShade],
   )
 
   const ringing = os.call?.phase === 'incoming'
@@ -484,7 +500,7 @@ export function GlassOS({
         pulse={pulse}
         ringing={ringing}
         header={
-          <div className="relative z-10 flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3 sm:flex-nowrap sm:pt-4">
+          <div className="pov-chrome relative z-10 flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3 sm:flex-nowrap sm:pt-4">
             <button
               type="button"
               onClick={() => setConfirmExit(true)}
@@ -499,13 +515,12 @@ export function GlassOS({
             <div className="order-2 shrink-0 sm:order-none"><FullscreenToggle /></div>
           </div>
         }
-        footer={<div className="min-h-5" aria-hidden="true" />}
       >
         <div className="relative w-full">
           {device}
           {/* notification banners ride with the device; tap to open the thread.
               They sit below the app header so nav controls stay reachable. */}
-          <div className={`os-skin ${caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''} pointer-events-none absolute left-1/2 top-18 z-50 w-[88%] -translate-x-1/2 space-y-2`}>
+          <div className={`os-skin ${caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''} os-safe-banners pointer-events-none absolute left-1/2 z-50 w-[88%] -translate-x-1/2 space-y-2`}>
             {banners.map((b) => (
               <button
                 key={b.id}
@@ -573,9 +588,12 @@ export function GlassOS({
 function DeviceFrame(props: {
   caseDef: CaseOS
   locked: boolean
+  returning: boolean
   brightness: number
   onBrightness: (n: number) => void
   onUnlock: () => void
+  onLock: () => void
+  onExitRequest: () => void
   app: AppId | null
   threadId: string | null
   browserPage: string | null
@@ -604,8 +622,27 @@ function DeviceFrame(props: {
   onClearLog: () => void
 }) {
   const { caseDef, locked, os } = props
+  const shadeStart = useRef<number | null>(null)
+  const lastHome = useRef(0)
+
+  const shadeDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    shadeStart.current = e.clientY
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
+  const shadeUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const start = shadeStart.current
+    shadeStart.current = null
+    if (start != null && e.clientY - start > 28) props.onOpenShade()
+  }
+  const goHomeOnce = () => {
+    const now = performance.now()
+    if (now - lastHome.current < 350) return
+    lastHome.current = now
+    props.onGoHome()
+  }
+
   return (
-    <div className="relative mx-auto w-full max-w-[400px]">
+    <div className="device-shell relative mx-auto w-full max-w-[400px]">
       <div className="device-frame relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5">
         {/* screen */}
         <div
@@ -623,7 +660,13 @@ function DeviceFrame(props: {
           />
 
           {locked ? (
-            <LockScreen caseDef={caseDef} os={os} onUnlock={props.onUnlock} />
+            <LockScreen
+              caseDef={caseDef}
+              os={os}
+              returning={props.returning}
+              onUnlock={props.onUnlock}
+              onExit={props.onExitRequest}
+            />
           ) : props.app ? (
             <AppSurface {...props} app={props.app} />
           ) : (
@@ -654,7 +697,7 @@ function DeviceFrame(props: {
               role="dialog"
               aria-label="Notifications"
             >
-              <div className="flex items-center justify-between px-4 pt-10 pb-2">
+              <div className="os-safe-shade flex items-center justify-between px-4 pb-2">
                 <span className="text-[11px] font-bold tracking-[0.2em] text-[var(--os-faint)] uppercase">Notifications</span>
                 <div className="flex items-center gap-2">
                   <button
@@ -674,7 +717,7 @@ function DeviceFrame(props: {
                   </button>
                 </div>
               </div>
-              <div className="min-h-0 flex-1 space-y-2 overflow-y-auto px-3 pb-8">
+              <div className="os-safe-shade-list min-h-0 flex-1 space-y-2 overflow-y-auto px-3">
                 {props.bannerLog.length === 0 ? (
                   <p className="px-2 py-10 text-center text-xs text-[var(--os-faint)]">No notifications yet.</p>
                 ) : (
@@ -713,15 +756,28 @@ function DeviceFrame(props: {
             }}
             aria-hidden="true"
           />
-          {/* status bar sits above everything except call overlay */}
+          {/* status bar sits above everything except call overlay; pulling
+              down from its centre opens the shade */}
           {!locked && (
-            <StatusBar
-              time={caseDef.phone.time}
-              meridiem={caseDef.phone.meridiem}
-              battery={caseDef.phone.battery}
-              unread={props.unread}
-              onOpenShade={props.onOpenShade}
-            />
+            <>
+              <div
+                aria-hidden="true"
+                className="absolute left-1/2 top-0 z-30 h-8 w-40 -translate-x-1/2 touch-none"
+                onPointerDown={shadeDown}
+                onPointerUp={shadeUp}
+                onPointerCancel={() => {
+                  shadeStart.current = null
+                }}
+              />
+              <StatusBar
+                time={caseDef.phone.time}
+                meridiem={caseDef.phone.meridiem}
+                battery={caseDef.phone.battery}
+                unread={props.unread}
+                onOpenShade={props.onOpenShade}
+                onLock={props.onLock}
+              />
+            </>
           )}
         </div>
         {/* gesture bar */}
@@ -729,8 +785,9 @@ function DeviceFrame(props: {
           <button
             type="button"
             aria-label="Home"
-            onClick={props.onGoHome}
-            className="os-gesturebar absolute bottom-1.5 left-1/2 z-40 h-5 w-28 -translate-x-1/2 rounded-full transition-colors before:absolute before:-inset-x-8 before:-inset-y-3 before:content-['']"
+            onClick={goHomeOnce}
+            onPointerUp={goHomeOnce}
+            className="os-gesturebar os-safe-gesturebar absolute left-1/2 z-40 h-5 w-28 -translate-x-1/2 touch-none rounded-full transition-colors before:absolute before:-inset-x-8 before:-inset-y-3 before:content-['']"
           />
         )}
       </div>
@@ -744,24 +801,39 @@ function StatusBar({
   battery,
   unread,
   onOpenShade,
+  onLock,
 }: {
   time: string
   meridiem: string
   battery: number
   unread: number
   onOpenShade: () => void
+  onLock: () => void
 }) {
   return (
-    <div className="pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 pt-3.5 text-[11px] font-semibold text-[var(--os-ink)]">
+    <div className="os-safe-status pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 text-[11px] font-semibold text-[var(--os-ink)]">
       <span>
         {time} <span className="opacity-70">{meridiem}</span>
       </span>
       <span className="flex items-center gap-1.5">
+        <MuteToggle />
+        <button
+          type="button"
+          onClick={onLock}
+          aria-label="Lock the phone"
+          title="Lock the phone"
+          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
+        >
+          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M12 3v8" />
+            <path d="M6.4 6.4a8 8 0 1 0 11.2 0" />
+          </svg>
+        </button>
         <button
           type="button"
           onClick={onOpenShade}
           aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
-          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full text-[10px]"
+          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full text-[10px] before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
         >
           🔔
           {unread > 0 && (
@@ -796,7 +868,7 @@ function MomentOverlay({
   }, [])
   return (
     <div
-      className="animate-fadein absolute inset-0 z-[45] flex flex-col justify-center overflow-y-auto bg-[var(--os-bg)] px-7 py-10"
+      className="os-safe-moment animate-fadein absolute inset-0 z-[45] flex flex-col justify-center overflow-y-auto bg-[var(--os-bg)] px-7"
       role="dialog"
       aria-label="Narrative moment"
     >
@@ -819,7 +891,19 @@ function MomentOverlay({
   )
 }
 
-function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; onUnlock: () => void }) {
+function LockScreen({
+  caseDef,
+  os,
+  returning,
+  onUnlock,
+  onExit,
+}: {
+  caseDef: CaseOS
+  os: OSState
+  returning: boolean
+  onUnlock: () => void
+  onExit: () => void
+}) {
   const preview = caseDef.threads
     .map((t) => {
       const msgs = visibleMessages(os, t.id)
@@ -829,8 +913,25 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
     .filter(Boolean)
     .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage }[]
 
+  const dragStart = useRef<number | null>(null)
+  const swipeDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    dragStart.current = e.clientY
+  }
+  const swipeUp = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const start = dragStart.current
+    dragStart.current = null
+    if (start != null && start - e.clientY > 52) onUnlock()
+  }
+
   return (
-    <div className="absolute inset-0 z-20 flex flex-col px-6 pb-6 pt-14 text-[var(--os-ink)]">
+    <div
+      className="os-safe-lock absolute inset-0 z-20 flex touch-none flex-col px-6 text-[var(--os-ink)]"
+      onPointerDown={swipeDown}
+      onPointerUp={swipeUp}
+      onPointerCancel={() => {
+        dragStart.current = null
+      }}
+    >
       <div className="text-center">
         <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
         <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
@@ -840,6 +941,12 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
       </div>
 
       <div className="mt-auto space-y-2">
+        {returning && (
+          <p className="flex items-center justify-center gap-1.5 pb-1 text-2xs tracking-wide opacity-80">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--os-ok)]" aria-hidden="true" />
+            While you were away
+          </p>
+        )}
         {preview.map(({ t, last }) => (
           <button
             key={t.id}
@@ -856,19 +963,33 @@ function LockScreen({ caseDef, os, onUnlock }: { caseDef: CaseOS; os: OSState; o
             </div>
           </button>
         ))}
+        {returning && (
+          <p className="pt-1 text-center text-2xs italic leading-snug text-[var(--os-faint)]">
+            The conversation is where you left it.
+          </p>
+        )}
       </div>
 
       <button
         type="button"
         onClick={onUnlock}
-        className="mx-auto mt-5 flex items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 py-2.5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
+        className="mx-auto mt-5 flex h-11 items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
       >
         ⌃ Swipe up to open
       </button>
       {caseDef.phone.lockNote && (
         <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">{caseDef.phone.lockNote}</p>
       )}
-      <p className="sr-only">Press Enter or activate the unlock button to open the phone.</p>
+      <div className="mt-1 flex justify-center">
+        <button
+          type="button"
+          onClick={onExit}
+          className="pov-only h-11 items-center rounded-full px-4 text-2xs text-[var(--os-faint)] transition-colors hover:text-[var(--os-dim)]"
+        >
+          Put the phone down
+        </button>
+      </div>
+      <p className="sr-only">Swipe up or press Enter to open the phone.</p>
     </div>
   )
 }
@@ -924,7 +1045,7 @@ function HomeScreen({
   }
 
   return (
-    <div className="absolute inset-0 z-10 flex flex-col px-5 pb-4 pt-12 text-[var(--os-ink)]">
+    <div className="os-safe-home absolute inset-0 z-10 flex flex-col px-5 text-[var(--os-ink)]">
       <div className="grid grid-cols-4 gap-x-3 gap-y-5">
         {tiles.map(renderIcon)}
       </div>
@@ -1010,7 +1131,7 @@ function AppSurface(props: {
 
   return (
     <div className="absolute inset-0 z-20 flex animate-appopen flex-col bg-[var(--os-bg)]/95 backdrop-blur-xl">
-      <div className="mt-9 flex items-center gap-2 px-4 pb-2">
+      <div className="os-safe-app flex items-center gap-2 px-4 pb-2">
         <button
           type="button"
           onClick={props.onGoBack}
@@ -1021,7 +1142,7 @@ function AppSurface(props: {
         </button>
         <span className="truncate text-[13px] font-bold text-[var(--os-ink)]">{meta.name}</span>
       </div>
-      <div className="min-h-0 flex-1">{inner}</div>
+      <div className="os-app-body min-h-0 flex-1">{inner}</div>
     </div>
   )
 }
@@ -1044,8 +1165,27 @@ function CallOverlay({
   const outgoing = call.direction === 'out'
   const live = call.phase === 'live'
   const saved = caseDef.contacts.some((c) => c.number === call.number)
+  const swipeStart = useRef<number | null>(null)
+  const callSwipeStart = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (call.phase === 'incoming') swipeStart.current = e.clientY
+  }
+  const callSwipeEnd = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const start = swipeStart.current
+    swipeStart.current = null
+    if (start == null || call.phase !== 'incoming') return
+    const dy = start - e.clientY
+    if (dy > 56) onAccept()
+    else if (dy < -56) onEnd(true)
+  }
   return (
-    <div className="absolute inset-0 z-50 flex animate-fadein flex-col items-center bg-gradient-to-b from-[var(--os-panel)]/98 to-[var(--os-bg)]/98 px-6 pb-10 pt-16 text-[var(--os-ink)] backdrop-blur-xl">
+    <div
+      className="os-safe-call absolute inset-0 z-50 flex animate-fadein touch-none flex-col items-center bg-gradient-to-b from-[var(--os-panel)]/98 to-[var(--os-bg)]/98 px-6 text-[var(--os-ink)] backdrop-blur-xl"
+      onPointerDown={callSwipeStart}
+      onPointerUp={callSwipeEnd}
+      onPointerCancel={() => {
+        swipeStart.current = null
+      }}
+    >
       <div className="text-2xs tracking-[0.25em] text-[var(--os-dim)] uppercase">
         {call.phase === 'incoming' ? 'Incoming Viber call' : outgoing ? `Calling ${saved ? 'saved contact' : 'number'}` : call.phase === 'live' ? 'Connected' : 'Call ended'}
       </div>
@@ -1072,7 +1212,13 @@ function CallOverlay({
         </div>
       )}
 
-      <div className="mt-auto flex items-center gap-10">
+      <div className="mt-auto flex w-full flex-col items-center">
+        {call.phase === 'incoming' && (
+          <p className="pov-only mb-4 items-center justify-center text-2xs tracking-wide text-[var(--os-faint)]">
+            Swipe up to answer · down to decline
+          </p>
+        )}
+        <div className="flex items-center gap-10">
         {call.phase === 'incoming' ? (
           <>
             <button
@@ -1104,6 +1250,7 @@ function CallOverlay({
             <span className="text-2xs text-[var(--os-dim)]">{live ? 'End call' : 'Close'}</span>
           </button>
         )}
+        </div>
       </div>
       {live && (
         <div className="mt-4 flex items-end gap-[3px]" aria-hidden="true">

@@ -119,7 +119,24 @@ Rules:
 Phone screens are themed by CSS variable sets on `.os-skin` / `.theme-<character>`:
 --os-bg, --os-panel, --os-ink, --os-dim, --os-faint, --os-hairline, --os-hover, --os-chip, --os-bub-in/-out (+ -ink), --os-accent (+ -ink), --os-chip-border/-bg/-bg-hover, --os-ok (+ -ink), --os-danger (+ -ink), --os-narr, --os-narr-size.
 
-Examples of the range: Maya (near-black, amber ink #f0c46f, minimal), Tita (warm cream #fbf6ec, maximal, plum bubbles #7b54c4), Bea (white, link-blue #1d9bf0, system-ui narration). --os-faint is tuned per skin to hold WCAG AA at 11px: maya #857b68, tita #7f7563, bea #66717f. A component must never hardcode a color inside a phone — it consumes the skin variables so the same UI becomes a different person.
+Examples of the range: Maya (near-black, amber ink #f0c46f, minimal), Tita (warm cream #fbf6ec, maximal, plum bubbles #7b54c4), Bea (white, link-blue #1d9bf0, system-ui narration). --os-faint is tuned per skin to hold WCAG AA at 11px: maya #857b68, tita #7f7563, bea #66717f. A component must never hardcode a color inside a phone — it consumes the skin variables so the same UI becomes a different person. The accent/ink pair is the pair that must survive: Tita’s `--os-accent-ink` and Bea’s are dark inks on their ochre and link-blue accents, because the prose-moment primary button is normal-size bold text (AA 4.5:1).
+
+## The POV shell — the phone is the page
+
+- At ≤899px the desk scene is removed rather than shrunk: `.stage-root`/`.device-frame`/`.os-skin` are `100dvh`, no bezel, no page header, no footer, no fullscreen button. Above 899px the desk, bevel, glow, tilt, sheen, and header stay.
+- Chrome sits on `env(safe-area-inset-*)` through the `.os-safe-*` classes; `env()` is zero on desktop, so one markup serves both. The status bar takes the top inset, the lock/home/call/moment surfaces take the bottom one, and the banners start below the status bar.
+- The home indicator is a real `.os-gesturebar` control: 44px tall hit area, visible 5px bar, bottom of the safe area. `.os-app-body` reserves `3rem + inset` on phones so the indicator never covers a reply, dock, or primary action.
+- Returning runs wake locked. `LockScreen` receives `returning` and shows “While you were away” above the last threads; the opening push sequence is skipped on resume and unlock re-enters the rule pump. The lock screen’s “Put the phone down” is the mobile exit; desktop keeps the header exit.
+- Gestures are accelerators, never the only door. Swipe up unlocks, pull down from the top centre opens the shade (pointer-captured), the home bar taps or swipes home, and an incoming call accepts on swipe up / declines on swipe down. The visible buttons, Enter unlock, Esc home→lock, and the notification bell remain the keyboard and screen-reader paths.
+- No color-only meaning: “While you were away” is text plus a dot, the gesture hint is copy, and the power control has an explicit accessible name.
+
+## The signal desk — the game layer around the glass
+
+- The desk is the world outside the phone and uses the desk palette (`--color-*` game tokens, MOVE_COLOR/GRADE_COLOR in `score.ts`); the skin-variable rule governs phone screens only. Nothing of the desk may render inside the full-bleed phone.
+- Two display channels, one truth (`scoreRun`): at ≥1200px the desk rails (`SignalDesk.tsx`) flank the phone — case file (objective, stakes, the episode pressure meter) and signal desk (clues, reflex feed, live total). Below 1200px the rails hide and the desk speaks in `.signal-toast`s fixed above the gesture bar: pointer-transparent, ≤3 on screen, 3s TTL, muted while a moment or call owns the screen (`quiet`).
+- The pressure meter ratchets only on authored story flags — it is the episode's clock, not a player stat. Its fill is positional color (calm → amber → red) plus a text step label; never color alone.
+- The verdict (`Verdict.tsx`) keeps two ledgers apart: the grade stamps what you SAW (clues) and the reflexes you practiced (moves, kind-annotated); WHAT HAPPENED tells the story outcome. The stamp animates from a dashed ghost to a solid slam; reduced motion gets the stamp and fanfare immediately and the total without the count-up.
+- Every desk sound (`gameSfx`) is tied to a visible event, and the status-bar mute (broadcast through `glassos-mute`, consumed by Settings) silences desk and OS in one tap.
 
 ## Wallpapers — CSS only, scene-set by gradient
 

@@ -39,6 +39,7 @@ const progress = (over: Partial<AnchorProgress> = {}): AnchorProgress => ({
   evidence: {},
   inspected: {},
   live: {},
+  scores: {},
   ...over,
 })
 

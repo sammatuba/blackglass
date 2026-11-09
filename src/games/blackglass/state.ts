@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { FlagValue, OSState } from '../../engine/os/types'
+import type { Grade, PhoneScore } from './score'
 
 /* Anthology progress. Per anchor:
    - completed: which phones have been lived
@@ -21,10 +22,12 @@ export interface AnchorProgress {
   inspected: Record<string, string[]>
   /** phoneId -> in-progress OS state (resumable) */
   live: Record<string, OSState>
+  /** phoneId -> best signal score of the lived runs */
+  scores: Record<string, PhoneScore>
 }
 
 export function emptyAnchorProgress(): AnchorProgress {
-  return { completed: {}, runs: {}, evidence: {}, inspected: {}, live: {} }
+  return { completed: {}, runs: {}, evidence: {}, inspected: {}, live: {}, scores: {} }
 }
 
 /** persisted progress can predate any field — read through defaults */
@@ -36,6 +39,7 @@ export function anchorProgress(progress: AnchorProgress | undefined): AnchorProg
     evidence: progress.evidence ?? {},
     inspected: progress.inspected ?? {},
     live: progress.live ?? {},
+    scores: progress.scores ?? {},
   }
 }
 
@@ -50,6 +54,7 @@ interface BlackglassState {
     evidence: string[],
     inspected: string[],
   ) => void
+  recordScore: (anchorId: string, phoneId: string, total: number, grade: Grade) => void
   reset: () => void
 }
 
@@ -91,6 +96,24 @@ export const useBlackglass = create<BlackglassState>()(
               evidence: { ...prev.evidence, [phoneId]: evidence },
               inspected: { ...prev.inspected, [phoneId]: inspected },
               live,
+            }
+          }),
+        })),
+      recordScore: (anchorId, phoneId, total, grade) =>
+        set((s) => ({
+          anchors: touch(s.anchors, anchorId, (prev) => {
+            const old = prev.scores[phoneId]
+            const best = Math.max(old?.best ?? 0, total)
+            return {
+              ...prev,
+              scores: {
+                ...prev.scores,
+                [phoneId]: {
+                  best,
+                  grade: best === total ? grade : (old?.grade ?? grade),
+                  plays: (old?.plays ?? 0) + 1,
+                },
+              },
             }
           }),
         })),

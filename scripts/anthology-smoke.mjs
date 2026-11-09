@@ -25,7 +25,7 @@ const capture = async (label) => {
 }
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: 'chrome' })
+const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 // console errors are only collected while we're actually in the game: the
 // hub fallback probes a deep link that 404s on hosts without SPA rewrites
@@ -47,6 +47,9 @@ const tap = async (name, timeout = 8000) => {
   await page.waitForTimeout(400)
 }
 const settle = (ms) => page.waitForTimeout(ms)
+const assert = (cond, msg) => {
+  if (!cond) throw new Error(`ASSERT: ${msg}`)
+}
 const shot = (p) => page.screenshot({ path: p })
 const tryTap = async (name, timeout = 2000) => {
   try {
@@ -121,7 +124,13 @@ if (await page.getByRole('button', { name: /^Home$/i }).first().isVisible().catc
   await tryTap(/Open Messages/i)
   await tryTap(/Santos Family GC/i)
 }
-await settle(8000) // drain → completion → rack, the others wake
+await settle(8000) // drain → the case closes on the verdict dossier
+await shot('/tmp/bg-7-vc-verdict.png')
+assert((await page.getByText(/CASE CLOSED/i).count()) > 0, 'the verdict dossier closes the case')
+assert((await page.getByText(/Back to the rack/i).count()) > 0, 'the verdict offers the rack')
+await tap(/Back to the rack/i, 8000)
+await settle(1200)
+assert((await page.getByText(/✓ lived · signal/i).count()) > 0, 'the rack stamps the phone with its best signal')
 await shot('/tmp/bg-8-vc-rack-awake.png')
 
 /* ============ ANCHOR IV — FIVE WEEKS (full run) ============ */
@@ -140,9 +149,11 @@ await settle(3500)
 await tap(/Quote-post the correction/i)
 await settle(3500)
 await tap(/Leave them muted/i)
-await settle(5000) // the webinar chain drains → completion
-await shot('/tmp/bg-9-5w-webinar.png')
-await settle(2500)
+await settle(5000) // the webinar chain drains → the verdict
+await shot('/tmp/bg-9-5w-verdict.png')
+// the verdict hands back to the rack; the timeline door waits there
+await tap(/Back to the rack/i, 12000)
+await settle(800)
 await tap(/What five weeks did/i, 8000)
 await settle(1200)
 await shot('/tmp/bg-10-5w-timeline.png')
@@ -180,6 +191,8 @@ await settle(9000)
 await tap(/❤️ and scroll past/i)
 await tap(/Lock the phone/i, 10000)
 await settle(2500)
+await tryTap(/Back to the rack/i, 10000) // the drain closes on the verdict
+await settle(800)
 await shot('/tmp/bg-14-kangkong-awake.png')
 
 /* ============ ANCHOR V — CERTAIN (Ask spot-check: Tita's dosage) ============ */
