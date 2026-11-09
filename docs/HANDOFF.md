@@ -135,10 +135,15 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
   verdict-tone desk sounds, debrief as the verdict dossier), radar case debrief
   + Tell Exam results onto the same stamp, Hub YOUR SEASON strip (localStorage
   reads only — lazy boundaries hold), radar ⇄ anthology cross-links, unified
-  `✓ worked · signal N` case stamps. Gates: tsc clean, 66/66 tests, build +
-  3.7 MB budget, all eight smokes exit 0 (radar/os/exam/hub/anthology/resume/
-  shade/finale), axe 0 serious/critical on the new debrief + hub strip. Visual
-  probes: /tmp/probe-hub.png, probe-exam.png, probe-radar-menu.png, header-fix.png.
+  `✓ worked · signal N` case stamps. Review rework folded in first (all 5
+  findings: best-case records award-once, 0-point completions worked, case-file
+  objective, exam/hub smokes assert the new surfaces). Gates: tsc clean,
+  70/70 tests, build + 3.7 MB budget, all eight smokes exit 0, axe 0
+  serious/critical. Committed `6de80db`, pushed `main` → Workers Builds
+  published; `deploy.sh` refreshed gh-pages. Verified live: Workers hub strip +
+  feed desk probe exit 0 zero console errors, full anthology smoke exit 0;
+  Pages hub/radar/exam smokes exit 0 (radar needed one retry — busy system).
+- **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
 - **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
   committed `7d5ab3e`, pushed `main` → Workers Builds published, `deploy.sh`
   refreshed gh-pages. Verified live: anthology smoke exit 0 with zero console

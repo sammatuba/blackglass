@@ -2,6 +2,12 @@
   "work_id": "blackglass-suite-desk",
   "phase": "wrapup",
   "status": "complete",
+  "deployed": {
+    "commit": "6de80db (main, pushed 2026-11-10 with explicit user authorization)",
+    "workers_primary": "Workers Builds published the push; live probe at / asserts the hub season strip and /scam-radar the feed desk (live signal moved across 3 reads) — zero console errors; full anthology smoke exit 0 attempt 1",
+    "pages_secondary": "scripts/deploy.sh force-pushed dist to gh-pages; live hub/radar/exam smokes exit 0 (radar attempt 2 after one busy-system failure), season strip asserted at 159/184/73%/WATCHER",
+    "live_verification": "Workers: /tmp/workers-probe.mjs + SHOT_BASE anthology smoke; Pages: hub-smoke (seeded season + axe), radar-smoke (feed desk + dossier debrief + axe), exam-smoke (full deck → results stamp)"
+  },
   "intent": "Two user asks, in order: (1) make the Scam Radar feed triage a game interface and immersive, like the anthology's signal desk; (2) evaluate how to make the whole BLACKGLASS suite share one interface, then apply it, leveraging creative navigation and presentation. The evaluation found M6.5's desk language (case files, live signal + grade, move ledger, verdict dossier, season ranks) existed only inside the anthology: Feed Triage was a bare quiz, the case debrief had a private stamp dialect, exam results were plain tiles, and the Hub showed no record of a player's season. The applied unification: one grade language (S/A/B/C + CRYSTAL/CLEAR/HAZY/FOGGED), one stamp, one fanfare, one meter, extracted to src/games/shared/ and adopted by every scored surface; Feed Triage rebuilt as a shift at the feed desk; the Hub reads one season across the suite. The grade still measures what you saw and practiced, never what you saved; Glassbox stays deliberately scoreless.",
   "scope": [
     "src/games/shared/grade.ts (new) - the suite's pure grade logic: Grade, gradeFor, GRADE_NAME/GRADE_COLOR, RANKS/rankFor; no UI, no engine imports (the Hub can pull it)",
@@ -56,5 +62,5 @@
   "artifacts": [
     "Screenshots in /tmp listed under verification; review report .meos/reviews/20261109T231606Z.md"
   ],
-  "next_action": "Working tree verified and complete but NOT committed — commit+push+deploy wait on explicit user authorization (Workers Builds publishes on push; Pages via bash scripts/deploy.sh). After that: user plays the suite — the feed desk shift, a case debrief, the exam stamp, the Hub season strip — and reviews the shared feel; M7 content register (Tito Mike clip) unchanged."
+  "next_action": "Both hosts deployed and live-verified. Next: user plays the suite on the live hosts — the feed desk shift, a case debrief, the exam stamp, the Hub season strip — and reviews the shared feel; M7 content register (Tito Mike clip) unchanged."
 }
