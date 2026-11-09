@@ -38,9 +38,15 @@ The **season is content-complete**: hub → five anchors (13 phones) → THE CON
 5. **CERTAIN** — the assistant, one night (3 phones; new "Ask" app surface; shipped
    2026-11-03; E2 judgment PASS 4/4 in `docs/av-playthrough-judgment.md`).
 
-Plus: Tell Exam (E6 pedagogy measure), Scam Radar drills, Glassbox 01–02
-(transparency scrollytelling + feed model), PWA offline, voice notes with recorded
-provenance (`play/blackglass-phones/voice/PROVENANCE.md`).
+Plus: **the signal desk** (2026-11-09) — every phone is a scored case: authored
+pressure meters (SPREAD/URGENCY/THE PITCH/THE DRIFT/CONFIDENCE), move-weighted
+reflex scoring, live desk rails on wide desktops, POV toasts on mobile, a
+verdict dossier with grade stamp and fanfare, and season bests + ranks on the
+rack and hub (`score.ts`, `SignalDesk.tsx`, `Verdict.tsx`; the grade measures
+what you saw and practiced, never what you saved). Tell Exam (E6 pedagogy
+measure), Scam Radar drills, Glassbox 01–02 (transparency scrollytelling + feed
+model), PWA offline, voice notes with recorded provenance
+(`play/blackglass-phones/voice/PROVENANCE.md`).
 
 **The only placeholder left in the game:** the Tito Mike deepfake *clip* (anchor 3's
 video page plays the still + tells until it lands).
@@ -50,7 +56,7 @@ video page plays the still + tells until it lands).
 ```bash
 npm install                # once
 npm run build              # tsc + vite build (base /blackglass/ unless CF_PAGES/WORKERS_CI set)
-npm test                   # vitest (45 tests incl. glassbox + navigation contract)
+npm test                   # vitest (60 tests incl. scoring, glassbox + navigation contract)
 npm run assets:budget      # dist weight gate (~3.7 MB budget)
 npm run assets:sync        # regenerate artifact/voice manifests from play/ + public/
 npm run preview            # serve dist at localhost:4173 (Pages base)
@@ -117,6 +123,18 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
 
 ## 8. Session log (recent, newest first)
 
+- **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
+  committed `7d5ab3e`, pushed `main` → Workers Builds published, `deploy.sh`
+  refreshed gh-pages. Verified live: anthology smoke exit 0 with zero console
+  errors on the Workers host (full 5-anchor playthrough incl. the new verdict
+  beats), Pages serving the new bundle. Review rework folded in beforehand:
+  Ask citation sources count as clue points, touch-none swipe surfaces, AA
+  ink-500 (5.1:1 rendered), toasts clear of the reply dock. Smoke repairs:
+  base-aware `gotoGame` (Workers mounts the anthology at `/blackglass`),
+  finale seeded for the 13-phone season, shade aligned with moment-to-thread,
+  os-smoke self-healing thread re-entry (5× green). Both hosts answered 200 at
+  close; `SHOT_BASE=<host> SMOKE_CHANNEL=chromium` runs smokes where system
+  Chrome is absent.
 - **2026-11-03 (b)** — integrated the parallel `main` line (glassOS navigation, photo
   attachments, searchable history, Glassbox, Cloudflare deploys) with Anchor V:
   assistant-aware `openThread` routing, moments open Ask directly, smokes + navigation

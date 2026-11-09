@@ -63,14 +63,23 @@ const tryTap = async (name, timeout = 2000) => {
   }
 }
 
-// enter the game (deep link locally; hub fallback where the host 404s a route)
+// enter the game. Deep links differ by host base: Pages builds mount the
+// anthology at /blackglass/blackglass, root-base Workers hosts at
+// /blackglass — and a mismatched link lands on the hub via the catch-all.
+// Probe the candidates and confirm the anchor select actually rendered
+// ("Season signal" exists only in the game), falling back to the hub card.
 const gotoGame = async () => {
   auditing = false
-  // the deep link is expected to 404 where the host has no SPA fallback; never
-  // wait for networkidle on it — a 404 document can leave the request hung
-  const direct = await gotoWithRetry(page, `${BASE}/blackglass/blackglass`, { attempts: 2 }).catch(() => null)
-  if (!direct?.ok()) {
-    await gotoWithRetry(page, `${BASE}/blackglass/`)
+  const inGame = async () => (await page.getByText(/Season signal/i).count()) > 0
+  for (const path of ['/blackglass/blackglass', '/blackglass', '/']) {
+    // a 404 document can leave the request hung — never wait for networkidle
+    const res = await gotoWithRetry(page, `${BASE}${path}`, { attempts: 2 }).catch(() => null)
+    if (!res?.ok()) continue
+    await settle(600)
+    if (await inGame()) break
+  }
+  if (!(await inGame())) {
+    await gotoWithRetry(page, `${BASE}/`)
     const card = page.getByRole('link', { name: /Three phones\. One morning/i }).first()
     await card.waitFor({ state: 'visible', timeout: 15000 })
     await card.click()

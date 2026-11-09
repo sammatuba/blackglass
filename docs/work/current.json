@@ -2,6 +2,12 @@
   "work_id": "blackglass-signal-desk",
   "phase": "wrapup",
   "status": "complete",
+  "deployed": {
+    "commit": "7d5ab3e (main, pushed 2026-11-10 with explicit user authorization)",
+    "workers_primary": "Workers Builds published the push; live CSS verified to carry the new rules (.signal-rail-left, .verdict-stamp-grade, ink-500 #6f83a8)",
+    "pages_secondary": "scripts/deploy.sh force-pushed dist to gh-pages; live asset hash index-gAS8-bEu.css matches the new build",
+    "live_verification": "anthology smoke against https://blackglass.sammatuba.workers.dev - exit 0, zero console errors, full 5-anchor playthrough including the verdict beats (with the base-aware gotoGame fix below)"
+  },
   "intent": "Make the anthology play like a game (modeled on Beyond Megawatts: visible meters, grade stamps, best-score season progression) without breaking the canon: the grade measures what you SAW and the reflexes you practiced, never what you saved. Resumed and completed the stalled session's in-flight pass.",
   "scope": [
     "src/games/blackglass/score.ts - pure scoring layer: CASE_GAMES per phone (objective, stakes, tension meter named for the episode, move weights, outcome lines), gradeFor/scoreRun/tensionLevel, season RANKS; unit-tested",
@@ -37,7 +43,7 @@
     "tsc clean; 58/58 unit tests; production build + asset budget green; all six smokes exit 0 with zero console errors; axe 0 serious/critical on the phone run and the desk rails."
   ],
   "blockers": [],
-  "next_action": "User review of the game feel (desk rails at >=1200px, POV toasts on mobile, the verdict dossier after closing a phone) on the uncommitted tree - it now holds BOTH this pass and the still-uncommitted inhabited-POV shell. On approval, commit both passes; push/deploy stays user-authorized.",
+  "next_action": "Both hosts are deployed and live-verified (Workers smoke exit 0 zero console errors; Pages serving the new bundle). Next: user review of the game feel on the live hosts (desk rails at >=1200px, POV toasts on mobile, verdict dossier after closing a phone); content follow-ups (real deepfake clip) stay on the M7 register.",
   "review": {
     "mode": "independent reviewer via ./meos review (report: .meos/reviews/20261109T154859Z.md) — VERDICT: rework — all five findings addressed in the rework pass below; author self-review of the original pass also recorded",
     "verdict": "rework -> reworked (fixes verified; see verification)",
@@ -51,7 +57,8 @@
       "author self-review | per-toast role=status collided with the OS forward-confirmation locator (shade smoke strict-mode failure) and duplicated the aria-live container | role removed",
       "author self-review | stale smokes red on clean HEAD before this pass: finale seed lived 10 phones of the 13-phone season (finale locked), shade expected an off-screen banner that the moment-to-thread contract no longer produces | finale seed widened to 13 with Anchor V choices, 10/10 -> 13/13; shade returns home before the banner beat",
       "note | toasts skip neutral moves by design (the desk does not celebrate the story's default); the move still scores in the feed and the verdict",
-      "note | os-smoke proved timing-flaky at the 'Call the saved number anyway' beat (4s window vs rule-pumped reply; reproduced on reruns unrelated to rework) | that tap's window widened to 12s; 4 consecutive green runs recorded"
+      "note | os-smoke proved timing-flaky at the 'Call the saved number anyway' beat (4s window vs rule-pumped reply; reproduced on reruns unrelated to rework) | that tap's window widened to 12s; 4 consecutive green runs recorded",
+      "important | scripts/anthology-smoke.mjs gotoGame (found at live verification) | the smoke probed only the Pages-style deep link; on the root-base Workers host that URL falls through the catch-all to the hub, so the first live run timed out before the game rendered | gotoGame now probes /blackglass/blackglass, /blackglass and / and confirms the anchor select rendered ('Season signal' marker) before tapping; live Workers smoke exit 0, local Pages-base smoke exit 0"
     ]
   },
   "verification": [
