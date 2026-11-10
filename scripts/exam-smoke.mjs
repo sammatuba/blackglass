@@ -81,6 +81,11 @@ if (!stampOk) throw new Error(`ASSERT: the exam results never showed the shared 
 //      the viewer route is reached through the hub — deep links 404 live) ———
 await gotoWithRetry(page, `${BASE}/blackglass/`)
 await page.waitForTimeout(800)
+// the legacy pieces live in the archive drawer — open it first
+const archiveSummary = page.getByText(/The archive — \d+ legacy pieces/i)
+await archiveSummary.scrollIntoViewIfNeeded()
+await archiveSummary.click()
+await page.waitForTimeout(400)
 const classicCard = page.getByRole('link', { name: /BLACKGLASS · classic/i }).first()
 await classicCard.waitFor({ state: 'visible', timeout: 15000 })
 await classicCard.click()

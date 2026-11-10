@@ -149,6 +149,16 @@ one fanfare, one meter — extracted so every scored surface speaks them:
 - **Round/case/exam signals are all `/100` with honest denominators:** the feed round's max includes the streak bonus on both sides (`readMax`), the case divides by 60, the exam by the planted-tell count. `gradeFor` thresholds are shared, so a B means the same thing everywhere.
 - **The grade still measures what you saw and practiced** — reads made, flags caught, clues seen, reflexes practiced — never what the scam did. Glassbox stays deliberately scoreless; its paper language is its own.
 
+## The operator's console — the hub joins the desk fiction
+
+The hub is not a landing page; it is the desk the suite already speaks about.
+You arrive as the operator; everything playable is a station of equipment.
+
+- **Station anatomy** (`src/ui/Station.tsx`): silhouette tile (icon + status LED, lit once a record exists via `--station-accent`), kicker in the desk metaphor (`PLAY · THE PHONE RACK`), product name, ONE line, and the record stamp in the shared chip voice (`✓ 159 · WATCHER` / `UNPLAYED`). Stations are plain links — Tab reaches them, Enter activates, keys 1–5 jump and 6 toggles the archive (HOTKEY_ROUTES in `Hub.tsx`).
+- **Everything playable has one place:** three stations (rack/feed/lens), the glassbox lab (its live computed paper readouts stay — they are content, not chrome), the operator badge (the season strip, od-id `season`, unchanged data contract), and the archive drawer (all six legacy pieces, openable; no NEW/LEGACY badge guessing). One line per station; the games do the explaining on their own turf.
+- **The route boot is part of the language** (`src/app/RouteBoot.tsx` + the `RouteBootGate` overlay in `App.tsx`): module loads show the console boot (brand mark, `.boot-scan` shimmer, honest first-visit line), never a bare black page — and because Router v7's startTransition retains the stale page, the overlay covers it whenever the destination chunk isn't warm. Static under reduced motion.
+- **Chunks warm before the click** (`src/app/prefetch.ts`): stations fire `prefetchRoute()` on pointerenter/focus; the hub warms all routes at idle. The prefetch map mirrors App.tsx's lazy factories exactly — add new routes to BOTH (and to ROUTE_MODULES in App.tsx). `scripts/nav-perf.mjs` is the gate (isolated hover-prefetch proof, cold-click boot, time-to-interactive).
+
 ## Wallpapers — CSS only, scene-set by gradient
 
 `.wall-*` classes paint scenes in pure CSS (dusk, dawn, leaf, grid, mtpulag, lastsupper, tweet): layered linear/radial gradients, optional ::before/::after for light shafts or oversized serif punctuation. No raster backgrounds for walls; diegetic imagery arrives as content artifacts, not decoration.

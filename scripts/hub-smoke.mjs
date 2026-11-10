@@ -1,5 +1,6 @@
-/* Dev helper: load the hub and confirm the hero path is healthy —
-   capability gate → idle import → canvas renders, zero console errors.
+/* Dev helper: load the hub and confirm the operator's console is healthy —
+   capability gate → idle import → canvas renders, the desk stations answer,
+   the seeded season badge shows, zero console errors.
    The hero chunk is NOT precached, so this also exercises the
    degrade-to-CSS-gradient path on any load failure.
    NOTE: this one takes the ORIGIN as SHOT_BASE (it appends /blackglass/):
@@ -43,9 +44,32 @@ const seasonOk =
   seasonText.includes('184') &&
   seasonText.includes('73%') &&
   /WATCHER/.test(seasonText)
+
+// the desk: stations carry their records as stamps (the seeded season must
+// light all three LEDs), and the archive drawer holds the legacy pieces
+const stationStamps = await page.evaluate(() => {
+  const pick = (id) => document.querySelector(`[data-od-id="${id}"]`)?.textContent ?? ''
+  return {
+    rack: pick('station-rack'),
+    feed: pick('station-feed'),
+    lens: pick('station-lens'),
+    desk: Boolean(document.querySelector('[data-od-id="desk"]')),
+  }
+})
+const stationsOk =
+  stationStamps.desk &&
+  /159 · WATCHER/.test(stationStamps.rack) &&
+  /184 pts · streak 6×/i.test(stationStamps.feed) &&
+  /73% best/i.test(stationStamps.lens)
+// the drawer must open before its links are reachable
+await page.getByText(/The archive — \d+ legacy pieces/i).click()
+await page.waitForTimeout(400)
+const archiveOk = await page.getByRole('link', { name: /BLACKGLASS · classic/i }).isVisible().catch(() => false)
 await page.screenshot({ path: '/tmp/hub-hero.png' })
 await axeCheck(page, 'hub')
 
-console.log(JSON.stringify({ canvasCount, heroTitle, seasonOk, seasonText: seasonText.slice(0, 200), errors }, null, 2))
+console.log(
+  JSON.stringify({ canvasCount, heroTitle, seasonOk, stationsOk, stationStamps, archiveOk, seasonText: seasonText.slice(0, 200), errors }, null, 2),
+)
 await browser.close()
-process.exit(errors.length === 0 && canvasCount > 0 && heroTitle === 1 && seasonOk ? 0 : 1)
+process.exit(errors.length === 0 && canvasCount > 0 && heroTitle === 1 && seasonOk && stationsOk && archiveOk ? 0 : 1)

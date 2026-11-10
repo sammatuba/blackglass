@@ -1,0 +1,61 @@
+{
+  "work_id": "blackglass-operator-console",
+  "phase": "wrapup",
+  "status": "complete",
+  "deployed": false,
+  "intent": "Two user asks, in order: (1) fix the navigation performance — coming from the home page, clicking into different modules sometimes shows long delays with just a black background; (2) make the hub a full-fledged, immersive game interface — a creative game-menu hub in the found-device fiction that unifies everything playable, because today it reads like a text-heavy brochure. Strategy findings: the black screen is App.tsx's single Suspense fallback (a dim 'Loading…' string over #070b14) shown while a lazy game chunk (14–217 KB raw) streams over the network; the hub unmounts during the fetch, nothing prefetches on hover, and the SW precache only masks repeat visits — hence 'sometimes'. The hub redesign follows the suite's own established fiction: M6.5/M6.6 made 'the signal desk' the shared language (dossiers, stamps, meters, shifts) — so the hub becomes THE OPERATOR'S CONSOLE, the desk itself. You arrive as the operator; every playable thing is a station of equipment on the desk: THE PHONE RACK (the anthology), THE FEED DESK (Scam Radar), THE LENS BENCH (Tell Exam), THE GLASSBOX LAB (both explorables, keeping their live computed paper previews — the strongest content on the page), THE ARCHIVE DRAWER (all six legacy pieces, collapsed into one place, which also kills the confusing NEW/LEGACY badge split), and THE OPERATOR BADGE (the season strip as your ID card, same localStorage reads, same od-id). Each station: hardware silhouette + status LED, product name (recognizability), ONE short line, record stamp (✓ signal/rank or UNPLAYED). Marketing CTAs and pillar essays die — the desk is the navigation; number keys 1–6 jump stations. The route fix is a branded boot: App-level fallback becomes the console boot screen (brand mark, scanline shimmer, 'BOOTING'; static under reduced-motion), a prefetchRoute() helper warms chunks on pointerenter/focus of every station link, and the hub idle-warms all route chunks once after mount (requestIdleCallback with timeout fallback).",
+  "scope": [
+    "src/app/RouteBoot.tsx (new) — the branded Suspense fallback: dark console boot, brand mark, shimmer bar, 'BOOTING' kicker; prefers-reduced-motion gets a static version; renders instantly on navigation",
+    "src/app/prefetch.ts (new) — prefetchRoute(id) dynamic-import map mirroring App.tsx's lazy chunks; idempotent (cache the promise)",
+    "src/App.tsx — swap the fallback to RouteBoot; keep the single Suspense boundary and all routes",
+    "src/app/pages/Hub.tsx — rebuild as the operator's console: console header (brand + guardrails tagline), hero compressed to the headline + one subline over the GlassHero backdrop, THE DESK station grid, THE OPERATOR BADGE (SeasonStrip kept, restyled as the ID card, od-id 'season' kept), THE ARCHIVE DRAWER (legacy entries, details/summary), footer guardrails line kept; number keys 1–6 activate stations; hover/focus prefetch + idle warm-up",
+    "src/ui/Station.tsx (new) — the desk station: silhouette tile + LED, kicker (desk metaphor + pillar), name, one-liner, record stamp; Link semantics, focus-visible ring, hover raise; key hint chip (desktop only)",
+    "src/ui/GameCard.tsx — retired if the drawer supersedes it (check usages; registry/GAMES data stays)",
+    "scripts/nav-perf.mjs (new) — CDP-throttled hub→module click-through: asserts the boot fallback is visible immediately after click (never a bare black screen), asserts prefetch fires on hover, records time-to-interactive, zero console errors",
+    "scripts/hub-smoke.mjs — assert the console: hero heading + canvas + season od-id stay, stations present with names (/Scam Radar/i, /Tell Exam/i, /BLACKGLASS · classic/i for the drawer), axe over the console",
+    "docs/design-system.md — 'the operator's console' section (the hub joins the desk fiction; station anatomy; prefetch contract); docs/GAME-PLAN.md M6.7 milestone; docs/HANDOFF.md current state + session log"
+  ],
+  "constraints": [
+    "Canon: no new dependency, no new external asset — the console is CSS/SVG over the existing ink/glass tokens and icon set; no tracking, no accounts, fictional everything.",
+    "Preserve smoke-visible contracts: link accessible names /Scam Radar|Start scam training/i, /Tell Exam/i, /BLACKGLASS · classic/i; heading /see clearly/i; canvas count > 0 (GlassHero stays); data-od-id 'season' text includes 159/184/73%/WATCHER when seeded.",
+    "Routes unchanged; registry data unchanged; storage keys untouched; lazy-loading boundaries hold (the hub still imports only shared/grade.ts + localStorage for records).",
+    "11px minimum text everywhere new; AA contrast on tokens; keyboard paths (Tab reaches every station, 1–6 jump, Enter activates; drawer opens via summary); reduced-motion: no shimmer/flicker animation, boot fallback static.",
+    "Glassbox stays scoreless; the grade still measures seen/practiced; the desk presents records, it never invents them.",
+    "Do not commit, push, or deploy without explicit authorization."
+  ],
+  "acceptance_checks": [
+    "Cold navigation hub→any module shows the branded boot screen immediately (never a bare black page); hovering a station prefetches its chunk before the click; after hub idle all route chunks are warm; nav-perf probe records the fallback visible within the first frames and time-to-interactive per route; zero console errors.",
+    "The hub is the operator's console: stations carry silhouette + LED + kicker + name + one line + record stamp; all six legacy pieces live only in the archive drawer; the season badge renders the cross-suite record from localStorage and stays silent for fresh visitors; a newcomer can reach anything within one screenfold of scanning.",
+    "Keyboard: Tab reaches every station in DOM order, 1–6 jump directly, Enter activates, drawer toggles; axe 0 serious/critical on the console; 11px floor holds.",
+    "tsc clean; unit tests green (new pure logic tested if any); build + assets budget green; all smokes exit 0 zero console errors (hub-smoke updated for the console, others unchanged and passing)."
+  ],
+  "blockers": [],
+  "review": {
+    "mode": "independent reviewer via ./meos review (report: .meos/reviews/20261110T005206Z.md) — VERDICT: rework",
+    "verdict": "rework -> reworked (all 6 findings addressed; gates re-run green in the 2026-11-10 recovery session)",
+    "findings": [
+      "important | App.tsx RoutePending couldn't commit inside the retained Suspense transition | RouteBootGate now wraps history.pushState/replaceState synchronously (urgent, outside the transition); the overlay covers the stale page whenever the destination chunk isn't resolved and lifts two rAFs after it lands",
+      "important | prefetch counted an in-flight request as warm | app/prefetch.ts tracks requested (inflight map) vs resolved (ready set) separately; isRouteReady is resolution-only; ensureRoute hands the boot gate the in-flight promise",
+      "important | nav-perf didn't prove immediate feedback during a cold fetch | gate rewritten with isolated assertions: service workers blocked, idle warm-up disabled via the __BG_SKIP_IDLE_WARM__ seam (hover proven to cause the chunk request), destination response held while .route-boot must appear within 1000 ms, in-flight-prefetch click and cold programmatic click both covered, destination's own control asserted after release, zero console errors",
+      "minor | packet/HANDOFF reconciliation incomplete | this wrapup packet (recovery session)",
+      "minor | hotkey 6 only opened the drawer | setArchiveOpen((o) => !o) — successive presses toggle",
+      "minor | season links lacked focus prefetch | onFocus added beside onPointerEnter on the season cells (and glassbox lab cards)",
+      "recovery note | the rework left two typos the stalled session never re-ran: App.tsx arrow function with a this-parameter (TS2730/TS2683 — build broken) and a stray `await heldRoute = null` in nav-perf.mjs (SyntaxError — gate could not parse) | both fixed in the recovery session; full gates re-run green afterwards",
+      "reviewer sandbox note | the reviewer's sandbox could not run vitest/Chrome (EROFS); no re-review ran in the recovery runtime (no codex CLI) — rework verified by source inspection plus the executed gates, nav-perf being the executable proof of findings 1–3"
+    ]
+  },
+  "verification": [
+    "npm run build — tsc clean + vite build green (after the recovery fix: wrap fn is a function expression, not a this-param arrow); PWA precache 44 entries",
+    "npm test — 76/76 across 11 files (incl. season.test.ts 6: zero-point case + legacy boolean read as worked, corrupt store degrades, fresh visitor null)",
+    "npm run assets:budget — Σ 3.7 MB, no artifact duplicated in dist/",
+    "smokes (SMOKE_CHANNEL=chromium, local preview) all exit 0 zero console errors: hub (desk stations + seeded season 159 · WATCHER / 184 / 73% + archive drawer + axe clean serious/critical), exam (full deck → results stamp; legacy iframe via the archive drawer), radar, os, resume, shade, finale, anthology (5-anchor playthrough)",
+    "node scripts/nav-perf.mjs — exit 0 after the syntax fix: hoverPrefetchFired true with idle warm-up isolated (no chunk request before hover), boot shown while the destination response was held (in-flight click), coldBootMs 95 ms, warmNavMs 2572 / coldNavMs 575 under ~1.6 Mbps CDP throttle, errors []",
+    "static contracts: 11px floor holds (text-2xs = 0.6875rem = 11px; Station stamps/key chips 11px); reduced-motion boot is static (.boot-scan::after animation: none); Hub imports no game chunk (only registry/UI/prefetch/season + glassbox pure models for the lab readouts) — lazy boundaries hold; GameCard/PILLAR_META retired with no dangling imports (tsc proof)"
+  ],
+  "artifacts": [
+    "/tmp/navperf-1-boot.png + /tmp/navperf-2-landed.png (in-flight click: boot during held fetch → the rack)",
+    "/tmp/navperf-3-boot.png + /tmp/navperf-4-landed.png (cold click: boot at 95 ms → the exam)",
+    "smoke logs /tmp/m67-smoke-*.log (this session)"
+  ],
+  "next_action": "Commit + push + deploy ONLY on explicit user authorization (standing constraint). Six unreferenced probe-*.mjs files (probe-boot/console-shots/final-shots/hub-shots/keys/nav-debug) are the stalled session's debug scratch — delete them or keep them out of the commit. After deploy: user plays the operator's console on the live hosts (station hover prefetch, cold-click boot, keys 1–6, archive drawer, season badge); M7 content register (Tito Mike clip) unchanged."
+}

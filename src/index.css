@@ -403,33 +403,31 @@ body {
 
 /* ---- POV safe areas ----
    env() is zero on desktop, so these preserve the old geometry while
-   lifting chrome clear of notches, home indicators, and browser bars. */
-.os-safe-status {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 0.875rem);
-}
+   lifting chrome clear of notches, home indicators, and browser bars.
+   M8.1: the top paddings clear the dynamic island (11px + 36px + air). */
 .os-safe-lock {
   padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
 }
 .os-safe-home {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 3rem);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3.75rem);
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
 }
 .os-safe-app {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 2.25rem);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
 }
 .os-safe-call {
   padding-top: calc(env(safe-area-inset-top, 0px) + 4rem);
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
 }
 .os-safe-shade {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
 }
 .os-safe-shade-list {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2rem);
 }
 .os-safe-moment {
-  padding-top: calc(env(safe-area-inset-top, 0px) + 2.5rem);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 3.5rem);
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 2.5rem);
 }
 .os-safe-banners {
@@ -2450,4 +2448,69 @@ body {
   .feed-context-toggle {
     transition: none;
   }
+}
+
+/* ——— the route boot — the branded chunk-loading screen ——— */
+.boot-scan {
+  position: relative;
+  width: 180px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-ink-800);
+  overflow: hidden;
+}
+.boot-scan::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--color-play), transparent);
+  animation: boot-scan 1.4s ease-in-out infinite;
+}
+@keyframes boot-scan {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boot-scan::after {
+    animation: none;
+    transform: translateX(60%);
+  }
+}
+
+/* ——— the operator's console — the hub as the desk ——— */
+
+/* status LED on a station's silhouette tile */
+.station-led {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-ink-600);
+  box-shadow: 0 0 0 0 transparent;
+}
+.station-led.is-live {
+  background: var(--station-accent, var(--color-play));
+  box-shadow: 0 0 8px 1px var(--station-accent, var(--color-play));
+}
+
+/* the desk frame — a faint console scanline texture over the section,
+   static by nature (no animation), pure CSS gradient */
+.desk-plate {
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(143, 160, 189, 0.035) 0px,
+    rgba(143, 160, 189, 0.035) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+}
+
+/* the archive drawer rows keep the desk's list language */
+.archive-row:hover {
+  background: rgba(28, 39, 64, 0.5);
 }

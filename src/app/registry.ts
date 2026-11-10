@@ -1,5 +1,10 @@
 export type Pillar = 'play' | 'train' | 'learn'
 
+/* pillar stays as data on each entry (the archive drawer and future
+   surfaces may group by it); the old PILLAR_META/STATUS_LABEL brochure
+   chrome left with the landing-page hub — the desk speaks the station
+   language instead */
+
 export type IconName =
   | 'phone'
   | 'book'
@@ -26,47 +31,6 @@ export interface GameEntry {
   route?: string
   /** directory under dist/legacy (vanilla apps shipped verbatim from play/) */
   legacyPath?: string
-}
-
-export const PILLAR_META: Record<
-  Pillar,
-  {
-    name: string
-    blurb: string
-    /** literal utility strings so Tailwind can see them */
-    text: string
-    border: string
-    chipBg: string
-    iconBg: string
-  }
-> = {
-  play: {
-    name: 'Play',
-    blurb:
-      'Stories you live from the inside. The anthology puts you in the phones of a family navigating AI-powered deception — each phone its own way of being fooled.',
-    text: 'text-play',
-    border: 'hover:border-play/60',
-    chipBg: 'bg-play/12 text-play',
-    iconBg: 'bg-play/15 text-play',
-  },
-  train: {
-    name: 'Train',
-    blurb:
-      'Skills for the real world. Scam Radar drills the reflexes — judge the feed, work the case, verify through official channels — until the pause before you tap Send becomes automatic.',
-    text: 'text-train',
-    border: 'hover:border-train/60',
-    chipBg: 'bg-train/12 text-train',
-    iconBg: 'bg-train/15 text-train',
-  },
-  learn: {
-    name: 'Glassbox',
-    blurb:
-      'Take the mechanism apart. Explorables that put the model in your hands — change the numbers, watch the incentive move, then return to the story knowing why it worked.',
-    text: 'text-learn',
-    border: 'hover:border-learn/60',
-    chipBg: 'bg-learn/12 text-learn',
-    iconBg: 'bg-learn/15 text-learn',
-  },
 }
 
 export const STATUS_LABEL: Record<GameStatus, string> = {

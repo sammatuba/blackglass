@@ -1,30 +1,69 @@
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { GAMES, PILLAR_META, type GameEntry, type Pillar } from '../registry'
-import { GameCard } from '../../ui/GameCard'
+import { useEffect, useRef, useState, type RefObject } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { GAMES } from '../registry'
+import { BrandMark } from '../../ui/BrandMark'
+import { Station } from '../../ui/Station'
 import { FadeIn } from '../../ui/FadeIn'
+import { Icon } from '../../ui/Icon'
 import GlassHero from '../../three/GlassHero'
-import { rankFor } from '../../games/shared/grade'
+import { warmRoutesWhenIdle, prefetchRoute } from '../prefetch'
+import { anthologyStamp, examStamp, radarStamp, readSeason } from '../season'
 import { EXPLORABLES, type ExplorableEntry } from '../../games/glassbox/catalog'
 import { PRESETS, computeScam } from '../../games/glassbox/model'
 import { DEFAULT_DIAL, simulateFeed } from '../../games/glassbox/feed-model'
 import { formatCount, formatNumber, formatPercent, formatPeso } from '../../games/glassbox/format'
 
-const PILLAR_ORDER: Pillar[] = ['play', 'train', 'learn']
+/* THE OPERATOR'S CONSOLE — the hub as the desk itself. The suite's shared
+   fiction is the signal desk (M6.5/M6.6); the hub joins it: everything
+   playable is a station of equipment, the season is your operator badge,
+   and the legacy pieces live in one archive drawer. Minimal reading — the
+   stations carry one line each; the games themselves do the explaining. */
 
-function BrandMark({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
-      <path d="M12 2.5 21 12l-9 9.5L3 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-      <path d="M12 2.5v19M3 12h18" stroke="currentColor" strokeWidth="0.75" opacity="0.55" />
-    </svg>
-  )
+const HOTKEY_ROUTES: Record<string, string> = {
+  '1': '/blackglass',
+  '2': '/scam-radar',
+  '3': '/tell-exam',
+  '4': '/glassbox/one-in-a-thousand',
+  '5': '/glassbox/the-feed-dial',
 }
 
 export default function Hub() {
+  const navigate = useNavigate()
+  const [archiveOpen, setArchiveOpen] = useState(false)
+  const archiveRef = useRef<HTMLDetailsElement>(null)
+
   useEffect(() => {
     document.title = 'BLACKGLASS — Seeing Clearly in a World Shaped by AI'
   }, [])
+
+  // the desk warms every route chunk once the browser is idle — later
+  // navigations land on an already-booted module, even on a cold cache
+  useEffect(() => {
+    warmRoutesWhenIdle()
+  }, [])
+
+  // operator shortcuts: 1–5 jump straight to a station, 6 opens the archive
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return
+      if (e.key === '6') {
+        e.preventDefault()
+        setArchiveOpen((o) => !o)
+        if (!archiveOpen) {
+          const reduced = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+          archiveRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' })
+        }
+        return
+      }
+      const to = HOTKEY_ROUTES[e.key]
+      if (to) {
+        e.preventDefault()
+        navigate(to)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [navigate])
 
   return (
     <div className="min-h-dvh bg-gradient-to-b from-ink-950 via-ink-900 to-ink-950">
@@ -46,8 +85,9 @@ export default function Hub() {
       </header>
 
       <main id="main" className="relative z-10 mx-auto max-w-6xl px-5 pb-20 sm:px-8">
-        {/* HERO */}
-        <section data-od-id="hero" className="relative py-16 text-center sm:py-24" aria-labelledby="hero-title">
+        {/* THE CONSOLE HEADER — the suite's statement, compressed; the
+            desk below is the navigation, so the marketing CTAs are gone */}
+        <section data-od-id="hero" className="relative py-14 text-center sm:py-20" aria-labelledby="hero-title">
           <GlassHero />
           <div className="relative">
             <FadeIn>
@@ -64,82 +104,99 @@ export default function Hub() {
               </h1>
             </FadeIn>
             <FadeIn delay={0.16}>
-              <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-ink-400 sm:text-lg">
-                Live the story. Take the mechanism apart. Practice the reflex.
-                Free, in your browser, no account — progress stays on your device.
+              <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-400 sm:text-base">
+                Live the story. Train the reflex. Take the mechanism apart — no account, and
+                your season stays on this device.
               </p>
-            </FadeIn>
-            <FadeIn delay={0.24}>
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-                <Link
-                  to="/scam-radar"
-                  className="rounded-full border border-train/60 px-6 py-3 text-sm font-bold text-train transition-colors duration-200 hover:bg-train/10"
-                >
-                  Start scam training →
-                </Link>
-                <Link
-                  to="/blackglass"
-                  className="rounded-full border border-ink-600 px-6 py-3 text-sm font-semibold text-ink-100 transition-colors duration-200 hover:border-play hover:text-play"
-                >
-                  Play the anthology
-                </Link>
-                <Link
-                  to="/glassbox/one-in-a-thousand"
-                  className="rounded-full border border-learn/60 px-6 py-3 text-sm font-semibold text-learn transition-colors duration-200 hover:bg-learn/10"
-                >
-                  Try Glassbox →
-                </Link>
-              </div>
             </FadeIn>
           </div>
         </section>
 
-        {/* YOUR SEASON — one record across the scored surfaces. Read from
-            each game's persisted store directly: importing a game module
-            would break the lazy-loading boundary, so this strip parses
-            localStorage and stays silent until something has been played. */}
+        {/* THE DESK — every playable thing is a station. Hovering (or
+            focusing) a station warms its route chunk before the click. */}
+        <section data-od-id="desk" className="py-8 sm:py-10" aria-labelledby="desk-title">
+          <FadeIn>
+            <div className="mb-5 flex items-baseline gap-3">
+              <h2 id="desk-title" className="text-2xs font-semibold tracking-[0.24em] text-play uppercase">
+                The desk
+              </h2>
+              <p className="hidden text-[11px] text-ink-500 sm:block">
+                pick a station — keys 1–6 (6 opens the archive)
+              </p>
+            </div>
+          </FadeIn>
+          <div className="grid gap-4 lg:grid-cols-3">
+            <FadeIn>
+              <Station
+                odId="station-rack"
+                id="blackglass"
+                to="/blackglass"
+                kicker="Play · the phone rack"
+                name="BLACKGLASS"
+                line="Thirteen phones, one family's Saturday. Pick up; the desk scores every flag you catch."
+                icon="phone"
+                accent="play"
+                stamp={anthologyStamp()}
+                hotkey="1"
+              />
+            </FadeIn>
+            <FadeIn delay={0.06}>
+              <Station
+                odId="station-feed"
+                id="scam-radar"
+                to="/scam-radar"
+                kicker="Train · the feed desk"
+                name="Scam Radar"
+                line="Judge the live feed, work the case files. Train the pause that beats the scam."
+                icon="radar"
+                accent="train"
+                stamp={radarStamp()}
+                hotkey="2"
+              />
+            </FadeIn>
+            <FadeIn delay={0.12}>
+              <Station
+                odId="station-lens"
+                id="tell-exam"
+                to="/tell-exam"
+                kicker="Train · the lens bench"
+                name="Tell Exam"
+                line="The synthetic images, one at a time — tap the flaw they planted on purpose."
+                icon="eye"
+                accent="train"
+                stamp={examStamp()}
+                hotkey="3"
+              />
+            </FadeIn>
+          </div>
+
+          {/* THE GLASSBOX LAB — the learn pillar keeps its live paper
+              readouts; the numbers are computed, not decorative */}
+          <div className="mt-4 space-y-4">
+            {EXPLORABLES.map((piece, i) => (
+              <FadeIn key={piece.id} delay={i * 0.06}>
+                <GlassboxCard piece={piece} hotkey={i === 0 ? '4' : '5'} />
+              </FadeIn>
+            ))}
+          </div>
+        </section>
+
+        {/* YOUR SEASON — the operator badge. One record across the scored
+            surfaces, read from each game's persisted store directly:
+            importing a game module would break the lazy-loading boundary,
+            so this strip parses localStorage and stays silent until
+            something has been played. */}
         <SeasonStrip />
 
-        {/* PILLARS */}
-        {PILLAR_ORDER.map((pillar) => {
-          const meta = PILLAR_META[pillar]
-          const games = GAMES.filter((g) => g.pillar === pillar)
-          return (
-            <section key={pillar} data-od-id={`pillar-${pillar}`} className="py-10 sm:py-14" aria-labelledby={`pillar-${pillar}`}>
-              <FadeIn>
-                <div className="mb-6 flex items-baseline gap-3">
-                  <span className={`font-display text-3xl font-semibold ${meta.text}`} aria-hidden="true">
-                    {pillar === 'play' ? '01' : pillar === 'train' ? '02' : '03'}
-                  </span>
-                  <div>
-                    <h2 id={`pillar-${pillar}`} className="font-display text-2xl font-semibold text-ink-100">
-                      {meta.name}
-                    </h2>
-                    <p className="mt-1 max-w-2xl text-sm leading-relaxed text-ink-400">{meta.blurb}</p>
-                  </div>
-                </div>
-              </FadeIn>
-              {pillar === 'learn' ? (
-                <div className="space-y-4">
-                  {EXPLORABLES.map((piece, i) => (
-                    <FadeIn key={piece.id} delay={i * 0.06}>
-                      <GlassboxCard piece={piece} />
-                    </FadeIn>
-                  ))}
-                  <ReferenceShelf games={games} />
-                </div>
-              ) : (
-                <div className={`grid gap-4 sm:grid-cols-2 ${games.length > 2 ? 'lg:grid-cols-3' : ''}`}>
-                  {games.map((game, i) => (
-                    <FadeIn key={game.id} delay={i * 0.06}>
-                      <GameCard game={game} />
-                    </FadeIn>
-                  ))}
-                </div>
-              )}
-            </section>
-          )
-        })}
+        {/* THE ARCHIVE — every legacy piece in one drawer. The desk shows
+            only current work; the archive keeps the old shelf playable
+            without the NEW/LEGACY badge guessing game. */}
+        <ArchiveDrawer
+          games={GAMES.filter((g) => g.status === 'legacy')}
+          openRef={archiveRef}
+          open={archiveOpen}
+          setOpen={setArchiveOpen}
+        />
       </main>
 
       <footer className="relative z-10 border-t border-ink-800">
@@ -157,44 +214,18 @@ export default function Hub() {
   )
 }
 
-/* The explorable is the pillar; the legacy card games remain playable as
-   reference, collapsed so their separate visual language doesn't compete
-   with the flagship work. */
+/* ——— the records: parsers live in app/season.ts (pure, tested) ——— */
 
 /* ——— YOUR SEASON: the cross-suite record strip ——— */
 
-interface SeasonRecord {
-  anthology: { lived: number; total: number; rank: string } | null
-  radar: { score: number; streak: number } | null
-  exam: number | null
+const SEASON_PREFETCH: Record<string, string> = {
+  '/blackglass': 'blackglass',
+  '/scam-radar': 'scam-radar',
+  '/tell-exam': 'tell-exam',
 }
 
-function readSeason(): SeasonRecord | null {
-  const rec: SeasonRecord = { anthology: null, radar: null, exam: null }
-  try {
-    const bg = JSON.parse(localStorage.getItem('cgAI_blackglass_v2') ?? 'null') as
-      | { state?: { scores?: Record<string, { best?: number }> } }
-      | null
-    const scores = bg?.state?.scores
-    if (scores) {
-      const lived = Object.keys(scores).length
-      const total = Object.values(scores).reduce((n, r) => n + (r.best ?? 0), 0)
-      if (lived > 0) rec.anthology = { lived, total, rank: rankFor(total, lived) }
-    }
-    const rd = JSON.parse(localStorage.getItem('cgAI_scamradar_v1') ?? 'null') as
-      | { state?: { totalScore?: number; bestStreak?: number; rounds?: number } }
-      | null
-    const rs = rd?.state
-    if (rs && ((rs.totalScore ?? 0) > 0 || (rs.rounds ?? 0) > 0)) {
-      rec.radar = { score: rs.totalScore ?? 0, streak: rs.bestStreak ?? 0 }
-    }
-    const ex = Number(localStorage.getItem('cgAI_tellExam_best') ?? '')
-    if (Number.isFinite(ex) && ex > 0) rec.exam = ex
-  } catch {
-    /* private mode or a partial write: the strip stays quiet */
-  }
-  if (!rec.anthology && !rec.radar && !rec.exam) return null
-  return rec
+function seasonPrefetchId(to: string): string {
+  return SEASON_PREFETCH[to] ?? 'blackglass'
 }
 
 function SeasonStrip() {
@@ -237,6 +268,8 @@ function SeasonStrip() {
           <Link
             key={c.to}
             to={c.to}
+            onPointerEnter={() => prefetchRoute(seasonPrefetchId(c.to))}
+            onFocus={() => prefetchRoute(seasonPrefetchId(c.to))}
             className="group rounded-xl border border-ink-700 bg-ink-900/50 px-4 py-3.5 transition-colors hover:border-ink-400"
           >
             <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">{c.label}</p>
@@ -251,18 +284,31 @@ function SeasonStrip() {
   )
 }
 
-function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
+/* ——— THE GLASSBOX LAB: the explorables keep their computed readouts ——— */
+
+function GlassboxCard({ piece, hotkey }: { piece: ExplorableEntry; hotkey: string }) {
+  const prefetchId = piece.preview === 'feed' ? 'glassbox-feed' : 'glassbox'
   return (
     <Link
       to={piece.route}
       data-od-id="glassbox-feature"
       aria-labelledby={`glassbox-${piece.id}-title`}
-      className="group grid gap-5 rounded-card border border-ink-700 bg-ink-800/40 p-5 transition-colors hover:border-learn/60 sm:grid-cols-[1.15fr_0.85fr] sm:items-center sm:p-6"
+      onPointerEnter={() => prefetchRoute(prefetchId)}
+      onFocus={() => prefetchRoute(prefetchId)}
+      className="group relative grid gap-5 rounded-card border border-ink-700 bg-ink-800/40 p-5 transition-colors hover:border-learn/60 sm:grid-cols-[1.15fr_0.85fr] sm:items-center sm:p-6"
     >
       <div>
-        <p className="text-2xs font-semibold tracking-[0.22em] text-learn uppercase">
-          Glassbox {piece.number} · {piece.minutes} minutes · no score
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-2xs font-semibold tracking-[0.22em] text-learn uppercase">
+            Learn · the glassbox lab · {piece.number} · {piece.minutes} minutes · no score
+          </p>
+          <span
+            aria-hidden="true"
+            className="hidden h-6 w-6 shrink-0 place-items-center rounded-md border border-ink-700 text-[11px] font-semibold text-ink-500 lg:grid"
+          >
+            {hotkey}
+          </span>
+        </div>
         <h3
           id={`glassbox-${piece.id}-title`}
           className="font-display mt-2 text-2xl font-semibold text-ink-100 sm:text-3xl"
@@ -270,7 +316,6 @@ function GlassboxCard({ piece }: { piece: ExplorableEntry }) {
           {piece.title}
         </h3>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-300">{piece.tagline}</p>
-        <p className="mt-2 max-w-xl text-sm leading-relaxed text-ink-400">{piece.description}</p>
         <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-learn">
           Take it apart
           <span className="transition-transform group-hover:translate-x-0.5" aria-hidden="true">
@@ -369,15 +414,35 @@ function FeedPreview() {
   )
 }
 
-function ReferenceShelf({ games }: { games: GameEntry[] }) {
+/* ——— THE ARCHIVE DRAWER: every legacy piece, one place ——— */
+
+function ArchiveDrawer({
+  games,
+  openRef,
+  open,
+  setOpen,
+}: {
+  games: typeof GAMES
+  openRef: RefObject<HTMLDetailsElement | null>
+  open: boolean
+  setOpen: (open: boolean) => void
+}) {
   return (
     <FadeIn>
       <details
-        data-od-id="learn-reference-shelf"
-        className="group rounded-card border border-ink-700 bg-ink-800/30 px-5 py-4 sm:px-6"
+        ref={openRef}
+        open={open}
+        onToggle={(e) => setOpen(e.currentTarget.open)}
+        data-od-id="archive"
+        className="group desk-plate rounded-card border border-ink-700 bg-ink-800/30 px-5 py-4 sm:px-6"
       >
         <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-ink-200 [&::-webkit-details-marker]:hidden">
-          <span>The reference shelf — {games.length} legacy concept games</span>
+          <span className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-ink-700 bg-ink-900/80 text-ink-400">
+              <Icon name="book" className="h-4 w-4" />
+            </span>
+            The archive — {games.length} legacy pieces, kept playable
+          </span>
           <span className="shrink-0 text-xs font-normal text-ink-400 group-open:hidden">Open ›</span>
           <span className="hidden shrink-0 text-xs font-normal text-ink-400 group-open:inline">Close ›</span>
         </summary>
@@ -386,10 +451,10 @@ function ReferenceShelf({ games }: { games: GameEntry[] }) {
             <li key={g.id}>
               <Link
                 to={`/legacy/${g.legacyPath}`}
-                className="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-ink-700/50"
+                className="archive-row group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors"
               >
-                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-learn/12 text-sm text-learn" aria-hidden="true">
-                  {g.icon === 'eye' ? '👁' : g.icon === 'clipboard' ? '📋' : g.icon === 'search' ? '🔍' : '⚖'}
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-ink-700/50 text-ink-300" aria-hidden="true">
+                  <Icon name={g.icon} className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13.5px] font-semibold text-ink-100">{g.title}</span>
@@ -397,15 +462,14 @@ function ReferenceShelf({ games }: { games: GameEntry[] }) {
                     {g.tagline} · {g.meta}
                   </span>
                 </span>
-                <span className="shrink-0 text-xs text-ink-400 transition-colors group-hover:text-learn">Open ›</span>
+                <span className="shrink-0 text-xs text-ink-400 transition-colors group-hover:text-ink-200">Open ›</span>
               </Link>
             </li>
           ))}
         </ul>
         <p className="mt-3 border-t border-ink-700 pt-3 text-xs leading-relaxed text-ink-400">
-          These card games ship as they were built — vanilla, playable, honest about their age. They
-          remain as reference, not as the pillar&apos;s flagship; the concepts now live inside the
-          explorables above.
+          Shipped as they were built — vanilla, playable, honest about their age. The concepts now
+          live inside the desk above.
         </p>
       </details>
     </FadeIn>
