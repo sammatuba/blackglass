@@ -1,0 +1,145 @@
+/* ============================================================
+   iOS token layer — M8.1 THE IPHONE PASS (GAME-PLAN M8)
+   The base vocabulary of the glassOS device shell, on the
+   iPhone 15 Pro / iOS 18 metric grid (393 × 852 points — see
+   ios/metrics.ts). Research metrics and grammar only: no Apple
+   fonts, SF Symbols, bitmap packs or screenshots are embedded;
+   every glyph below is code-drawn. The per-phone glassOS theme
+   (--os-*) rides ABOVE this layer — UI-as-character holds.
+
+   The shell is a SIZE CONTAINER: island and status metrics are
+   written in cqw (1 logical point = 100/393 cqw) so the top band
+   stays proportionally true at every rendered screen width —
+   desk stage, POV full-bleed, and everything between.
+   ============================================================ */
+
+.os-skin {
+  container-type: size;
+
+  /* device metrics */
+  --ios-safe-top: calc(env(safe-area-inset-top, 0px));
+  --ios-safe-bottom: calc(env(safe-area-inset-bottom, 0px));
+
+  /* dark-mode system palette (the glass screens are dark) */
+  --ios-label: rgba(255, 255, 255, 0.95);
+  --ios-secondary: rgba(235, 235, 245, 0.6);
+  --ios-tertiary: rgba(235, 235, 245, 0.3);
+  --ios-blue: #0a84ff;
+  --ios-green: #30d158;
+  --ios-red: #ff453a;
+  --ios-fill: rgba(120, 120, 128, 0.36);
+  --ios-hairline: rgba(84, 84, 88, 0.65);
+
+  /* type + motion */
+  --ios-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ios-body: 17px;
+  --ios-caption: 13px;
+  --ios-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ---- the desktop stage renders an aspect-true screen ----
+   Height keeps today's desk behavior (74dvh, capped); the width
+   derives from the 393:852 grid. POV (≤899px, full-bleed) is the
+   index.css override and is untouched here. */
+@media (min-width: 900px) {
+  .stage-body .device-shell {
+    width: fit-content;
+  }
+  .stage-body .device-frame {
+    width: fit-content;
+    margin-inline: auto;
+  }
+  .stage-body .os-skin {
+    aspect-ratio: 393 / 852;
+    width: auto;
+    min-height: 640px;
+  }
+}
+
+/* ---- dynamic island — hardware, not UI ----
+   Above every overlay (moment, shade, call — a real island is
+   hardware, it does not scroll under chrome); inert to pointers
+   so the shade's pull-down strip still owns its area. Expansion
+   states (call, moment) are wired in M8.3 through data-state.
+   124×36 pt at top 11 pt, all in cqw of the 393 grid. */
+.os-island {
+  position: absolute;
+  top: calc(var(--ios-safe-top) + 2.8cqw);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 31.55cqw;
+  height: 9.16cqw;
+  border-radius: calc(4.58cqw + 2px);
+  background: #000;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  color: var(--ios-secondary);
+  pointer-events: none;
+}
+.os-island svg {
+  width: 3.8cqw;
+  height: 3.8cqw;
+}
+
+/* ---- status bar in iOS grammar: time · island · glyphs ----
+   Ink follows the phone theme (--os-ink), the clock wears the
+   system font. The diegetic controls (mute / power / bell) keep
+   their canon places; glyphs are code-drawn SVG. The text band
+   rides BELOW env(safe-area-inset-top) so real-device hardware
+   never overlaps it; on desktop env() is 0. */
+.os-status-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 32;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: calc(var(--ios-safe-top) + 1cqw) 3.56cqw 0;
+  font-family: var(--ios-font);
+  font-size: 3.82cqw;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--os-ink);
+  pointer-events: none;
+}
+.os-status-row > * {
+  height: 6.62cqw;
+  display: flex;
+  align-items: center;
+}
+.os-status-row .os-ctl {
+  height: 4.07cqw;
+  width: 4.07cqw;
+}
+.os-status-row .os-ctl svg {
+  height: 3.05cqw;
+  width: 3.05cqw;
+}
+.os-status-glyphs {
+  display: flex;
+  align-items: center;
+  gap: 0.76cqw;
+}
+.os-g-sig {
+  height: 2.8cqw;
+  width: 4.32cqw;
+}
+.os-g-wifi {
+  height: 2.8cqw;
+  width: 3.82cqw;
+}
+.os-g-batt {
+  height: 2.8cqw;
+  width: 5.85cqw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-island,
+  .os-island * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

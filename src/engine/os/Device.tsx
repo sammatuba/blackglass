@@ -13,7 +13,8 @@ import {
   setCallPhase,
   visibleMessages,
 } from './runtime'
-import { sfx, vibrate } from './sound'
+import { isMuted, onMuteChange, sfx, vibrate } from './sound'
+import './ios/tokens.css'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
@@ -643,10 +644,10 @@ function DeviceFrame(props: {
 
   return (
     <div className="device-shell relative mx-auto w-full max-w-[400px]">
-      <div className="device-frame relative overflow-hidden rounded-[2.4rem] border border-white/12 bg-[#05070d] p-1.5">
+      <div className="device-frame relative overflow-hidden rounded-[3.25rem] border border-white/12 bg-[#05070d] p-1.5">
         {/* screen */}
         <div
-          className={`os-skin relative h-[74dvh] max-h-[760px] min-h-[560px] overflow-hidden rounded-[2rem] bg-[var(--os-bg)] ${
+          className={`os-skin relative h-[74dvh] max-h-[800px] min-h-[640px] overflow-hidden rounded-[2.75rem] bg-[var(--os-bg)] ${
             caseDef.phone.theme ? `theme-${caseDef.phone.theme}` : ''
           }`}
         >
@@ -658,6 +659,9 @@ function DeviceFrame(props: {
             style={{ opacity: (100 - props.brightness) / 145 }}
             aria-hidden="true"
           />
+          {/* the island is hardware, not UI — it rides above the dim, on the
+              lock screen and off it */}
+          <DynamicIsland />
 
           {locked ? (
             <LockScreen
@@ -762,7 +766,7 @@ function DeviceFrame(props: {
             <>
               <div
                 aria-hidden="true"
-                className="absolute left-1/2 top-0 z-30 h-8 w-40 -translate-x-1/2 touch-none"
+                className="absolute left-1/2 top-0 z-30 h-[46px] w-[200px] -translate-x-1/2 touch-none"
                 onPointerDown={shadeDown}
                 onPointerUp={shadeUp}
                 onPointerCancel={() => {
@@ -771,7 +775,6 @@ function DeviceFrame(props: {
               />
               <StatusBar
                 time={caseDef.phone.time}
-                meridiem={caseDef.phone.meridiem}
                 battery={caseDef.phone.battery}
                 unread={props.unread}
                 onOpenShade={props.onOpenShade}
@@ -797,34 +800,30 @@ function DeviceFrame(props: {
 
 function StatusBar({
   time,
-  meridiem,
   battery,
   unread,
   onOpenShade,
   onLock,
 }: {
   time: string
-  meridiem: string
   battery: number
   unread: number
   onOpenShade: () => void
   onLock: () => void
 }) {
   return (
-    <div className="os-safe-status pointer-events-none absolute left-0 right-0 top-0 z-30 flex items-center justify-between px-7 text-[11px] font-semibold text-[var(--os-ink)]">
-      <span>
-        {time} <span className="opacity-70">{meridiem}</span>
-      </span>
-      <span className="flex items-center gap-1.5">
+    <div className="os-status-row">
+      <span className="tabular-nums">{time}</span>
+      <span className="os-status-glyphs">
         <MuteToggle />
         <button
           type="button"
           onClick={onLock}
           aria-label="Lock the phone"
           title="Lock the phone"
-          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
+          className="os-ctl pointer-events-auto relative grid place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
         >
-          <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M12 3v8" />
             <path d="M6.4 6.4a8 8 0 1 0 11.2 0" />
           </svg>
@@ -833,24 +832,54 @@ function StatusBar({
           type="button"
           onClick={onOpenShade}
           aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}
-          className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full text-[10px] before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
+          className="os-ctl pointer-events-auto relative grid place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
         >
-          🔔
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+          </svg>
           {unread > 0 && (
             <span className="absolute -top-1 -right-1.5 grid h-3 min-w-3 place-items-center rounded-full bg-red-500 px-0.5 text-[8px] font-bold text-white">
               {unread > 9 ? '9+' : unread}
             </span>
           )}
         </button>
-        <span className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="text-[9px] tracking-tighter">••••</span>
-          <span>⌃</span>
-          <span className="tabular-nums">{battery}%</span>
-          <span className="inline-block h-2.5 w-5 rounded-[3px] border border-current opacity-80">
-            <span className="block h-full w-full rounded-[2px] bg-current opacity-80" style={{ width: `${battery}%` }} />
-          </span>
+        <span className="os-status-glyphs" aria-hidden="true">
+          {/* code-drawn signal / wifi / battery — iOS glyph grammar */}
+          <svg viewBox="0 0 18 12" className="os-g-sig" fill="currentColor">
+            <rect x="0" y="8" width="3" height="4" rx="1" />
+            <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
+            <rect x="10" y="3" width="3" height="9" rx="1" />
+            <rect x="15" y="0.5" width="3" height="11.5" rx="1" opacity="0.35" />
+          </svg>
+          <svg viewBox="0 0 16 12" className="os-g-wifi" fill="currentColor">
+            <path d="M8 11 0.9 4.5A10.4 10.4 0 0 1 15.1 4.5Z" />
+          </svg>
+          <svg viewBox="0 0 27 13" className="os-g-batt" aria-hidden="true">
+            <rect x="0.5" y="0.5" width="23" height="12" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
+            <rect x="2.5" y="2.5" width={Math.max(2, 19 * (battery / 100))} height="8" rx="2" fill="currentColor" />
+            <path d="M25.4 4.6v3.8c1-.4 1.6-1 1.6-1.9s-.6-1.5-1.6-1.9Z" fill="currentColor" fillOpacity="0.4" />
+          </svg>
         </span>
       </span>
+    </div>
+  )
+}
+
+/* the dynamic island — hardware, not UI: a black pill in the top inset
+   that surfaces the phone's silent state; expansion states (call,
+   moment) arrive with the control center in M8.3 via data-state */
+function DynamicIsland() {
+  const [muted, setM] = useState(isMuted())
+  useEffect(() => onMuteChange(setM), [])
+  return (
+    <div className="os-island" data-state={muted ? 'muted' : undefined} aria-hidden="true">
+      {muted && (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M11 5 6 9H3v6h3l5 4z" />
+          <path d="m16 9 5 6m0-6-5 6" />
+        </svg>
+      )}
     </div>
   )
 }

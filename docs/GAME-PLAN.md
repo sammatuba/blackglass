@@ -224,8 +224,97 @@ shared interface (`src/games/shared/grade.ts` pure + `shared/desk.tsx` UI;
   shift signal.
 - exam/hub smokes gained the `SMOKE_CHANNEL` override (Chrome-less hosts).
 
+### M6.7 — The operator's console ✅ built 2026-11-10
+Two user asks answered together — the hub IS the navigation, and navigation
+never shows a bare black page again:
+
+- **The route boot** (`app/RouteBoot.tsx`): the old Suspense fallback was a dim
+  "Loading…" alone on the near-black page — the black gap visitors read as a
+  broken link while a lazy chunk streamed in. The fallback is now the console
+  boot: brand mark, shimmer bar, an honest line about the first visit. Reduced
+  motion gets the static frame. Because React Router v7 wraps navigation in
+  `startTransition` (a suspending destination would keep the stale page on
+  screen and never show the fallback), `App.tsx` adds the `RouteBootGate`
+  overlay: whenever the route changes to a module whose chunk isn't warm yet,
+  the boot covers the stale page until the chunk resolves (two rAFs, so the
+  reveal never flashes the hub). Cold deep links show the same boot through
+  the Suspense boundary.
+- **Chunks warm before the click** (`app/prefetch.ts`): every station (and the
+  season badge cells) fires `prefetchRoute()` on pointerenter/focus, mirroring
+  App.tsx's exact lazy factories; the hub also warms all route chunks once when
+  the browser is idle (`warmRoutesWhenIdle`). `scripts/nav-perf.mjs` gates it
+  with isolated assertions: idle warm-up is disabled via the
+  `__BG_SKIP_IDLE_WARM__` probe seam so the hover is proven to cause the chunk
+  request; the warm click-through must mount the destination's own heading;
+  a cold programmatic click (no hover, no focus) must show `.route-boot` and
+  then the destination's control; zero console errors.
+- **The hub is the desk** (`Hub.tsx` rebuilt): the brochure (pillar essays,
+  topic chips, NEW/LEGACY badges, marketing CTAs) is gone. THE DESK holds
+  stations — the phone rack (BLACKGLASS), the feed desk (Scam Radar), the lens
+  bench (Tell Exam) — each a silhouette tile with a status LED, a kicker in the
+  desk metaphor, the product name, one line, and the record stamp (`✓ 159 ·
+  WATCHER` / `UNPLAYED`). The glassbox lab keeps its live computed paper
+  readouts. The operator badge (YOUR SEASON, od-id `season`) sits below the
+  desk; all six legacy pieces live in one archive drawer — no more badge
+  guessing game. Keys 1–5 jump straight to a station, 6 toggles the archive;
+  Tab reaches everything; stations are plain links.
+- **The season parsers are pure and tested** (`app/season.ts` + `season.test.ts`):
+  the stamps and the strip share one injectable reader — a completed zero-point
+  case and a legacy boolean save both read as worked (matching the radar
+  store's semantics), a corrupt store degrades quietly, fresh visitors get null.
+- GameCard.tsx and PILLAR_META/STATUS_LABEL brochure chrome retired; the hub
+  still imports only `shared/grade.ts` + localStorage (lazy boundaries hold).
+
 ### M7 — External assets (placeholders in place)
 See register. None block play.
+
+### M8 — THE IPHONE PASS (glassOS interface overhaul) — opened 2026-11-10
+The phone stops being a glassy approximation and becomes dimensionally, visually
+an iPhone: the user pointed at **FoundPhone-Studio** (github.com/keoyyo85/
+foundphone-studio — iPhone 15 Pro / iOS 18 virtual-phone framework) and asked
+for "the same iphone interface." Best practices borrowed (patterns and metrics,
+never assets — their own BRAND_NOTICE is the model for ours): device metrics as
+constants (393×852, safe-top 59 / safe-bottom 34, island 124×36), a token-layer
+CSS (iOS system colors, 17/13/34 type scale, `cubic-bezier(0.32,0.72,0,1)` ease),
+pure launcher layout logic with unit tests, code-drawn squircle icons, one file
+per app. Deliberately NOT taken: their story engine/compiler (ours + the signal
+desk is ahead), IndexedDB (localStorage `cgAI_` canon), the 49-app catalog, the
+authoring UI. glassOS stays the fictional OS name; app identities stay fictional
+(iOS *grammar*, not Apple marks — guardrails hold). The hub/desk (M6.7) is
+untouched. M7 (Tito Mike clip) stays open, user-side, independent.
+
+Ladder — **every milestone ends in a checkpoint** (gates green → work-packet
+wrapup → HANDOFF session log → commit point → compact and regroup; nothing
+crosses a checkpoint unfinished):
+
+- **M8.1 — The device shell.** `engine/os/ios/tokens.css` base layer (metrics,
+  colors, type, ease, radii) with the per-phone theme layer riding on top;
+  status bar in iOS glyph grammar (diegetic mute + power kept — canon); dynamic
+  island expands for live calls and moments. *Checkpoint:* all 13 phones render
+  the shell; os/resume/shade/anthology smokes green.
+- **M8.2 — Lock screen + home launcher.** iOS lock grammar (clock, date, widget
+  row; returning lock keeps "While you were away"); home = 4×6 grid + dock +
+  page dots, data-driven per phone; new pure `engine/os/launcher.ts` + tests
+  (FoundPhone `layout.ts` pattern); code-drawn squircle icons. *Checkpoint:*
+  launcher on all phones; layout tests green.
+- **M8.3 — System surfaces.** Control center (mute/power/brightness move here —
+  already canon controls); shade + banners to iOS grammar. *Checkpoint:*
+  shade-smoke + os-smoke green.
+- **M8.4 — App reskins (a/b).** **a:** Messages → iMessage bubble grammar,
+  Phone → iOS tabs + keypad. **b:** Settings (grouped lists + iOS toggles),
+  Notes, Gallery, Browser, Ask. `apps/index.tsx` (76 KB monolith) splits per
+  app as each reskins. *Checkpoint each:* anthology smoke (full 5-anchor
+  playthrough) + os smoke green.
+- **M8.5 — App Library + polish + full re-gate.** Library behind the last home
+  page; icon/contrast/reduced-motion audits (11px floor, axe); budget +
+  nav-perf re-gate; design-system doc section; deploy on authorization.
+  *Checkpoint:* full gates + live verification; track closes.
+
+Material unknowns (recorded; what would change the plan): if the user later
+wants recognizable brand mimicry rather than fictional identities, M8.4 widens;
+image wallpapers would need assets-budget headroom (default stays CSS-only);
+backdrop-filter blur perf on low-end mobile gets a nav-perf-style probe with
+reduced-motion fallbacks.
 
 ## 7. Placeholder register
 

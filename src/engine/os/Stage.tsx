@@ -127,9 +127,9 @@ export function MuteToggle() {
       aria-pressed={muted}
       aria-label={muted ? 'Unmute sound' : 'Mute sound'}
       title={muted ? 'Unmute sound' : 'Mute sound'}
-      className="pointer-events-auto relative grid h-5 w-5 place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
+      className="os-ctl pointer-events-auto relative grid place-items-center rounded-full before:absolute before:-inset-y-3 before:-inset-x-[3px] before:content-['']"
     >
-      <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 5 6 9H3v6h3l5 4z" />
         {muted ? <path d="m16 9 5 6m0-6-5 6" /> : <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12" />}
       </svg>

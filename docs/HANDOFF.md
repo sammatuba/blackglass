@@ -53,6 +53,18 @@ measure), Scam Radar drills, Glassbox 01–02 (transparency scrollytelling + fee
 model), PWA offline, voice notes with recorded provenance
 (`play/blackglass-phones/voice/PROVENANCE.md`).
 
+And since 2026-11-10 (M6.7) the hub is **the operator's console** — the desk
+itself, not a landing page: stations for the rack/feed desk/lens bench (one
+line + record stamp + status LED each), the glassbox lab with its live paper
+readouts, the season badge, and one archive drawer for the six legacy pieces
+(no NEW/LEGACY badge guessing; keys 1–5 jump to a station, 6 toggles the
+archive). Route loads show the console boot (`app/RouteBoot.tsx` +
+`RouteBootGate` in App.tsx — Router v7's startTransition would otherwise keep
+the stale page) instead of a bare black page, and chunks warm on hover/focus
+plus one idle pass (`app/prefetch.ts`; `scripts/nav-perf.mjs` is the perf
+gate, with isolated assertions). Season parsers are pure + tested
+(`app/season.ts` — a zero-point case and a legacy save both read as worked).
+
 **The only placeholder left in the game:** the Tito Mike deepfake *clip* (anchor 3's
 video page plays the still + tells until it lands).
 
@@ -61,7 +73,7 @@ video page plays the still + tells until it lands).
 ```bash
 npm install                # once
 npm run build              # tsc + vite build (base /blackglass/ unless CF_PAGES/WORKERS_CI set)
-npm test                   # vitest (66 tests incl. scoring, round signal, glassbox + navigation contract)
+npm test                   # vitest (76 tests incl. scoring, round signal, store rework, season parsers, glassbox + navigation contract)
 npm run assets:budget      # dist weight gate (~3.7 MB budget)
 npm run assets:sync        # regenerate artifact/voice manifests from play/ + public/
 npm run preview            # serve dist at localhost:4173 (Pages base)
@@ -71,7 +83,8 @@ npm run preview            # serve dist at localhost:4173 (Pages base)
 node scripts/anthology-smoke.mjs            # plays all 5 anchors end-to-end
 node scripts/av-e2-capture.mjs              # Anchor V full capture + transcript (E2)
 node scripts/case-os-smoke.mjs              # Case 01 on the OS engine
-node scripts/{exam,radar,os,hub}-smoke.mjs  # Tell Exam / radar / Case 01 / hub spot checks
+node scripts/{exam,radar,os,hub}-smoke.mjs  # Tell Exam / radar / Case 01 / console spot checks
+node scripts/nav-perf.mjs                   # the route-boot + hover-prefetch perf gate (throttled)
 node scripts/cadence-smoke.mjs              # chat pacing at real 1×
 
 # deploys
@@ -110,10 +123,17 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
    → add `at:` timestamps to the tells in `src/games/blackglass/content/deepfake.ts`
    (only once the clip exists — the tells layer renders `at` unconditionally) →
    extend `scripts/anita-video-shot.mjs` as `mike-video-shot.mjs`.
-3. **Optional Anchor VI+** — candidates in the architecture doc's axes (AI recruiter,
+3. **M8 — THE IPHONE PASS** (opened 2026-11-10, see `docs/GAME-PLAN.md` §6): the
+   glassOS interface overhauled to iPhone 15 Pro / iOS 18 fidelity, borrowing
+   patterns + metrics from **FoundPhone-Studio** (cloned to `/tmp/
+   foundphone-studio` for reference — patterns only, never assets). Ladder
+   M8.1 shell → M8.2 lock/launcher → M8.3 control center → M8.4 app reskins
+   (a/b) → M8.5 library + re-gate; every milestone ends in a checkpoint
+   (gates green → packet wrapup → commit point → compact and regroup).
+4. **Optional Anchor VI+** — candidates in the architecture doc's axes (AI recruiter,
    election audio, romance scam); each needs a brief like Anchor V's and a writing
    session.
-4. **Optional:** pair the legit-baseline clip into a deepfake content page; extend
+5. **Optional:** pair the legit-baseline clip into a deepfake content page; extend
    E2 capture to moment text.
 
 ## 7. Conventions worth keeping
@@ -129,6 +149,59 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
 
 ## 8. Session log (recent, newest first)
 
+- **2026-11-11 (a)** — M8.1 THE IPHONE PASS · the device shell (checkpoint reached,
+  NOT committed): track M8 opened on the user's FoundPhone-Studio pointer
+  (cloned to /tmp/foundphone-studio — patterns + metrics only, never assets;
+  ladder + material unknowns recorded in GAME-PLAN.md M8). The shell is now
+  iPhone 15 Pro-true: `engine/os/ios/tokens.css` (dark-mode system palette,
+  system-font clock, iOS ease; the screen is a size container and island/status
+  metrics are in cqw against the 393 grid so the top band is proportionally
+  correct at every width), `ios/metrics.ts` (IOS_DEVICE + IOS_HOME_GRID for
+  M8.2), status bar in iOS grammar (code-drawn signal/wifi/battery SVGs, mute/
+  power/bell kept with canon aria-labels; battery % numeral + meridiem retired
+  from the row), DynamicIsland (bell-slash when muted, data-state API for M8.3;
+  z above every overlay — hardware does not scroll under chrome — pointer-inert
+  so the shade strip owns the pull-down), iPhone corner radii, aspect-true desk
+  stage (393:852, min-h 640). Prior M6.7 packet archived at
+  docs/work/blackglass-operator-console.json (still uncommitted, awaiting
+  authorization). Gates on the final tree: tsc clean, 76/76 tests, build green,
+  3.7 MB budget, 8/8 smokes exit 0 (anthology = the shell regression net),
+  nav-perf exit 0 (coldBoot 30 ms), visual probe verified island+status on desk
+  stage and POV 360 (/tmp/m81-probe.mjs). Next: commit on authorization → M8.2
+  lock screen + home launcher.
+- **2026-11-10 (d)** — wrapup recovery (Qoder): the zcode session stalled after
+  the M6.7 review rework, and (c)'s gate claims predated two rework typos —
+  App.tsx's history wrapper was a this-param arrow (TS2730/TS2683, build
+  broken) and nav-perf.mjs had a stray `await heldRoute = null` (SyntaxError,
+  gate unparseable). Both fixed; ALL gates re-run on the final tree: tsc +
+  build clean, 76/76 tests, 3.7 MB budget, 8/8 smokes exit 0 zero console
+  errors (hub axe clean, seeded season stamps asserted), nav-perf exit 0
+  (hover prefetch proven with idle warm-up isolated, boot during the held
+  fetch, cold boot 95 ms, throttled nav 0.6–2.6 s). Docs aligned to the code
+  (`RouteBootGate`, key 6 toggles). Work packet finalized: wrapup/complete,
+  review rework verified, deployed=false. Six unreferenced probe-*.mjs debug
+  scratch files remain untracked — delete or exclude at commit. Tree NOT
+  committed — awaiting user authorization.
+- **2026-11-10 (c)** — the operator's console (M6.7): the hub rebuilt as the
+  desk itself (stations with silhouette + LED + one line + record stamp, the
+  glassbox lab kept with its live paper readouts, the season badge, one
+  archive drawer for all six legacy pieces, keys 1–5 jump + 6 opens the
+  archive, Tab reaches all) and the route boot (`app/RouteBoot.tsx` +
+  `RouteBootGate` in App.tsx) replacing the bare black-page fallback — Router
+  v7's startTransition retains the stale page, so the overlay covers it
+  whenever the destination chunk isn't warm. Chunks warm on hover/focus + one
+  idle pass (`app/prefetch.ts`), gated by the throttled `scripts/nav-perf.mjs`
+  with isolated assertions (idle warm-up disabled via the `__BG_SKIP_IDLE_WARM__`
+  seam → hover proven to fire the chunk request; warm click-through mounts the
+  destination's own heading; cold programmatic click shows `.route-boot` at
+  ~110ms and then the exam mounts; zero console errors). Season parsers pure +
+  tested (`app/season.ts`: zero-point cases and legacy booleans read as
+  worked). GameCard/PILLAR_META brochure chrome retired; exam smoke opens the
+  archive drawer for the legacy-iframe check. Independent review VERDICT
+  rework (5 findings) folded in, gates re-run: tsc clean, 76/76 tests, build +
+  3.7 MB budget, hub smoke asserts the seeded stamps (159 · WATCHER / 184 pts
+  / 73% best) + drawer, all smokes + nav-perf exit 0, axe clean. Tree NOT
+  committed — awaiting user authorization.
 - **2026-11-10 (b)** — one desk across the suite (M6.6): the anthology's grade
   language extracted to `src/games/shared/` (grade.ts pure / desk.tsx UI),
   Feed Triage rebuilt as a shift at the feed desk (live signal meter + grade,
@@ -143,7 +216,6 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
   published; `deploy.sh` refreshed gh-pages. Verified live: Workers hub strip +
   feed desk probe exit 0 zero console errors, full anthology smoke exit 0;
   Pages hub/radar/exam smokes exit 0 (radar needed one retry — busy system).
-- **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
 - **2026-11-10 (a)** — shipped the signal desk (M6.5) + the inhabited POV shell:
   committed `7d5ab3e`, pushed `main` → Workers Builds published, `deploy.sh`
   refreshed gh-pages. Verified live: anthology smoke exit 0 with zero console

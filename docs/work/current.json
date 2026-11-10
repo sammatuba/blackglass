@@ -1,66 +1,45 @@
 {
-  "work_id": "blackglass-suite-desk",
+  "work_id": "blackglass-iphone-shell",
+  "milestone": "M8.1 (track M8 — THE IPHONE PASS, opened 2026-11-10)",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": {
-    "commit": "6de80db (main, pushed 2026-11-10 with explicit user authorization)",
-    "workers_primary": "Workers Builds published the push; live probe at / asserts the hub season strip and /scam-radar the feed desk (live signal moved across 3 reads) — zero console errors; full anthology smoke exit 0 attempt 1",
-    "pages_secondary": "scripts/deploy.sh force-pushed dist to gh-pages; live hub/radar/exam smokes exit 0 (radar attempt 2 after one busy-system failure), season strip asserted at 159/184/73%/WATCHER",
-    "live_verification": "Workers: /tmp/workers-probe.mjs + SHOT_BASE anthology smoke; Pages: hub-smoke (seeded season + axe), radar-smoke (feed desk + dossier debrief + axe), exam-smoke (full deck → results stamp)"
-  },
-  "intent": "Two user asks, in order: (1) make the Scam Radar feed triage a game interface and immersive, like the anthology's signal desk; (2) evaluate how to make the whole BLACKGLASS suite share one interface, then apply it, leveraging creative navigation and presentation. The evaluation found M6.5's desk language (case files, live signal + grade, move ledger, verdict dossier, season ranks) existed only inside the anthology: Feed Triage was a bare quiz, the case debrief had a private stamp dialect, exam results were plain tiles, and the Hub showed no record of a player's season. The applied unification: one grade language (S/A/B/C + CRYSTAL/CLEAR/HAZY/FOGGED), one stamp, one fanfare, one meter, extracted to src/games/shared/ and adopted by every scored surface; Feed Triage rebuilt as a shift at the feed desk; the Hub reads one season across the suite. The grade still measures what you saw and practiced, never what you saved; Glassbox stays deliberately scoreless.",
-  "scope": [
-    "src/games/shared/grade.ts (new) - the suite's pure grade logic: Grade, gradeFor, GRADE_NAME/GRADE_COLOR, RANKS/rankFor; no UI, no engine imports (the Hub can pull it)",
-    "src/games/shared/desk.tsx (new) - the desk's UI voice: useCountUp (ticks, stamp slam, grade-sized fanfare, reduced-motion safe), GradeStamp, DeskMeter",
-    "src/games/blackglass/score.ts - grade logic re-exported from shared (existing imports/tests hold); RANKS/rankFor moved",
-    "src/games/blackglass/Verdict.tsx, SignalDesk.tsx - now consume the shared useCountUp/GradeStamp/DeskMeter (behavior unchanged, one implementation)",
-    "src/games/scam-radar/feed/FeedGame.tsx - rebuilt as a shift at the feed desk: case-file header (objective + stakes), live desk block (signal /100 + grade chip + DeskMeter + reads + pts/streak), desk sound on every verdict (scam→protect, verify→verify, legit→neutral, half→drift, miss→risk), shift debrief as the verdict dossier (count-up, stamp, fanfare, clean/half/missed tiles, red-flag mastery, STILL SLIPPING PAST, WHAT THE SHIFT TAUGHT, best-shift continuity)",
-    "src/games/scam-radar/feed/round.ts - readMax/signalFor: the round's honest /100 (streak bonus in the denominator too); +round.test.ts (6 tests)",
-    "src/games/scam-radar/state.ts - bestRoundSignal persisted; cases hold best points as numbers (legacy true reads as worked); completeCase awards lifetime points once and always keeps the best; +state.test.ts (4 tests)",
-    "src/games/scam-radar/cases/CaseGame.tsx - OsDebrief on the shared dossier (case signal = outcome + evidence over CASE_MAX 60, stamp, fanfare, verdict/clues tiles); exports CASE_MAX; every run records its best",
-    "src/games/scam-radar/index.tsx - case cards stamp '✓ worked · signal N' (isWorked handles 0-point completions + legacy booleans), feed card shows best shift, 'Where these flags live' cross-link to the anthology",
-    "src/games/tell-exam/index.tsx - results carry the shared dossier hero (ExamVerdict: stamp, count-up %, tells/best tiles)",
-    "src/app/pages/Hub.tsx - YOUR SEASON strip between hero and pillars: anthology total + rank + phones lived, radar score + streak, exam best — reads the three persisted stores directly (localStorage parse, no game module import; lazy boundaries hold; silent for fresh visitors)",
-    "scripts/exam-smoke.mjs, scripts/hub-smoke.mjs - SMOKE_CHANNEL override; exam now plays the full deck to the results and asserts the shared stamp; hub seeds a season and asserts the strip (numbers + rank) with axe over it",
-    "docs/design-system.md - 'One desk across the suite' contract; docs/GAME-PLAN.md - M6.6 milestone; docs/HANDOFF.md - current state + session log"
+  "deployed": false,
+  "committed": false,
+  "intent": "The user pointed at FoundPhone-Studio (github.com/keoyyo85/foundphone-studio — an iPhone 15 Pro / iOS 18 virtual-phone story framework, cloned for reference at /tmp/foundphone-studio) and asked for the phone to have 'the same iphone interface', with the plan broken into milestones that each end in a checkpoint so sessions can compact and regroup continuously. Track decision recorded in docs/GAME-PLAN.md M8 (best practices adopted: device metrics as constants, token-layer CSS, pure layout logic + tests, code-drawn icons, one-file-per-app; NOT adopted: their story engine, IndexedDB, 49-app catalog, authoring UI — blackglass's engine + signal desk and the cgAI_ localStorage canon stay). M8.1 delivered the device shell: an iOS token layer on the iPhone 15 Pro grid with the per-phone glassOS theme riding above it, the status bar in iOS glyph grammar (time · island · signal/wifi/battery, diegetic mute + power + bell kept), and a dynamic island that floats above every overlay like real hardware.",
+  "scope_delivered": [
+    "src/engine/os/ios/tokens.css (new) — the iOS base token layer: dark-mode system palette, system-font stack, iOS ease; the screen is a SIZE CONTAINER and island/status metrics are written in cqw (1 logical point = 100/393 cqw) so the top band stays proportionally true at every rendered width — desk stage, POV full-bleed, in between; island z-60 (hardware above every overlay, pointer-inert so the shade's pull-down strip owns its area); reduced-motion static; desktop stage media (≥900px) renders an aspect-true screen (393:852, min-height 640)",
+    "src/engine/os/ios/metrics.ts (new) — IOS_DEVICE (393×852, safe 59/34, island 124×36) + IOS_HOME_GRID (4×6 + dock) for the M8.2 launcher math",
+    "src/engine/os/Device.tsx — StatusBar rebuilt in iOS grammar (tabular clock in the system font; mute/power/bell kept with their canon aria-labels 'Mute sound'/'Lock the phone'/'Notifications'; code-drawn signal/wifi/battery SVGs replace the ••••/⌃/emoji set; battery % numeral retired — the level paints the glyph fill); DynamicIsland component (bell-slash when muted, via the sound.ts store, data-state attribute API for M8.3 expansions); frame/screen corner radii to iPhone proportions (3.25rem/2.75rem); screen min-height 640 / max 800; shade pull-down strip widened to the island area",
+    "src/engine/os/Stage.tsx — MuteToggle resized via the os-ctl token class (canon behavior unchanged)",
+    "src/index.css — top safe-area paddings clear the island (home 3.75rem, app/shade/moment 3.5rem); .os-safe-status rule retired",
+    "No changes to: app surfaces (M8.4), lock/home layout (M8.2), shade mechanics (M8.3), hub/desk, score/storage, content"
   ],
-  "constraints": [
-    "Depict deception, never enable it: the grade measures reads made, flags caught, clues seen — never what the scam did; the WHAT THE SHIFT TAUGHT line teaches the pause.",
-    "No new dependency, no new external asset; sounds reuse the existing WebAudio gameSfx; the desk palette stays on --color-* game tokens.",
-    "11px minimum text on all new copy (two 10px labels caught and bumped), AA contrast on the shared tokens, keyboard paths preserved (1/2/3 + Enter; exam Enter/arrows/Backspace), reduced-motion gets the stamp without the count-up.",
-    "Lazy-loading boundaries hold: the Hub parses persisted localStorage; it imports only shared/grade.ts (pure).",
-    "Existing smoke assertions kept passing (anthology CASE CLOSED / rack stamps; radar 10-read loop; exam flow; hub hero).",
-    "Do not commit, push, or deploy without explicit authorization."
+  "constraints_held": [
+    "No new external assets — every glyph is code-drawn SVG; no Apple fonts/SF Symbols/bitmaps (FoundPhone's BRAND_NOTICE is the model, noted in the token header)",
+    "UI-as-character: ink follows --os-ink (per-phone theme) for the status row; the theme layer rides above the iOS base",
+    "Smoke-visible contracts held: 'Lock the phone' / 'Notifications' / 'Mute sound' aria-labels, pull-down shade, gestures, returning lock, desk rails, toasts",
+    "11px floor: status text is 3.82cqw — ≥11px at every supported screen width (desktop floor 295px → 11.3px, POV ≥360 → 13.7px)",
+    "cgAI_ storage untouched; lazy boundaries hold; no commit/push/deploy without explicit authorization"
   ],
-  "acceptance_checks": [
-    "Feed Triage plays as a desk shift: the case file states the objective and stakes, the live signal meter + grade chip move with every read, every verdict lands a desk sound tied to the visible ledger, and the debrief is the verdict dossier (count-up, stamp slam, grade-sized fanfare, mastery bars, still-slipping list).",
-    "The radar case debrief and the Tell Exam results show the same grade stamp language as the anthology verdict; the rack, case cards, and feed menu all stamp '✓ … · signal N'.",
-    "The Hub shows one season record across anthology/radar/exam without importing any game module (hub smoke seeds and asserts it; budgets hold).",
-    "tsc clean; 70/70 unit tests (66 → 70 with round-signal + store rework tests); build + assets budget green; all eight smokes exit 0 zero console errors; axe 0 serious/critical on the new debrief, hub strip, os surfaces."
+  "acceptance_results": [
+    "Island + status row verified rendered on the desk stage (1280×900) and POV (360×780) via /tmp/m81-probe.mjs screenshots (/tmp/m81-2c-desktop-home.png, /tmp/m81-5-pov-home.png): clock left, island centered, control+glyph cluster right, all inside the island columns; the island floats above the moment overlay like hardware",
+    "Desktop stage is aspect-true: the phone renders on the 393:852 grid (~310-370px wide depending on window height) and reads as an iPhone on the desk; desk rails (case file + signal desk) unaffected",
+    "tsc clean; 76/76 tests; build green (precache 45 entries); assets budget Σ 3.7 MB no duplication",
+    "8/8 smokes exit 0 zero console errors: os, resume, shade, anthology (full 5-anchor playthrough — the shell regression net), hub, exam, radar, finale",
+    "nav-perf exit 0 (coldBootMs 30, errors [])"
   ],
   "blockers": [],
-  "review": {
-    "mode": "independent reviewer via ./meos review (report: .meos/reviews/20261109T231606Z.md) — VERDICT: rework",
-    "verdict": "rework -> reworked (all findings addressed; gates re-run green)",
-    "findings": [
-      "important | CaseGame.tsx finish | completed cases never updated their record on replay (first-completion guard kept both the best stale and lifetime points double-counted on rework paths) | completeCase now always records Math.max as the best while awarding lifetime points exactly once (legacy true saves already earned theirs — no re-award); replay worse/better/legacy covered in state.test.ts",
-      "important | index.tsx case cards | a 0-point completion recorded {id: 0} and rendered as unplayed ('Pick up', excluded from the worked count) | isWorked treats record presence as worked (true | number), the stats count uses it too",
-      "important | exam/hub smokes | the gates never demonstrated the new surfaces (exam advanced once and left; hub ran without progress so the strip never rendered under axe) | exam-smoke plays the full deck and asserts the results hero carries the shared stamp; hub-smoke seeds the three stores, asserts the strip's numbers + rank, and axes over it; both gained the SMOKE_CHANNEL override",
-      "minor | FeedGame case file | the packet required the case file to state the objective; the header had only shift + stats | objective + stakes line added under the THE FEED DESK kicker",
-      "minor | docs/work/current.json | packet left in intent phase while HANDOFF declared done | this wrapup packet",
-      "reviewer sandbox note | tests/build/smokes could not execute under the read-only sandbox (EROFS) | re-run in the working session after the rework: tsc clean, 70/70, build + budget green, 8/8 smokes exit 0"
-    ]
-  },
-  "verification": [
-    "npx tsc --noEmit - clean",
-    "npm test - 70/70 across 10 files (round.test.ts 6: honest max incl. streak, judge pairs, desk mix; state.test.ts 4: award-once, best-on-replay, 0-point worked, legacy upgrade)",
-    "npm run build - tsc clean, PWA precache 44 entries; npm run assets:budget - 3.7 MB, no artifact duplication",
-    "smokes (SMOKE_CHANNEL=chromium) all exit 0 zero console errors: radar (10-read loop + axe on the dossier debrief), os (full case + axe), exam (full deck → results stamp asserted), hub (season strip asserted 159/184/73%/WATCHER + axe), anthology (5-anchor playthrough incl. verdict beats), resume, shade, finale",
-    "visual probes reviewed: /tmp/probe-hub.png (season strip at 1200px), /tmp/probe-exam.png + exam-4b-results.png (exam dossier), /tmp/probe-radar-menu.png ('✓ worked · signal 78' card + best-shift line), /tmp/radar-debrief.png (shift dossier mid-slam), /tmp/os-11-debrief.png (case dossier: S CRYSTAL · 88/100), /tmp/header-fix.png (feed desk at 420px, nothing clipped)",
-    "11px floor: two new 10px labels found in self-review and bumped (shift debrief tiles, hub season cells)"
+  "decisions": [
+    "Island layering: hardware floats ABOVE all overlays (moment/shade/call) — a real island never scrolls under chrome; it is pointer-inert so the pull-down strip still works",
+    "Top-band metrics in cqw against the 393 grid (container-type: size on .os-skin) instead of fixed px — proportional truth at every width, and the narrow-viewport special-casing disappears",
+    "Status text rides BELOW env(safe-area-inset-top) so real-device hardware never overlaps it; the CSS island sits at env + 2.8cqw (in browser tabs env=0)",
+    "Battery % numeral left the status bar (iOS grammar); the level still paints the glyph fill",
+    "Meridiem left the status row (lock screen keeps it) — iOS clocks show time only",
+    "Prior work record archived at docs/work/blackglass-operator-console.json (M6.7 wrapup/complete, deployed=false — commit+deploy still awaiting explicit authorization)"
   ],
   "artifacts": [
-    "Screenshots in /tmp listed under verification; review report .meos/reviews/20261109T231606Z.md"
+    "/tmp/m81-0-select.png … /tmp/m81-5-pov-home.png (probe pass: select, rack, lock, moment with island above, app, home on both stages)",
+    "/tmp/m81-smoke-{os,resume,shade,anthology,hub,exam,radar,finale}.log + /tmp/m81-navperf.log"
   ],
-  "next_action": "Both hosts deployed and live-verified. Next: user plays the suite on the live hosts — the feed desk shift, a case debrief, the exam stamp, the Hub season strip — and reviews the shared feel; M7 content register (Tito Mike clip) unchanged."
+  "next_action": "M8.1 checkpoint reached: commit on explicit user authorization (M6.7 operator-console work + M8.1 shell, or M8.1 separately), then open M8.2 (lock screen + home launcher: iOS lock grammar, 4×6 grid + dock data-driven per phone, pure launcher.ts + tests, code-drawn squircle icons). Ladder in docs/GAME-PLAN.md M8."
 }
