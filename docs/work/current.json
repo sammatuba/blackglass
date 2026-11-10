@@ -3,8 +3,8 @@
   "milestone": "M8.1 (track M8 — THE IPHONE PASS, opened 2026-11-10)",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": false,
-  "committed": false,
+  "deployed": true,
+  "committed": true,
   "intent": "The user pointed at FoundPhone-Studio (github.com/keoyyo85/foundphone-studio — an iPhone 15 Pro / iOS 18 virtual-phone story framework, cloned for reference at /tmp/foundphone-studio) and asked for the phone to have 'the same iphone interface', with the plan broken into milestones that each end in a checkpoint so sessions can compact and regroup continuously. Track decision recorded in docs/GAME-PLAN.md M8 (best practices adopted: device metrics as constants, token-layer CSS, pure layout logic + tests, code-drawn icons, one-file-per-app; NOT adopted: their story engine, IndexedDB, 49-app catalog, authoring UI — blackglass's engine + signal desk and the cgAI_ localStorage canon stay). M8.1 delivered the device shell: an iOS token layer on the iPhone 15 Pro grid with the per-phone glassOS theme riding above it, the status bar in iOS glyph grammar (time · island · signal/wifi/battery, diegetic mute + power + bell kept), and a dynamic island that floats above every overlay like real hardware.",
   "scope_delivered": [
     "src/engine/os/ios/tokens.css (new) — the iOS base token layer: dark-mode system palette, system-font stack, iOS ease; the screen is a SIZE CONTAINER and island/status metrics are written in cqw (1 logical point = 100/393 cqw) so the top band stays proportionally true at every rendered width — desk stage, POV full-bleed, in between; island z-60 (hardware above every overlay, pointer-inert so the shade's pull-down strip owns its area); reduced-motion static; desktop stage media (≥900px) renders an aspect-true screen (393:852, min-height 640)",
@@ -22,11 +22,12 @@
     "cgAI_ storage untouched; lazy boundaries hold; no commit/push/deploy without explicit authorization"
   ],
   "acceptance_results": [
-    "Island + status row verified rendered on the desk stage (1280×900) and POV (360×780) via /tmp/m81-probe.mjs screenshots (/tmp/m81-2c-desktop-home.png, /tmp/m81-5-pov-home.png): clock left, island centered, control+glyph cluster right, all inside the island columns; the island floats above the moment overlay like hardware",
-    "Desktop stage is aspect-true: the phone renders on the 393:852 grid (~310-370px wide depending on window height) and reads as an iPhone on the desk; desk rails (case file + signal desk) unaffected",
+    "Island + status row verified rendered on the desk stage (1280×900) and POV (360×780) via probe screenshots: clock left, island centered, control+glyph cluster right, all inside the island columns; the island floats above the moment overlay like hardware",
+    "Desktop stage is aspect-true: the phone renders on the 393:852 grid and reads as an iPhone on the desk; desk rails (case file + signal desk) unaffected",
     "tsc clean; 76/76 tests; build green (precache 45 entries); assets budget Σ 3.7 MB no duplication",
-    "8/8 smokes exit 0 zero console errors: os, resume, shade, anthology (full 5-anchor playthrough — the shell regression net), hub, exam, radar, finale",
-    "nav-perf exit 0 (coldBootMs 30, errors [])"
+    "8/8 smokes exit 0 locally on the final tree (os, resume, shade, anthology, hub, exam, radar, finale) + nav-perf exit 0 (coldBootMs 30)",
+    "LIVE VERIFIED on both hosts (user-authorized deploy): Pages hub + os + anthology exit 0; Workers hub + os + anthology exit 0 — console stations/season/archive asserted, the M8.1 shell exercised by the full 5-anchor playthrough on both hosts",
+    "Commits: d54544e (M6.7 operator's console) + ebdf1c1 (M8.1 iPhone shell), pushed main; gh-pages refreshed by deploy.sh"
   ],
   "blockers": [],
   "decisions": [
@@ -41,5 +42,13 @@
     "/tmp/m81-0-select.png … /tmp/m81-5-pov-home.png (probe pass: select, rack, lock, moment with island above, app, home on both stages)",
     "/tmp/m81-smoke-{os,resume,shade,anthology,hub,exam,radar,finale}.log + /tmp/m81-navperf.log"
   ],
-  "next_action": "M8.1 checkpoint reached: commit on explicit user authorization (M6.7 operator-console work + M8.1 shell, or M8.1 separately), then open M8.2 (lock screen + home launcher: iOS lock grammar, 4×6 grid + dock data-driven per phone, pure launcher.ts + tests, code-drawn squircle icons). Ladder in docs/GAME-PLAN.md M8."
+  "next_action": "M8.2 — lock screen + home launcher: iOS lock grammar (clock, date, widget row; returning lock keeps While you were away), 4×6 grid + dock data-driven per phone, pure engine/os/launcher.ts + unit tests (IOS_HOME_GRID), code-drawn squircle icons. Ladder in docs/GAME-PLAN.md M8. Standing: commit at each checkpoint, deploy on explicit authorization.",
+  "smoke_fixes": [
+    "scripts/lib/nav.mjs — launchAuditBrowser (Chromium --disable-async-dns: its async DNS resolver stalls under WSL2's NAT resolver; navigation never commits with zero requests logged — proven by A/B probe) + gotoHub(page, BASE) (proves the hub per host base instead of assuming the URL)",
+    "hub-smoke — mounts through gotoHub and gates on the hero heading before any soft assertion (an unmounted page now fails legibly at the gate)",
+    "os-smoke — proves the radar destination before skipping its fallback; falls in through the hub's feed-desk station per host base",
+    "anthology-smoke — gotoGame proves the mount with a bounded waitFor (fixed 600ms settle fired before React mount on live), discovers the hub-rendering path per host, and enters through [data-od-id=\"station-rack\"] (GitHub Pages has no SPA fallback for deep links; the old fallback locator was pre-M6.7 brochure text)",
+    "follow-up recorded: exam/radar/case-os direct-link probes still assume a host base (passed locally + on Pages; latent conflation on the other base)"
+  ],
+  "ops_learnings": "docs/HANDOFF.md §7b — three failure modes captured: (1) Chromium async-DNS stall under WSL2 (signature: curl fast + browser no-commit + empty request log = resolver, not the site), (2) never compare bundle hashes across vite bases (Workers base / vs Pages /blackglass/ — 40-min false alarm), (3) smokes must prove destinations and mounts, not responses and sleeps"
 }

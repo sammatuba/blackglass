@@ -4,11 +4,11 @@
    and pull-down notifications.
    Local:  node scripts/resume-smoke.mjs  (against npm run preview)
    Live:   SHOT_BASE=https://sammatuba.github.io node scripts/resume-smoke.mjs */
-import { chromium } from 'playwright-core'
-import { gotoWithRetry } from './lib/nav.mjs'
+
+import { gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch()
+const browser = await launchAuditBrowser()
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 // smoke runs use the fast pace; cadence math is covered by pacing.test.ts

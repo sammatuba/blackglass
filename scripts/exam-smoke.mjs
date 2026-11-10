@@ -1,11 +1,11 @@
 /* Dev helper: drive the Tell Exam (E6 field-exam) — begin, place a marker,
    reveal, advance, and confirm the results screen. Also verifies the legacy
    iframe's deduped artifact path (window.ARTIFACT_BASE probe → platform copy). */
-import { chromium } from 'playwright-core'
-import { gotoWithRetry } from './lib/nav.mjs'
+
+import { gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
+const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))

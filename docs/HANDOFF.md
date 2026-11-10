@@ -147,8 +147,67 @@ Full reasoning: `craft/maya/_meta/anchor-v-brief.md` §8.
   build if a story moment promises a conversation that doesn't exist — extend it to
   every new anchor.
 
+## 7b. Operational learnings (live verification — read before running live smokes)
+
+Captured 2026-11-11 during the M6.7/M8.1 deploy verification. Three failure
+modes cost hours each; they are now fixed or documented so they are never
+re-diagnosed from scratch:
+
+1. **Chromium's async DNS stalls under WSL2 — the "invisible hang".**
+   Symptom: `page.goto` never commits (20–45 s timeouts), *zero requests
+   issued, zero failures logged*, run-to-run random on the same command, while
+   `curl` on the same host answers in 100 ms. Retries inside the page cannot
+   help because no request ever leaves the browser. Root cause proven with an
+   A/B probe: Chromium's built-in async DNS resolver intermittently hangs on
+   WSL2's NAT resolver; with `--disable-async-dns` (system getaddrinfo) every
+   load went 43–1300 ms. Fix: `launchAuditBrowser()` in `scripts/lib/nav.mjs`
+   (all ten gate smokes launch through it). Durable machine-level alternative:
+   fix WSL2's resolver (mirrored networking or a real DNS server in
+   `/etc/resolv.conf`) — user's call. Diagnostic signature to remember:
+   **curl fast + browser no-commit + empty request log = resolver, not the site.**
+2. **Never verify a deploy by comparing bundle hashes across build bases.**
+   The Workers build uses vite base `/` and Pages/preview use `/blackglass/` —
+   the same source produces different hashes, so "hash differs from local" was
+   wrongly read as "old bundle still served" and cost a 40-minute false alarm.
+   Verify by content markers (e.g. `grep 'os-safe-home'` for the 3.75rem
+   island clearance in the served CSS) or by behavior smokes — the latter is
+   the standard.
+3. **Smokes must prove destinations, not responses, and prove mounts, not
+   sleeps.** Two latent smoke defects surfaced only on live hosts (local SPA
+   fallback masks them): `hub-smoke`/`os-smoke` assumed the hub/radar URL per
+   host base (Workers' `/blackglass/scam-radar` is the anthology catch-all, not
+   the radar), and `anthology-smoke`'s `gotoGame` "proved" it was in-game with a
+   fixed 600 ms settle that can fire before React mounts on a slow live load —
+   plus its fallback expected pre-M6.7 brochure card text. Also: **GitHub Pages
+   has no SPA fallback for deep links** (no 404.html) — `/blackglass/blackglass`
+   404s live, so the anthology can only be entered through the hub card there.
+   Fixes now in `scripts/lib/nav.mjs`: `gotoHub(page, BASE)` proves the hub per
+   host base; `gotoGame` waits for the app's own text (bounded waitFor) and
+   enters via `[data-od-id="station-rack"]`; `os-smoke` proves the radar
+   destination before skipping its fallback; `hub-smoke` gates on the hero
+   heading before any soft assertion. The remaining `SHOT_BASE` semantics are
+   per-script and documented in each script's header — hub/radar/exam/os take
+   the ORIGIN; check before a live run. (Follow-up: `exam-smoke`/`radar-smoke`/
+   `case-os-smoke` direct-link probes still assume a host base; they passed
+   locally and on Pages but have the same latent conflation on the other base.)
+
 ## 8. Session log (recent, newest first)
 
+- **2026-11-11 (b)** — DEPLOYED both hosts + live-verified (user-authorized):
+  committed `d54544e` (M6.7 operator's console — 16 files incl. the two UI
+  pieces an amend caught unstaged) and `ebdf1c1` (M8.1 iPhone shell), pushed
+  `main` → Workers Builds published; `deploy.sh` refreshed gh-pages (served
+  bundle confirmed by content marker). Live verification (SMOKE_CHANNEL=
+  chromium): **Pages** hub + os + anthology exit 0; **Workers** hub + os +
+  anthology exit 0 — console stations/season/archive asserted, the M8.1 shell
+  exercised by the full 5-anchor playthrough on both hosts. Getting there
+  root-caused three failure modes (see §7b — operational learnings): Chromium
+  async-DNS stall under WSL2 (fixed: launchAuditBrowser), an invalid
+  cross-base hash comparison (40-min false alarm, my error), and three latent
+  smoke contracts that only live hosts expose (fixed: gotoHub + destination/
+  mount proofs; follow-up noted for exam/radar/case-os). All 8 gates green on
+  the final tree (76/76 tests, 8/8 smokes local, nav-perf exit 0 coldBoot
+  30 ms). Work packet: deployed=true. Next: M8.2 lock screen + home launcher.
 - **2026-11-11 (a)** — M8.1 THE IPHONE PASS · the device shell (checkpoint reached,
   NOT committed): track M8 opened on the user's FoundPhone-Studio pointer
   (cloned to /tmp/foundphone-studio — patterns + metrics only, never assets;

@@ -13,11 +13,11 @@
    - the destination must mount its OWN control after release.
    Zero console errors is part of the gate.
      Local: node scripts/nav-perf.mjs   (needs `npm run preview` running) */
-import { chromium } from 'playwright-core'
-import { gotoWithRetry } from './lib/nav.mjs'
+
+import { gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
+const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 
 const throttle = async (page) => {

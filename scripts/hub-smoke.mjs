@@ -6,12 +6,12 @@
    NOTE: this one takes the ORIGIN as SHOT_BASE (it appends /blackglass/):
      Local: node scripts/hub-smoke.mjs
      Live:  SHOT_BASE=https://sammatuba.github.io node scripts/hub-smoke.mjs */
-import { chromium } from 'playwright-core'
-import { gotoWithRetry } from './lib/nav.mjs'
+
+import { gotoHub, launchAuditBrowser } from './lib/nav.mjs'
 import { axeCheck } from './lib/axe.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
+const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
@@ -32,7 +32,10 @@ await page.addInitScript(() => {
   localStorage.setItem('cgAI_tellExam_best', '73')
 })
 
-await gotoWithRetry(page, `${BASE}/blackglass/`)
+// the mount gate: gotoHub proves the hub (and finds it per host base) —
+// on a slow live load this fails HERE, legibly, instead of 30 s later at the
+// drawer with every soft assertion silently empty.
+await gotoHub(page, BASE)
 await page.waitForTimeout(2500) // idle callback + hero chunk import + first frames
 
 const canvasCount = await page.locator('canvas').count()

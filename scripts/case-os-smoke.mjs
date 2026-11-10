@@ -1,8 +1,9 @@
 /* Dev helper: smoke Cases 02 + 03 on glassOS through their key paths. */
-import { chromium } from 'playwright-core'
+
+import { launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: 'chrome' })
+const browser = await launchAuditBrowser({ channel: 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))

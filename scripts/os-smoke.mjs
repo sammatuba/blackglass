@@ -1,10 +1,10 @@
 /* Dev helper: drive glassOS Case 01 — unlock, snoop, decide, call, debrief. */
-import { chromium } from 'playwright-core'
+
 import { axeCheck } from './lib/axe.mjs'
-import { gotoWithRetry } from './lib/nav.mjs'
+import { gotoHub, gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
+const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 const page = await browser.newPage({ viewport: { width: 420, height: 920 } })
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()))
@@ -24,13 +24,29 @@ const tap = async (name, timeout = 4000) => {
 }
 const settle = (ms) => page.waitForTimeout(ms)
 
-// deep links 404 on hosts without SPA rewrites — fall in through the hub card
+// prove the destination, not the response — /blackglass/scam-radar only means
+// the radar on base-blackglass hosts; on root-base hosts (Workers) it is the
+// anthology route. Deep links also 404 on hosts without SPA rewrites, so the
+// fallback enters through the hub's feed-desk station (per host base).
 const direct = await gotoWithRetry(page, `${BASE}/blackglass/scam-radar`, { attempts: 2 }).catch(() => null)
-if (!direct?.ok()) {
-  await gotoWithRetry(page, `${BASE}/blackglass/`)
+const onRadar =
+  direct?.ok() &&
+  (await page
+    .getByRole('button', { name: /It’s Me, Again/i })
+    .first()
+    .waitFor({ state: 'visible', timeout: 6000 })
+    .then(() => true)
+    .catch(() => false))
+if (!onRadar) {
+  await gotoHub(page, BASE)
   const card = page.getByRole('link', { name: /Scam Radar|Start scam training/i }).first()
   await card.waitFor({ state: 'visible', timeout: 15000 })
   await card.click()
+  await page
+    .getByRole('button', { name: /It’s Me, Again/i })
+    .first()
+    .waitFor({ state: 'visible', timeout: 15000 })
+    .catch(() => {})
   await page.waitForTimeout(900)
 }
 errors.length = 0 // the hub-fallback probe's expected 404s are not game errors

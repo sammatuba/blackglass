@@ -5,11 +5,11 @@
    TRANSCRIPT=1 additionally dumps the visible chat bubbles at each beat to
    <tmpdir>/bg-transcript.json — the E2 playthrough judge's input
    (docs/game-design-eval.md, facet 2). */
-import { chromium } from 'playwright-core'
+
 import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { gotoWithRetry } from './lib/nav.mjs'
+import { gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const TRANSCRIPT = !!process.env.TRANSCRIPT
 const transcript = []
@@ -25,7 +25,7 @@ const capture = async (label) => {
 }
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
-const browser = await chromium.launch({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
+const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
 const errors = []
 // console errors are only collected while we're actually in the game: the
 // hub fallback probes a deep link that 404s on hosts without SPA rewrites
@@ -71,16 +71,34 @@ const tryTap = async (name, timeout = 2000) => {
 const gotoGame = async () => {
   auditing = false
   const inGame = async () => (await page.getByText(/Season signal/i).count()) > 0
-  for (const path of ['/blackglass/blackglass', '/blackglass', '/']) {
+  // prove the mount with a bounded wait — a fixed settle() can fire before
+  // React mounts on a slow live load, so every correct deep link would "miss"
+  const mounted = () =>
+    page.getByText(/Season signal/i).first().waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false)
+  // GitHub Pages has no SPA fallback for deep links (no 404.html), so the
+  // anthology URL 404s there and the only way in is the hub card. Record the
+  // first SPA-served path that renders the HUB — by construction it renders
+  // the hub on THIS host (Pages: /blackglass/ · Workers root: any catch-all).
+  let hubUrl = null
+  for (const path of ['/blackglass/blackglass', '/blackglass/', '/']) {
     // a 404 document can leave the request hung — never wait for networkidle
     const res = await gotoWithRetry(page, `${BASE}${path}`, { attempts: 2 }).catch(() => null)
     if (!res?.ok()) continue
-    await settle(600)
-    if (await inGame()) break
+    if (await mounted()) break
+    if (hubUrl === null) {
+      const isHub = await page
+        .getByRole('heading', { name: /see clearly/i })
+        .first()
+        .waitFor({ state: 'visible', timeout: 4000 })
+        .then(() => true)
+        .catch(() => false)
+      if (isHub) hubUrl = `${BASE}${path}`
+    }
   }
   if (!(await inGame())) {
-    await gotoWithRetry(page, `${BASE}/`)
-    const card = page.getByRole('link', { name: /Three phones\. One morning/i }).first()
+    await gotoWithRetry(page, hubUrl ?? `${BASE}/`)
+    // the M6.7 console's anthology entry is the rack station link itself
+    const card = page.locator('[data-od-id="station-rack"]').first()
     await card.waitFor({ state: 'visible', timeout: 15000 })
     await card.click()
     await settle(800)
