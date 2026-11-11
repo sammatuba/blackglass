@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { PointerEvent as ReactPointerEvent } from 'react'
+import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react'
 import type { AppId, CaseOS, OSMessage, OSMoment, OSState } from './types'
 import {
   applyPushAt,
@@ -14,6 +14,8 @@ import {
   visibleMessages,
 } from './runtime'
 import { isMuted, onMuteChange, sfx, vibrate } from './sound'
+import { buildLauncherLayout, homeAppsFor, showPageDots } from './launcher'
+import { AppIcon, AppGlyph } from './ios/AppIcon'
 import './ios/tokens.css'
 import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
@@ -855,14 +857,22 @@ function StatusBar({
           <svg viewBox="0 0 16 12" className="os-g-wifi" fill="currentColor">
             <path d="M8 11 0.9 4.5A10.4 10.4 0 0 1 15.1 4.5Z" />
           </svg>
-          <svg viewBox="0 0 27 13" className="os-g-batt" aria-hidden="true">
-            <rect x="0.5" y="0.5" width="23" height="12" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
-            <rect x="2.5" y="2.5" width={Math.max(2, 19 * (battery / 100))} height="8" rx="2" fill="currentColor" />
-            <path d="M25.4 4.6v3.8c1-.4 1.6-1 1.6-1.9s-.6-1.5-1.6-1.9Z" fill="currentColor" fillOpacity="0.4" />
-          </svg>
+          <BatteryGlyph level={battery} />
         </span>
       </span>
     </div>
+  )
+}
+
+/** the battery glyph — the level paints the fill (the % numeral lives on
+    the lock screen's battery widget, iOS grammar) */
+function BatteryGlyph({ level, className = 'os-g-batt' }: { level: number; className?: string }) {
+  return (
+    <svg viewBox="0 0 27 13" className={className} aria-hidden="true">
+      <rect x="0.5" y="0.5" width="23" height="12" rx="4" fill="none" stroke="currentColor" strokeOpacity="0.4" />
+      <rect x="2.5" y="2.5" width={Math.max(2, 19 * (level / 100))} height="8" rx="2" fill="currentColor" />
+      <path d="M25.4 4.6v3.8c1-.4 1.6-1 1.6-1.9s-.6-1.5-1.6-1.9Z" fill="currentColor" fillOpacity="0.4" />
+    </svg>
   )
 }
 
@@ -942,6 +952,41 @@ function LockScreen({
     .filter(Boolean)
     .slice(0, 3) as { t: CaseOS['threads'][number]; last: OSMessage }[]
 
+  // iOS lock widgets — glanceable and data-honest: the battery is always
+  // known; missed calls / voicemails / saved notes only chip in when the
+  // case actually seeds them (M8.2 review finding: the row was planned
+  // but missing)
+  const missedCalls = caseDef.recents?.filter((c) => c.missed).length ?? 0
+  const voicemails = caseDef.voicemails?.length ?? 0
+  const lockWidgets: { key: string; label: string; glyph: ReactNode }[] = [
+    {
+      key: 'battery',
+      label: `${caseDef.phone.battery}%`,
+      glyph: <BatteryGlyph level={caseDef.phone.battery} className="h-[3.3cqw] w-auto" />,
+    },
+    ...(missedCalls > 0
+      ? [{ key: 'missed', label: `${missedCalls} missed`, glyph: <AppGlyph app="phone" className="h-3.5 w-3.5" /> }]
+      : []),
+    ...(voicemails > 0
+      ? [
+          {
+            key: 'voicemail',
+            label: `${voicemails} voicemail${voicemails > 1 ? 's' : ''}`,
+            glyph: (
+              <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <circle cx="7.2" cy="12.4" r="3.1" />
+                <circle cx="16.8" cy="12.4" r="3.1" />
+                <path d="M4.5 17.5h15" />
+              </svg>
+            ),
+          },
+        ]
+      : []),
+    ...(os.evidence.length > 0
+      ? [{ key: 'notes', label: `${os.evidence.length} in Notes`, glyph: <AppGlyph app="notes" className="h-3.5 w-3.5" /> }]
+      : []),
+  ]
+
   const dragStart = useRef<number | null>(null)
   const swipeDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     dragStart.current = e.clientY
@@ -962,11 +1007,35 @@ function LockScreen({
       }}
     >
       <div className="text-center">
-        <div className="text-[13px] font-medium tracking-wide opacity-80">{caseDef.phone.day}</div>
-        <div className="font-display text-6xl font-semibold tracking-tight drop-shadow">
+        <svg
+          viewBox="0 0 24 24"
+          className="mx-auto mb-1.5 h-4 w-4 opacity-80"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <rect x="5.5" y="10.5" width="13" height="9.5" rx="2.8" />
+          <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+        </svg>
+        <div className="text-[15px] font-medium tracking-wide opacity-85">{caseDef.phone.day}</div>
+        <div className="font-display os-lock-clock font-semibold drop-shadow">
           {caseDef.phone.time}
-          <span className="ml-1.5 text-xl opacity-75">{caseDef.phone.meridiem}</span>
+          <span className="ml-1.5 align-baseline text-[4.6cqw] font-medium opacity-75">{caseDef.phone.meridiem}</span>
         </div>
+      </div>
+
+      <div className="os-lock-widgets">
+        {lockWidgets.map((w) => (
+          <span
+            key={w.key}
+            className="flex items-center gap-1.5 rounded-full bg-[var(--os-panel)]/70 px-3 py-1.5 backdrop-blur-md"
+          >
+            {w.glyph}
+            <span className="text-[11px] font-semibold tabular-nums">{w.label}</span>
+          </span>
+        ))}
       </div>
 
       <div className="mt-auto space-y-2">
@@ -981,9 +1050,9 @@ function LockScreen({
             key={t.id}
             type="button"
             onClick={onUnlock}
-            className="block w-full rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
+            className="block w-full rounded-3xl border border-[var(--os-hairline)] bg-[var(--os-panel)]/90 px-4 py-3 text-left backdrop-blur-md transition-colors hover:bg-[var(--os-panel)]"
           >
-            <div className="text-[11px] font-bold tracking-wide opacity-75">
+            <div className="text-[11px] font-bold uppercase tracking-wide opacity-75">
               {SERVICE_LABEL[t.service]}
             </div>
             <div className="text-[13px] font-bold">{t.name}</div>
@@ -1004,7 +1073,10 @@ function LockScreen({
         onClick={onUnlock}
         className="mx-auto mt-5 flex h-11 items-center gap-2 rounded-full bg-[var(--os-chip)] px-5 text-[12px] font-semibold backdrop-blur-md transition-colors hover:bg-[var(--os-chip-bg-hover)]"
       >
-        ⌃ Swipe up to open
+        <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="m6 14 6-6 6 6" />
+        </svg>
+        Swipe up to open
       </button>
       {caseDef.phone.lockNote && (
         <p className="mt-3 text-center text-2xs italic leading-snug text-[var(--os-faint)]">{caseDef.phone.lockNote}</p>
@@ -1034,21 +1106,13 @@ function HomeScreen({
 }) {
   const newReplies = caseDef.replies.filter((r) => !os.sentReplies.includes(r.id) && (!r.requires || os.flags[r.requires])).length
 
-  const tiles: { id: AppId; badge?: number }[] = [
-    { id: 'gallery' },
-    { id: 'phone' },
-    { id: 'contacts' },
-    { id: 'notes', badge: os.evidence.length || undefined },
-  ]
-  const hasAsk = caseDef.threads.some((t) => t.service === 'assistant')
-  const dockApps: { id: AppId; badge?: number }[] = [
-    { id: 'messages', badge: newReplies > 0 ? newReplies : undefined },
-    ...(hasAsk ? [{ id: 'assistant' as AppId }] : []),
-    { id: 'browser' },
-    { id: 'settings' },
-  ]
+  // the case's home layout, one ordered list — the launcher pages and docks it
+  const apps = homeAppsFor(caseDef.threads, { notes: os.evidence.length || undefined, messages: newReplies || undefined })
+  const layout = buildLauncherLayout(apps)
+  const [page, setPage] = useState(0)
+  const safePage = Math.min(page, layout.pages.length - 1)
 
-  const renderIcon = ({ id, badge }: { id: AppId; badge?: number }) => {
+  const renderApp = (id: AppId, badge?: number) => {
     const meta = APP_META[id]
     return (
       <button
@@ -1058,51 +1122,52 @@ function HomeScreen({
         aria-label={`Open ${meta.name}`}
         className="group flex flex-col items-center gap-1.5"
       >
-        <span
-          className={`relative grid h-14 w-14 place-items-center rounded-2xl text-2xl shadow-lg backdrop-blur-md transition-transform group-active:scale-95 ${meta.tile}`}
-        >
-          {meta.icon}
-          {badge != null && badge > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[var(--os-danger)] px-1 text-2xs font-bold text-[var(--os-danger-ink)]">
-              {badge}
-            </span>
-          )}
-        </span>
+        <AppIcon app={id} badge={badge} />
         <span className="text-2xs font-medium opacity-85">{meta.name}</span>
       </button>
     )
   }
 
   return (
-    <div className="os-safe-home absolute inset-0 z-10 flex flex-col px-5 text-[var(--os-ink)]">
-      <div className="grid grid-cols-4 gap-x-3 gap-y-5">
-        {tiles.map(renderIcon)}
+    <div className="os-safe-home absolute inset-0 z-10 flex flex-col px-6 text-[var(--os-ink)]">
+      <div className="grid flex-1 grid-cols-4 content-start gap-x-[4.6cqw] gap-y-5 [grid-auto-rows:min-content]">
+        {layout.pages[safePage].cells.map((cell, i) =>
+          cell ? renderApp(cell.id, cell.badge) : <span key={`empty-${i}`} aria-hidden="true" />,
+        )}
       </div>
 
       <div className="mt-auto">
-        <div className="mx-auto mb-4 w-max rounded-full bg-[var(--os-chip)] px-4 py-1 text-2xs text-[var(--os-dim)]">
+        {showPageDots(layout) && (
+          <div className="os-page-dots" role="tablist" aria-label="Home pages">
+            {layout.pages.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                role="tab"
+                aria-selected={i === safePage}
+                aria-label={`Home page ${i + 1}`}
+                onClick={() => setPage(i)}
+                className="os-page-dot"
+                data-active={i === safePage}
+              />
+            ))}
+          </div>
+        )}
+        <div className="mx-auto mb-3 w-max rounded-full bg-[var(--os-chip)] px-4 py-1 text-2xs text-[var(--os-dim)]">
           {os.evidence.length > 0 ? `${os.evidence.length} saved in Notes` : 'glassOS 4.0'}
         </div>
-        <div className="flex items-center justify-around rounded-3xl bg-[var(--os-chip)] px-4 py-3 backdrop-blur-md">
-          {dockApps.map(({ id, badge }) => {
-            const meta = APP_META[id]
-            return (
-              <button
-                key={id}
-                type="button"
-                onClick={() => onOpenApp(id)}
-                aria-label={`Open ${meta.name}`}
-                className="relative grid h-13 w-13 place-items-center rounded-2xl text-2xl shadow-lg transition-transform active:scale-95"
-              >
-                {meta.icon}
-                {badge != null && badge > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[var(--os-danger)] px-1 text-2xs font-bold text-[var(--os-danger-ink)]">
-                    {badge}
-                  </span>
-                )}
-              </button>
-            )
-          })}
+        <div className="flex items-center justify-around rounded-[2rem] bg-[var(--os-chip)] px-4 py-3 backdrop-blur-md">
+          {layout.dock.map(({ id, badge }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onOpenApp(id)}
+              aria-label={`Open ${APP_META[id].name}`}
+              className="relative"
+            >
+              <AppIcon app={id} badge={badge} />
+            </button>
+          ))}
         </div>
       </div>
     </div>

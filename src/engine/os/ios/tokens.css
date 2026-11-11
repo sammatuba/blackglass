@@ -87,7 +87,11 @@
    system font. The diegetic controls (mute / power / bell) keep
    their canon places; glyphs are code-drawn SVG. The text band
    rides BELOW env(safe-area-inset-top) so real-device hardware
-   never overlaps it; on desktop env() is 0. */
+   never overlaps it; on desktop env() is 0. The row centers on the
+   island's axis (2.8cqw + 9.16cqw/2 = 7.38cqw) like a real iPhone,
+   and its 4.07cqw sides clear the screen's fixed 2.75rem corner curve
+   at the 295px floor — the desk stage clipped a cqw-positioned
+   leading digit there (M8.2 probe finding). */
 .os-status-row {
   position: absolute;
   left: 0;
@@ -97,7 +101,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: calc(var(--ios-safe-top) + 1cqw) 3.56cqw 0;
+  padding: calc(var(--ios-safe-top) + 4.07cqw) 4.07cqw 0;
   font-family: var(--ios-font);
   font-size: 3.82cqw;
   font-weight: 600;
@@ -134,6 +138,59 @@
 .os-g-batt {
   height: 2.8cqw;
   width: 5.85cqw;
+}
+
+/* ---- home launcher (M8.2) — icon grid + dock + page dots ----
+   Icon 60 pt on the 393 grid = 15.3cqw; corner radius 22.5% reads as a
+   squircle at this scale; glyphs are white on the per-app gradient tile. */
+.os-app-icon {
+  width: 15.3cqw;
+  height: 15.3cqw;
+  border-radius: 22.5%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow:
+    0 0.9cqw 2cqw rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s var(--ios-ease);
+}
+.os-app-icon:active {
+  transform: scale(0.94);
+}
+.os-app-icon svg {
+  width: 58%;
+  height: 58%;
+}
+.os-page-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2cqw;
+  padding: 1cqw 0 2.6cqw;
+}
+.os-page-dot {
+  width: 1.6cqw;
+  height: 1.6cqw;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+}
+.os-page-dot[data-active='true'] {
+  opacity: 0.9;
+}
+
+/* ---- lock screen (M8.2) — iOS clock grammar ---- */
+.os-lock-clock {
+  font-size: 18.3cqw; /* 72 pt on the 393 grid */
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.os-lock-widgets {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5cqw;
+  margin-top: 2.6cqw;
 }
 
 @media (prefers-reduced-motion: reduce) {

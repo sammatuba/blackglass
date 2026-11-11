@@ -193,6 +193,30 @@ re-diagnosed from scratch:
 
 ## 8. Session log (recent, newest first)
 
+- **2026-11-12 (a)** — M8.2 THE IPHONE PASS · lock screen + home launcher (wrapup reached,
+  NOT committed): the interrupted session's implementation was recovered and finished.
+  New pure `engine/os/launcher.ts` (`homeAppsFor` app list + `buildLauncherLayout`
+  grid/dock/pages over IOS_HOME_GRID) with unit tests; `ios/AppIcon.tsx` code-drawn
+  squircle icons (8 glyphs, badge 9+ cap, `AppGlyph` reused by lock widgets);
+  `Device.tsx` HomeScreen rebuilt data-driven (grid + dock + tablist page dots +
+  safe-page clamp), LockScreen in iOS grammar (72pt cqw clock, date line, lock glyph,
+  'Swipe up to open' kept) with a NEW data-honest widget row (battery always; missed
+  calls / voicemails / Notes only when the case seeds them). Independent review
+  (`./meos review`) returned REWORK with 3 findings — all fixed and re-verified: the
+  missing widget row; M8.1's record archived verbatim to
+  `docs/work/blackglass-iphone-shell.json` and launcher coverage demonstrated across
+  all 16 CaseOS definitions (3 playable + 13 anthology phones,
+  `games/scam-radar/cases/launcher-phones.test.ts`); the grid-badge test that asserted
+  `undefined`. One probe finding fixed on top: the desk stage's FIXED 2.75rem screen
+  corner clipped the cqw status clock at the ~295px floor (POV full-bleed unaffected) —
+  the status row now centers on the island's axis (7.38cqw) with 4.07cqw sides,
+  iOS-true and clip-free at every width (zoomed re-probe). Gates on the final tree:
+  tsc clean, 85/85 tests, build green (45 precache), 3.7 MB budget, 8/8 smokes exit 0
+  (SMOKE_CHANNEL=chromium; system Chrome absent here), visual probe desk+POV
+  (icons 15.3cqw/22.5%, dock 4, dots hidden single-page, widgets both stages). Seven
+  probe-*.mjs scratch files untracked at root — delete or exclude at commit.
+  Work packet: docs/work/current.json (wrapup/complete, deployed=false). Next: commit
+  on authorization → M8.3 shade + island control-center states.
 - **2026-11-11 (b)** — DEPLOYED both hosts + live-verified (user-authorized):
   committed `d54544e` (M6.7 operator's console — 16 files incl. the two UI
   pieces an amend caught unstaged) and `ebdf1c1` (M8.1 iPhone shell), pushed

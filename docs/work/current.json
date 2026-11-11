@@ -1,54 +1,55 @@
 {
-  "work_id": "blackglass-iphone-shell",
-  "milestone": "M8.1 (track M8 — THE IPHONE PASS, opened 2026-11-10)",
+  "work_id": "blackglass-iphone-launcher",
+  "milestone": "M8.2 (track M8 — THE IPHONE PASS)",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": true,
-  "committed": true,
-  "intent": "The user pointed at FoundPhone-Studio (github.com/keoyyo85/foundphone-studio — an iPhone 15 Pro / iOS 18 virtual-phone story framework, cloned for reference at /tmp/foundphone-studio) and asked for the phone to have 'the same iphone interface', with the plan broken into milestones that each end in a checkpoint so sessions can compact and regroup continuously. Track decision recorded in docs/GAME-PLAN.md M8 (best practices adopted: device metrics as constants, token-layer CSS, pure layout logic + tests, code-drawn icons, one-file-per-app; NOT adopted: their story engine, IndexedDB, 49-app catalog, authoring UI — blackglass's engine + signal desk and the cgAI_ localStorage canon stay). M8.1 delivered the device shell: an iOS token layer on the iPhone 15 Pro grid with the per-phone glassOS theme riding above it, the status bar in iOS glyph grammar (time · island · signal/wifi/battery, diegetic mute + power + bell kept), and a dynamic island that floats above every overlay like real hardware.",
+  "deployed": false,
+  "committed": false,
+  "intent": "M8.2 of the M8 iPhone pass (M8.1 shell committed ebdf1c1 + live-verified): the lock screen and home launcher in iOS grammar. Lock: big clock, date line, widget row, swipe-to-unlock (returning lock keeps 'While you were away'). Home: 4×6 grid + 4-app dock + page dots, data-driven per phone; pure engine/os/launcher.ts (grid math: pages, positions, dock, dots) with unit tests incl. all-phones coverage; icons redrawn as code-drawn squircles (glyph grammar, no Apple bitmaps). Smoke-visible contracts to hold: 'Swipe up to open' unlock button, 'Open <App>' icon aria-labels, returning-lock flow.",
   "scope_delivered": [
-    "src/engine/os/ios/tokens.css (new) — the iOS base token layer: dark-mode system palette, system-font stack, iOS ease; the screen is a SIZE CONTAINER and island/status metrics are written in cqw (1 logical point = 100/393 cqw) so the top band stays proportionally true at every rendered width — desk stage, POV full-bleed, in between; island z-60 (hardware above every overlay, pointer-inert so the shade's pull-down strip owns its area); reduced-motion static; desktop stage media (≥900px) renders an aspect-true screen (393:852, min-height 640)",
-    "src/engine/os/ios/metrics.ts (new) — IOS_DEVICE (393×852, safe 59/34, island 124×36) + IOS_HOME_GRID (4×6 + dock) for the M8.2 launcher math",
-    "src/engine/os/Device.tsx — StatusBar rebuilt in iOS grammar (tabular clock in the system font; mute/power/bell kept with their canon aria-labels 'Mute sound'/'Lock the phone'/'Notifications'; code-drawn signal/wifi/battery SVGs replace the ••••/⌃/emoji set; battery % numeral retired — the level paints the glyph fill); DynamicIsland component (bell-slash when muted, via the sound.ts store, data-state attribute API for M8.3 expansions); frame/screen corner radii to iPhone proportions (3.25rem/2.75rem); screen min-height 640 / max 800; shade pull-down strip widened to the island area",
-    "src/engine/os/Stage.tsx — MuteToggle resized via the os-ctl token class (canon behavior unchanged)",
-    "src/index.css — top safe-area paddings clear the island (home 3.75rem, app/shade/moment 3.5rem); .os-safe-status rule retired",
-    "No changes to: app surfaces (M8.4), lock/home layout (M8.2), shade mechanics (M8.3), hub/desk, score/storage, content"
+    "src/engine/os/launcher.ts — pure layout: homeAppsFor(case threads, live badges) builds the ordered app list; buildLauncherLayout pages it row-major over IOS_HOME_GRID (4×6) and docks the trailing four; pageCount/showPageDots gate the dots; no React, no DOM",
+    "src/engine/os/launcher.test.ts — unit tests: row-major fill, overflow to page 2, badges surviving grid AND dock, dock-only phones, short lists vs the default grid",
+    "src/games/scam-radar/cases/launcher-phones.test.ts — the M8.2 review's coverage fix: all 16 CaseOS definitions (3 playable + the anthology's 13 phones) lay out validly — every app placed exactly once, dock ≤ 4, full-capacity cells, single page (dots hidden) for every real phone, assistant promoted iff the case has an assistant thread",
+    "src/engine/os/ios/AppIcon.tsx — code-drawn squircle icons: 8 app glyphs in one white stroke/fill grammar over the APP_META tile, 9+-capped badges; AppGlyph exports the bare glyph for lock widgets",
+    "src/engine/os/Device.tsx — HomeScreen rebuilt on the launcher (grid cells + empty slots, dock from layout.dock, page dots as a role=tablist with aria-selected, safe-page clamp); LockScreen in iOS grammar (lock glyph, date line, 72pt os-lock-clock in cqw, meridiem kept) plus the NEW widget row between clock and notifications; StatusBar battery glyph extracted to BatteryGlyph (shared with the battery widget)",
+    "src/engine/os/ios/tokens.css — launcher rules (.os-app-icon 15.3cqw/22.5% squircle + shadow, .os-page-dots/.os-page-dot), lock rules (.os-lock-clock 18.3cqw, .os-lock-widgets chip row), status-row fix (see decisions)",
+    "No changes to: app surfaces (M8.4), shade mechanics (M8.3), hub/desk, score/storage, content files"
   ],
   "constraints_held": [
-    "No new external assets — every glyph is code-drawn SVG; no Apple fonts/SF Symbols/bitmaps (FoundPhone's BRAND_NOTICE is the model, noted in the token header)",
-    "UI-as-character: ink follows --os-ink (per-phone theme) for the status row; the theme layer rides above the iOS base",
-    "Smoke-visible contracts held: 'Lock the phone' / 'Notifications' / 'Mute sound' aria-labels, pull-down shade, gestures, returning lock, desk rails, toasts",
-    "11px floor: status text is 3.82cqw — ≥11px at every supported screen width (desktop floor 295px → 11.3px, POV ≥360 → 13.7px)",
+    "No new external assets — icons, glyphs and widgets are code-drawn SVG; no Apple fonts/SF Symbols/bitmaps (FoundPhone BRAND_NOTICE rule)",
+    "UI-as-character: ink follows --os-ink / per-phone theme above the iOS base layer",
+    "Smoke-visible contracts held: 'Lock the phone'/'Notifications'/'Mute sound' aria-labels, 'Swipe up to open', 'Open <App>' labels, pull-down shade, gestures, returning lock, desk rails, toasts",
+    "11px floor: status text 3.82cqw ≥ 11px at the 295px desk floor; lock widget labels fixed 11px (the floor)",
     "cgAI_ storage untouched; lazy boundaries hold; no commit/push/deploy without explicit authorization"
   ],
   "acceptance_results": [
-    "Island + status row verified rendered on the desk stage (1280×900) and POV (360×780) via probe screenshots: clock left, island centered, control+glyph cluster right, all inside the island columns; the island floats above the moment overlay like hardware",
-    "Desktop stage is aspect-true: the phone renders on the 393:852 grid and reads as an iPhone on the desk; desk rails (case file + signal desk) unaffected",
-    "tsc clean; 76/76 tests; build green (precache 45 entries); assets budget Σ 3.7 MB no duplication",
-    "8/8 smokes exit 0 locally on the final tree (os, resume, shade, anthology, hub, exam, radar, finale) + nav-perf exit 0 (coldBootMs 30)",
-    "LIVE VERIFIED on both hosts (user-authorized deploy): Pages hub + os + anthology exit 0; Workers hub + os + anthology exit 0 — console stations/season/archive asserted, the M8.1 shell exercised by the full 5-anchor playthrough on both hosts",
-    "Commits: d54544e (M6.7 operator's console) + ebdf1c1 (M8.1 iPhone shell), pushed main; gh-pages refreshed by deploy.sh"
+    "tsc clean; 85/85 tests (76 prior + 5 launcher + 4 all-phones); build green (precache 45 entries); budget Σ 3.7 MB no duplication",
+    "8/8 smokes exit 0 locally on the final tree (os, resume, shade, anthology, hub, exam, radar, finale; SMOKE_CHANNEL=chromium — system Chrome absent on this machine, channel-less smokes use the bundled chromium either way)",
+    "Visual probe on desk stage (1280×900) + POV (360×780): squircle icons measure exactly 15.3cqw (47px desk / 55px POV) at 22.5% radius; dock = trailing 4 with badges; single page → dots hidden; lock clock 18.3cqw on both stages; widget row renders on both stages (battery chip on Case 01 — honest: it seeds no missed/voicemail/notes)",
+    "Independent review (./meos review → .meos/reviews/20261111T231432Z.md): verdict REWORK with 3 findings — all three fixed and re-verified on the final tree (see review_rework)"
   ],
+  "review_rework": {
+    "verdict": "rework → fixed",
+    "findings": [
+      "IMPORTANT — lock-screen widget row missing (intent listed it; rendering jumped clock→notifications): implemented .os-lock-widgets — data-honest chips (battery always; missed calls / voicemails / Notes only when the case seeds them), iOS pill grammar, both stages probed",
+      "IMPORTANT — current.json mixed M8.1 results under an M8.2 header and launcher coverage claimed but not demonstrated: M8.1 record archived verbatim to docs/work/blackglass-iphone-shell.json (header restored, marked superseded); coverage now demonstrated by launcher-phones.test.ts across all 16 CaseOS definitions; this record is a true M8.2 account",
+      "MINOR — launcher.test.ts grid-badge test asserted undefined (fixture had no grid badge): fixture now carries a badged grid app and asserts the badge on its cell"
+    ]
+  },
   "blockers": [],
   "decisions": [
-    "Island layering: hardware floats ABOVE all overlays (moment/shade/call) — a real island never scrolls under chrome; it is pointer-inert so the pull-down strip still works",
-    "Top-band metrics in cqw against the 393 grid (container-type: size on .os-skin) instead of fixed px — proportional truth at every width, and the narrow-viewport special-casing disappears",
-    "Status text rides BELOW env(safe-area-inset-top) so real-device hardware never overlaps it; the CSS island sits at env + 2.8cqw (in browser tabs env=0)",
-    "Battery % numeral left the status bar (iOS grammar); the level still paints the glyph fill",
-    "Meridiem left the status row (lock screen keeps it) — iOS clocks show time only",
-    "Prior work record archived at docs/work/blackglass-operator-console.json (M6.7 wrapup/complete, deployed=false — commit+deploy still awaiting explicit authorization)"
+    "Status row corner fix (probe finding, desk stage only): the screen's FIXED 2.75rem corner curve clipped the cqw-positioned status clock at the ~295px desk floor while POV full-bleed (no frame) was fine. Fix: the row now centers on the island's axis (2.8 + 9.16/2 = 7.38cqw — real iPhones align time and island) with 4.07cqw sides, clearing the curve at the floor by ~3px while keeping the M8.1-era island gap. Verified by zoomed re-probe (leading 9 intact, cluster clear of both corner and island)",
+    "Widget row is data-honest, not decorative: only battery is universally known; missed calls (recents.missed), voicemails (caseDef.voicemails) and Notes (os.evidence) chip in only when nonzero — Case 01's lock shows just the battery chip; os-parcel shows three",
+    "The battery % numeral, retired from the status row in M8.1, lives on the lock's battery widget (iOS grammar: locks show a % widget, status rows don't)",
+    "homeAppsFor lives in launcher.ts and takes (threads, badges): the home's app list is pure data over the case definition, which is what makes all-16-phones coverage a unit test",
+    "The all-phones test lives in games/scam-radar/cases/ (games→engine direction) rather than inverting engine→games imports",
+    "With 7 apps and dock=4, Notes docks and the grid keeps gallery/phone/contacts — the launcher's trailing-dock rule, accepted as designed (messages keeps its badge in the dock)"
   ],
   "artifacts": [
-    "/tmp/m81-0-select.png … /tmp/m81-5-pov-home.png (probe pass: select, rack, lock, moment with island above, app, home on both stages)",
-    "/tmp/m81-smoke-{os,resume,shade,anthology,hub,exam,radar,finale}.log + /tmp/m81-navperf.log"
+    "/tmp/m82-desk-lock.png, /tmp/m82-desk-home.png, /tmp/m82-pov-lock.png, /tmp/m82-pov-home.png (final-tree probe, both stages)",
+    "/tmp/m82-desk-clock-zoom*.png (corner-clip finding + fixed states), /tmp/m82-pov-corner-zoom.png",
+    "/tmp/m82-probe3.json (DOM metrics: icons, dock, dots, widget row, clock sizes)",
+    "/tmp/m82-final2-*.log (8/8 smokes on the reworked final tree)"
   ],
-  "next_action": "M8.2 — lock screen + home launcher: iOS lock grammar (clock, date, widget row; returning lock keeps While you were away), 4×6 grid + dock data-driven per phone, pure engine/os/launcher.ts + unit tests (IOS_HOME_GRID), code-drawn squircle icons. Ladder in docs/GAME-PLAN.md M8. Standing: commit at each checkpoint, deploy on explicit authorization.",
-  "smoke_fixes": [
-    "scripts/lib/nav.mjs — launchAuditBrowser (Chromium --disable-async-dns: its async DNS resolver stalls under WSL2's NAT resolver; navigation never commits with zero requests logged — proven by A/B probe) + gotoHub(page, BASE) (proves the hub per host base instead of assuming the URL)",
-    "hub-smoke — mounts through gotoHub and gates on the hero heading before any soft assertion (an unmounted page now fails legibly at the gate)",
-    "os-smoke — proves the radar destination before skipping its fallback; falls in through the hub's feed-desk station per host base",
-    "anthology-smoke — gotoGame proves the mount with a bounded waitFor (fixed 600ms settle fired before React mount on live), discovers the hub-rendering path per host, and enters through [data-od-id=\"station-rack\"] (GitHub Pages has no SPA fallback for deep links; the old fallback locator was pre-M6.7 brochure text)",
-    "follow-up recorded: exam/radar/case-os direct-link probes still assume a host base (passed locally + on Pages; latent conflation on the other base)"
-  ],
-  "ops_learnings": "docs/HANDOFF.md §7b — three failure modes captured: (1) Chromium async-DNS stall under WSL2 (signature: curl fast + browser no-commit + empty request log = resolver, not the site), (2) never compare bundle hashes across vite bases (Workers base / vs Pages /blackglass/ — 40-min false alarm), (3) smokes must prove destinations and mounts, not responses and sleeps"
+  "next_action": "Commit + push + deploy ONLY on explicit user authorization (all seven probe-*.mjs scratch files were deleted from the repo root on 2026-11-12; the tree now carries only real M8.2 files). After commit: M8.3 (shade + control center expansion of the island's data-state API)."
 }
