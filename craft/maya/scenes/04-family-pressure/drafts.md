@@ -1564,4 +1564,4 @@ Composite draft should:
 4. Keep Storyteller's Papa moment and cultural texture
 5. Use Minimalist's video analysis precision
 6. Total target: 1,200-1,400 words
-7. File location: `/home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene4_family_gc.ink`
+7. File location: `/home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene4_family_gc.ink`

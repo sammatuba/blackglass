@@ -523,9 +523,9 @@ Act 3 confirmed Act 2 pattern: Empathist + Storyteller + [Minimalist/Satirist fo
 
 ## Files Created
 
-1. ✅ `/home/sammatuba/projects/other/blackglass/craft/scripts/act3-polished-narratives.md` (3,348 words)
-2. ✅ `/home/sammatuba/projects/other/blackglass/craft/meta/act3-editorial-commentary.md` (this file, ~4,100 words)
-3. ⏳ `/home/sammatuba/projects/other/blackglass/craft/meta/full-arc-continuity-report.md` (next step)
+1. ✅ `/home/sammatuba/projects/ps/blackglass/craft/scripts/act3-polished-narratives.md` (3,348 words)
+2. ✅ `/home/sammatuba/projects/ps/blackglass/craft/meta/act3-editorial-commentary.md` (this file, ~4,100 words)
+3. ⏳ `/home/sammatuba/projects/ps/blackglass/craft/meta/full-arc-continuity-report.md` (next step)
 
 **Status:** Act 3 editorial complete. Ready for continuity verification.
 

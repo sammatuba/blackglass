@@ -1659,6 +1659,6 @@ Scene 8 is the moment Maya can no longer deny she's been a target all week. The 
 
 **Total draft word count:** ~6,800 words across 5 complete scenes (both paths)
 
-**Saved to:** `/home/sammatuba/projects/other/blackglass/craft/drafts/act2/scene8-drafts.md`
+**Saved to:** `/home/sammatuba/projects/ps/blackglass/craft/drafts/act2/scene8-drafts.md`
 
 **Next step:** Editorial composite draft → Ink script → Playtest

@@ -626,5 +626,5 @@ Act 3 must honor that all four paths are valid responses to systemic manipulatio
 **Ready for:** Ink script conversion (future session)
 
 **Files created:**
-- `/home/sammatuba/projects/other/blackglass/craft/scripts/act2-polished-narratives.md`
-- `/home/sammatuba/projects/other/blackglass/craft/meta/act2-editorial-commentary.md`
+- `/home/sammatuba/projects/ps/blackglass/craft/scripts/act2-polished-narratives.md`
+- `/home/sammatuba/projects/ps/blackglass/craft/meta/act2-editorial-commentary.md`

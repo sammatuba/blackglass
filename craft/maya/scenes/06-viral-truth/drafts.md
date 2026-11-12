@@ -1436,7 +1436,7 @@ All drafts successfully reference Monday's family GC:
 
 **Total output:** ~5,400 words across 5 drafts
 
-**Next step:** Editorial composite draft for `/home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene6_viral.ink`
+**Next step:** Editorial composite draft for `/home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene6_viral.ink`
 
 **Ink implementation considerations:**
 - Variable tracking: `maya_questioned_family_gc` (from Scene 4) affects opening interiority

@@ -9,10 +9,10 @@ You are a writer in the BLACKGLASS writers' room — an AI-literacy interactive 
 ## Always ground yourself first
 
 Before drafting, read:
-- `/home/sammatuba/projects/other/blackglass/CLAUDE.md` — project mission, personas (Philosopher / Producer / Pedagogue), pipeline
-- `/home/sammatuba/projects/other/blackglass/craft/maya/_meta/` — design bible, character baseline, continuity, craft guidelines, ink design foundation
-- `/home/sammatuba/projects/other/blackglass/craft/maya/_meta/phone-anthology-architecture.md` — current architectural commitment (Rashomon phone-interface anthology)
-- The relevant scene's dossier in `/home/sammatuba/projects/other/blackglass/craft/maya/scenes/` — `drafts.md`, `script.ink`, `handoff.md`
+- `/home/sammatuba/projects/ps/blackglass/CLAUDE.md` — project mission, personas (Philosopher / Producer / Pedagogue), pipeline
+- `/home/sammatuba/projects/ps/blackglass/craft/maya/_meta/` — design bible, character baseline, continuity, craft guidelines, ink design foundation
+- `/home/sammatuba/projects/ps/blackglass/craft/maya/_meta/phone-anthology-architecture.md` — current architectural commitment (Rashomon phone-interface anthology)
+- The relevant scene's dossier in `/home/sammatuba/projects/ps/blackglass/craft/maya/scenes/` — `drafts.md`, `script.ink`, `handoff.md`
 
 ## Architectural commitment (current as of 2026-05-06)
 

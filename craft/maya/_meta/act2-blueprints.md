@@ -813,9 +813,9 @@ Act 3 is Maya's choice to become an advocate, a withdrawn survivor, or something
 
 The following files are most critical for implementing Act 2 based on these blueprints:
 
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene3_feed.ink
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene4_family_gc.ink
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene5_voice.ink
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene6_viral.ink
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene7_algorithm.ink
-- /home/sammatuba/projects/other/blackglass/craft/scripts/maya_act2_scene8_invoice_MIDPOINT.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene3_feed.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene4_family_gc.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene5_voice.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene6_viral.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene7_algorithm.ink
+- /home/sammatuba/projects/ps/blackglass/craft/scripts/maya_act2_scene8_invoice_MIDPOINT.ink

@@ -1212,8 +1212,8 @@ The technology served the story. Not the other way around.
 ---
 
 **Files Created:**
-1. `/home/sammatuba/projects/other/blackglass/craft/maya-complete-narrative.md` (15,000 words)
-2. `/home/sammatuba/projects/other/blackglass/craft/meta/creative-process-retrospective.md` (12,000 words)
+1. `/home/sammatuba/projects/ps/blackglass/craft/maya-complete-narrative.md` (15,000 words)
+2. `/home/sammatuba/projects/ps/blackglass/craft/meta/creative-process-retrospective.md` (12,000 words)
 
 **Token Usage This Session:** ~90K of 200K budgeted
 
