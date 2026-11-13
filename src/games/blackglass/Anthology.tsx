@@ -7,7 +7,7 @@ import type { FlagValue, OSState } from '../../engine/os/types'
 import type { AnthologyAnchor } from './types'
 import { useBlackglass } from './state'
 import { allPhonesLived, anchorStats, choiceText, findChoice, globalStats } from './progress'
-import { RANKS, caseGame, rankFor, scoreRun, type RunScore } from './score'
+import { caseGame, scoreRun, type RunScore } from './score'
 import { SignalDesk } from './SignalDesk'
 import { Verdict } from './Verdict'
 import { Convergence } from './Convergence'
@@ -98,7 +98,6 @@ const BOOT_TOTAL = 3400
 
 function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index: number; onDone: () => void }) {
   const entry = anchor.phones[anchor.entry]
-  const game = caseGame(entry.id)
   const accent = PHONE_THEME_ACCENT[entry.phone.theme ?? ''] ?? '#8b8b8b'
   const roman = ['I', 'II', 'III', 'IV', 'V', 'VI'][index] ?? String(index + 1)
   const phones = anchor.order.length === 1 ? 'one phone' : `${anchor.order.length} phones`
@@ -150,12 +149,7 @@ function AnchorBoot({ anchor, index, onDone }: { anchor: AnthologyAnchor; index:
       </p>
       <h1 className={`${line(2)} font-display mt-2 text-5xl font-semibold`}>{anchor.subtitle}</h1>
       <p className={`${line(3)} font-display mt-4 max-w-md text-lg italic text-ink-300`}>{anchor.question}</p>
-      {game && (
-        <p className={`${line(4)} mt-5 max-w-md text-[13px] leading-relaxed text-ink-300`}>
-          <span className="mr-2 text-[11px] font-bold tracking-[0.2em] text-play uppercase">The case</span>
-          {game.objective}
-        </p>
-      )}
+      <p className={`${line(4)} mt-5 max-w-md text-[15px] leading-relaxed text-ink-200`}>{anchor.arrival}</p>
       <p className={`${line(4)} mt-8 font-mono text-[11.5px] tracking-wide text-ink-400`}>glassOS 4.0 · signal acquired</p>
       <p className={`${line(4)} mt-1 font-mono text-[11.5px] tracking-wide text-ink-400`}>
         {entry.phone.time} {entry.phone.meridiem} · {phones}
@@ -194,12 +188,10 @@ function AnchorSelect({
   const progress = useBlackglass((s) => s.anchors)
   const global = globalStats(anchors, progress)
   const unlocked = allPhonesLived(anchors, progress)
-  const seasonTotal = Object.values(progress).reduce(
-    (n, p) => n + Object.values(p?.scores ?? {}).reduce((m, s) => m + s.best, 0),
-    0,
-  )
-  const rank = rankFor(seasonTotal, global.lived)
-  const nextRank = RANKS.find((r) => r.at > 0 && r.at > seasonTotal)
+  /* the season frontier: the first anchor, in chronology, not yet fully lived.
+     Soft gate — later anchors stay open, the desk just points the way. */
+  const frontier =
+    anchors.find((a) => anchorStats(a, progress[a.id]).lived < a.order.length) ?? null
   return (
     <div className="desk-scene animate-screen min-h-dvh">
       <div className="mx-auto w-full max-w-2xl px-5 pt-6 pb-16">
@@ -213,36 +205,45 @@ function AnchorSelect({
             One family. The same deception moving through different phones, different habits of
             trust. You cannot see clearly from one position — so you will hold all of them.
           </p>
-          {global.lived > 0 && (
-            <p className="mt-4 inline-flex flex-wrap items-center gap-x-2 gap-y-1 rounded-full border border-ink-700 bg-ink-800/60 px-3.5 py-1.5 text-[12px] tabular-nums text-ink-300">
-              <span className="font-semibold text-ink-100">{global.lived}/{global.phones}</span> phones lived
-              <span className="text-ink-600">·</span>
-              <span className="font-semibold text-ink-100">{global.clues}/{global.cluesTotal}</span> clues found
-            </p>
-          )}
           <div className="mt-5 rounded-2xl border border-ink-700 bg-ink-800/60 p-4">
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[11px] font-bold tracking-[0.25em] text-play uppercase">Season signal</span>
-              <span className="text-[12px] font-black tracking-[0.15em] text-ink-100 uppercase">{rank}</span>
-            </div>
-            <div className="mt-1.5 flex flex-wrap items-baseline gap-x-2">
-              <span className="font-display text-2xl font-semibold tabular-nums text-ink-100">{seasonTotal}</span>
-              <span className="text-[12px] text-ink-400">
-                best signal across {global.phones} phones
-                {global.lived > 0 && (nextRank ? ` · ${nextRank.at - seasonTotal} to ${nextRank.name}` : ' · highest rank')}
+              <span className="text-[11px] font-bold tracking-[0.25em] text-play uppercase">The season</span>
+              <span className="text-[12px] tabular-nums text-ink-400">
+                {global.lived > 0 ? `${global.lived}/${global.phones} phones lived` : 'five days · one family'}
               </span>
             </div>
-            <div className="signal-meter mt-2.5" aria-hidden="true">
-              <span
-                className="signal-meter-fill"
-                style={{ width: `${global.lived === 0 ? 0 : nextRank ? Math.min(100, (seasonTotal / nextRank.at) * 100) : 100}%` }}
-              />
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+              {anchors.map((a, i) => {
+                const st = anchorStats(a, progress[a.id])
+                const livedAll = st.lived === a.order.length
+                const isNext = frontier?.id === a.id
+                return (
+                  <span key={a.id} className="inline-flex items-center gap-1.5">
+                    {i > 0 && (
+                      <span className="text-ink-600" aria-hidden="true">
+                        ·
+                      </span>
+                    )}
+                    <span
+                      className={`text-[12px] tabular-nums ${livedAll ? 'text-emerald-300' : isNext ? 'font-bold text-play' : 'text-ink-400'}`}
+                    >
+                      {a.subtitle}
+                    </span>
+                  </span>
+                )
+              })}
             </div>
-            {global.lived === 0 && (
-              <p className="mt-2 text-[12px] leading-relaxed text-ink-400">
-                Every phone is a case. See the clues, practice the reflexes — the desk grades what you saw, not what you saved.
-              </p>
-            )}
+            <p className="mt-2 text-[12px] leading-relaxed text-ink-400">
+              {global.lived === 0 ? (
+                <>One family, five days, in order — the season unfolds the way it happened. Start at the beginning; the desk keeps every phone you’ve lived open.</>
+              ) : frontier ? (
+                <>
+                  <span className="font-semibold text-ink-100">{frontier.title}</span> is next — {frontier.when.toLowerCase()}. Earlier phones stay open.
+                </>
+              ) : (
+                <>All lived. The Convergence is open — the one timeline none of them could see.</>
+              )}
+            </p>
           </div>
         </FadeIn>
         <div className="mt-8 space-y-3">
@@ -251,35 +252,39 @@ function AnchorSelect({
             const stats = anchorStats(a, prog)
             const done = stats.lived
             const all = done === a.order.length
+            const isNext = frontier?.id === a.id
+            const prevTitle = i > 0 ? anchors[i - 1].title : null
             return (
               <FadeIn key={a.id} delay={0.05 + i * 0.04}>
                 <button
                   type="button"
                   onClick={() => onPick(a.id)}
-                  className="group flex w-full flex-col rounded-2xl border border-ink-700 bg-ink-800/60 p-5 text-left transition-all hover:-translate-y-0.5 hover:border-play/60"
+                  className={`group flex w-full flex-col rounded-2xl border bg-ink-800/60 p-5 text-left transition-all hover:-translate-y-0.5 ${
+                    isNext && !all ? 'border-play/50 hover:border-play' : 'border-ink-700 hover:border-play/60'
+                  }`}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[11px] font-bold tracking-[0.2em] text-play uppercase">
-                      Anchor {['I', 'II', 'III', 'IV'][i] ?? i + 1} <span className="ml-1 font-medium text-ink-400 normal-case">· {a.order.length === 1 ? 'one phone' : `${a.order.length} phones`}</span>
+                      Anchor {['I', 'II', 'III', 'IV', 'V', 'VI'][i] ?? i + 1} <span className="ml-1 font-medium text-ink-400 normal-case">· {a.order.length === 1 ? 'one phone' : `${a.order.length} phones`}</span>
                     </span>
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase ${
-                        all ? 'bg-emerald-500/15 text-emerald-300' : done > 0 ? 'bg-play/15 text-play' : 'bg-ink-700/80 text-ink-400'
+                        all
+                          ? 'bg-emerald-500/15 text-emerald-300'
+                          : isNext
+                            ? 'bg-play/20 text-play'
+                            : 'bg-ink-700/80 text-ink-400'
                       }`}
                     >
-                      {all ? '✓ lived' : done > 0 ? `${done} of ${a.order.length} lived` : 'unplayed'}
+                      {all ? '✓ lived' : isNext ? 'next arrival' : done > 0 ? `${done} of ${a.order.length} lived` : prevTitle ? `arrives after ${prevTitle}` : 'unplayed'}
                     </span>
                   </div>
                   <h2 className="font-display mt-1.5 text-2xl font-semibold text-ink-100">
                     {a.title} <span className="text-ink-400">{a.subtitle}</span>
                   </h2>
+                  <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.15em] text-ink-500">{a.when}</p>
                   <p className="mt-2 text-sm leading-relaxed text-ink-400">{a.blurb}</p>
                   <p className="font-display mt-2 text-[13.5px] italic text-ink-300">{a.question}</p>
-                  {done > 0 && stats.cluesTotal > 0 && (
-                    <p className="mt-2 text-[11px] tabular-nums text-ink-400">
-                      clues found {stats.clues}/{stats.cluesTotal}
-                    </p>
-                  )}
                 </button>
               </FadeIn>
             )
@@ -323,7 +328,7 @@ function AnchorSelect({
           <div className="mt-10 text-center">
             <ResetButton />
             <p className="mt-3 text-[11px] text-ink-400">
-              Every character is fictional. The manipulation mechanics are not — see world/guardrails.md.
+              Every character is fictional. The manipulation mechanics are not.
             </p>
           </div>
         </FadeIn>
@@ -660,7 +665,7 @@ function AnchorRun({ anchor, onBack }: { anchor: AnthologyAnchor; onBack: () => 
           <div className="mt-10 text-center">
             <ResetButton />
             <p className="mt-3 text-[11px] text-ink-400">
-              Every character is fictional. The manipulation mechanics are not — see world/guardrails.md.
+              Every character is fictional. The manipulation mechanics are not.
             </p>
           </div>
         </FadeIn>

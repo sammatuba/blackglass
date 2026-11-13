@@ -33,6 +33,11 @@ const BEA_5W: CaseOS = {
     { id: 'council', service: 'messenger', name: 'the council', hue: 210, members: ['Janine', 'Ivo', 'Japs', 'Kat'] },
   ],
   opening: [{ threadId: 'feed', msg: { from: 'sys', text: 'WEEK 1 · Feb 10–16 · 1,247 followers' } }],
+  ambient: [
+    { threadId: 'feed', msg: { from: 'sys', text: '📈 your thread crossed 3,000 impressions this week · top reply: “finally someone said it”' } },
+    { threadId: 'council', msg: { from: 'them', text: 'Ivo: that verification-fatigue thread of yours is making the rounds again. deserved.' } },
+    { threadId: 'feed', msg: { from: 'sys', text: '🔔 12 new followers this hour · most engaged with: your hot takes' } },
+  ],
   photos: [],
   pages: [],
   notes: [
@@ -92,6 +97,22 @@ const BEA_5W: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Tuesday's voice clone, arriving as content to be written up */
+      id: 'w-echo-vc',
+      when: { allFlags: ['w1', 'done_voiceclone'], notFlag: 'w_echo_vc' },
+      set: { w_echo_vc: true },
+      push: [
+        {
+          threadId: 'council',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Tuesday’s voice clone — the family you know — has a thread in the council now, four hundred replies deep. Someone asks if you’ll write the case study. You could. It’s a good story. The thought arrives without friction, and you notice it arriving, and you let it stay.',
+          },
+        },
+      ],
+    },
+    {
       id: 'w3-arrive',
       when: { flag: 'w2_done' },
       set: { w3_read: true },
@@ -101,6 +122,22 @@ const BEA_5W: CaseOS = {
         { threadId: 'council', msg: { from: 'them', text: 'interesting but idk, feels like he’s bothsidesing a threat-model issue?', at: '2:02 PM' } },
         { threadId: 'feed', msg: { from: 'sys', kind: 'narr', text: 'He isn’t wrong. But he isn’t sharp — he’s doing the sound-balanced-instead-of-clear move. You know it. You used to make it.' } },
         { threadId: 'feed', msg: { from: 'sys', kind: 'aside', text: 'This is accountability, not cruelty. If you don’t name it, who will?' } },
+      ],
+    },
+    {
+      /* the season's echo: Saturday's debunk, still the thing she's proudest of */
+      id: 'w-echo-kk',
+      when: { allFlags: ['w2_done', 'done_kangkong'], notFlag: 'w_echo_kk' },
+      set: { w_echo_kk: true },
+      push: [
+        {
+          threadId: 'council',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'The vegetable-link debunk you shared that Saturday — your most-reposted post ever — still gets tagged in fresher misinfo threads. Someone called it “the cleanest explainer out there.” You screenshot the compliment. You do not rewatch the video.',
+          },
+        },
       ],
     },
     {
@@ -130,6 +167,22 @@ const BEA_5W: CaseOS = {
         { threadId: 'feed', msg: { from: 'sys', kind: 'narr', text: 'Thursday. A stranger replies to an old thread with a good-faith complication — a “well, actually, in some cultural contexts” that is true, and beside the point. You read it twice. Not wrong. Not helpful. You hover over their username. You click mute.' } },
         { threadId: 'feed', msg: { from: 'sys', kind: 'aside', text: 'You’re not silencing them. They can still talk. You’re just making space for signal over noise.' } },
         { threadId: 'feed', msg: { from: 'sys', kind: 'narr', text: 'You do it again the next day. And the day after. The ones who complicate without adding. Your feed is cleaner now. Sharper. Everyone visible seems to agree with you.' } },
+      ],
+    },
+    {
+      /* the season's echo: Sunday's receipts, cited as the standard that changed nothing */
+      id: 'w-echo-df',
+      when: { allFlags: ['w3_done', 'done_deepfake'], notFlag: 'w_echo_df' },
+      set: { w_echo_df: true },
+      push: [
+        {
+          threadId: 'council',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Sunday’s AngatPinas thread still gets cited as the standard — receipts, SEC screenshots, the works. It changed exactly nothing in the family it was written for. You have stopped thinking about that part. The thread got 1,900 likes.',
+          },
+        },
       ],
     },
     {
@@ -175,6 +228,9 @@ export const FIVEWEEKS: AnthologyAnchor = {
   blurb:
     'No scam this time. No lie. One phone, five weeks, and a feed that pays you a little more each time you’re a little less careful — until less careful feels like clarity.',
   question: 'Can you feel yourself changing?',
+  when: 'The five weeks after',
+  arrival:
+    'Five weeks. One phone, one feed. No scam this time, no lie — just a feed that pays you a little more each time you’re a little less careful.',
   entry: 'bea',
   order: ['bea'],
   phones: { bea: BEA_5W },

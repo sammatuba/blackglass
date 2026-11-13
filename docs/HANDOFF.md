@@ -190,6 +190,28 @@ re-diagnosed from scratch:
    the ORIGIN; check before a live run. (Follow-up: `exam-smoke`/`radar-smoke`/
    `case-os-smoke` direct-link probes still assume a host base; they passed
    locally and on Pages but have the same latent conflation on the other base.)
+4. **WSL2 GPU passthrough can flake mid-session — headless smokes must not
+   depend on it.** Captured 2026-11-13 during the M9 verify. Symptom stack:
+   every Playwright *strict* click on the hub timed out at "waiting for
+   element to be … stable" while text reads, sync evaluates and axe all
+   worked; in-page async loops (rAF sampling) hung; probe browsers reported
+   "Target page, context or browser has been closed" mid-run; one
+   `page.screenshot` hung "waiting for fonts" after fonts had loaded. A/B
+   probes proved the compositor intermittently stops producing frames when
+   the three.js hero renders — the GPU process wedges (GPU on) or the
+   software-WebGL loop starves the page (GPU off; note `--disable-gpu` alone
+   is NOT enough — Playwright's default `--enable-unsafe-swiftshader` keeps
+   WebGL alive on CPU). Fixes, all in the audit layer (`scripts/lib/nav.mjs`,
+   `scripts/hub-smoke.mjs`): the launcher now also passes
+   `--force-prefers-reduced-motion` — the app's own capability gate
+   (`GlassHero.capable()`) then never loads the hero chunk, which is the
+   designed degrade path and stills every animation for the stability
+   checks; `clickAudit()` scrolls and force-clicks (os-smoke's
+   force-fallback pattern generalized); diagnostic screenshots are
+   best-effort; hub-smoke accepts the degrade path unless `SMOKE_ANIMATION=1`
+   opts back into the canvas assert on a healthy-GPU machine. Diagnostic
+   signature: **text/CDP asserts healthy + strict clicks/screenshot hang =
+   compositor, not the site.**
 
 ## 8. Session log (recent, newest first)
 

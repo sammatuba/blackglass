@@ -239,6 +239,10 @@ export interface CaseOS {
   threads: OSThread[]
   /** messages pushed when the case opens (before any player action) */
   opening: OSPush[]
+  /** ambient life: messages that drip in BETWEEN story beats once the phone is
+      inhabited (os_engaged) — never during a rule burst, moment, or call.
+      This is the slow-burn channel: the ordinary day the story interrupts. */
+  ambient?: OSPush[]
   photos: OSPhoto[]
   pages: OSPage[]
   voicemails?: OSVoicemail[]
@@ -291,5 +295,7 @@ export interface OSState {
   }
   /** active prose interstitial id (pauses the rule pump) */
   moment: string | null
+  /** next undelivered index into CaseOS.ambient (the slow-burn channel) */
+  ambientIndex?: number
   done: boolean
 }

@@ -213,8 +213,7 @@ export default function ScamRadar() {
                 Reset progress
               </button>
               <p className="mt-3 text-[11px] text-ink-400">
-                Every scenario is fictional. Names, numbers, and links are invented for training —
-                see world/guardrails.md.
+                Every scenario is fictional. Names, numbers, and links are invented for training.
               </p>
             </div>
           </FadeIn>

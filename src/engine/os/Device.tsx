@@ -17,7 +17,7 @@ import { isMuted, onMuteChange, sfx, vibrate } from './sound'
 import { buildLauncherLayout, homeAppsFor, showPageDots } from './launcher'
 import { AppIcon, AppGlyph } from './ios/AppIcon'
 import './ios/tokens.css'
-import { bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
+import { ambientMs, bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, MuteToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
@@ -255,6 +255,46 @@ export function GlassOS({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  /* ---------- ambient life (M9 slow burn) ---------- */
+
+  /* A separate, deliberately slow channel: the ordinary day the story
+     interrupts. It never interleaves a rule burst (if the pump owns the world,
+     the beat waits and re-tries), never lands under a moment or call, and
+     nothing arrives until the phone is inhabited (os_engaged — set by the
+     first app open). Exhausts its queue and goes quiet. */
+  useEffect(() => {
+    const beats = caseDef.ambient
+    if (!beats?.length || returning) return
+    let cancelled = false
+    void (async () => {
+      while (!cancelled) {
+        await sleep(scaled(ambientMs()))
+        if (cancelled) return
+        const st = osRef.current
+        if (st.done || st.flags[caseDef.endFlag]) return
+        if (st.moment || st.call || pumping.current) continue
+        if (!st.flags.os_engaged) continue
+        const i = st.ambientIndex ?? 0
+        const beat = beats[i]
+        if (!beat) return
+        let s = applyPushAt(st, { id: '__ambient', when: {}, push: [beat] }, 0)
+        s = { ...s, ambientIndex: i + 1 }
+        osRef.current = s
+        setOS(s)
+        if (beat.msg.from !== 'you') {
+          sfx.receive()
+          vibrate(14)
+          setPulse((n) => n + 1)
+        }
+        if (beat.msg.from === 'them' && beat.msg.text) pushBanner(beat.threadId, beat.msg.text)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [caseDef, returning])
+
   /* re-run the rule pump after any player action */
   const bump = useCallback(() => {
     void processRules()
@@ -265,6 +305,12 @@ export function GlassOS({
   const openApp = useCallback((id: AppId, opts?: { threadId?: string; pageId?: string; photoId?: string }) => {
     sfx.open()
     vibrate(8)
+    // the phone is inhabited: the ambient channel may start breathing
+    if (!osRef.current.flags.os_engaged) {
+      const s: OSState = { ...osRef.current, flags: { ...osRef.current.flags, os_engaged: true } }
+      osRef.current = s
+      setOS(s)
+    }
     const from = viewRef.current
     // An attachment or link crosses apps, but the way back should lead to
     // the conversation you were reading, not to an unrelated home screen.

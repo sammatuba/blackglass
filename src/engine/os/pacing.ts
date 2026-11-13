@@ -46,14 +46,23 @@ export function continueMs(): number {
   return Math.round(420 + Math.random() * 520)
 }
 
-/** authorial prose (narr/aside): no typing indicator, just reading air */
+/** authorial prose (narr/aside): no typing indicator, just reading air.
+    Tuned 2026-11-13 (M9 slow burn) toward actual reading speed — a 250-char
+    paragraph gets ~7s, not the old ~1.6s; the narrator is meant to be read,
+    not outrun. */
 export function proseMs(text: string): number {
-  return Math.round(jitter(clamp(950 + text.length * 16, 1050, 2600), 0.15))
+  return Math.round(jitter(clamp(1500 + text.length * 22, 1700, 6500), 0.15))
 }
 
 /** the pause between rules — the world breathes before the next beat */
 export function settleMs(): number {
-  return Math.round(500 + Math.random() * 400)
+  return Math.round(900 + Math.random() * 900)
+}
+
+/** ambient life: how long the ordinary day waits between two filler beats
+    (M9 slow burn). Deliberately slow — ambient arrives, it does not chase. */
+export function ambientMs(): number {
+  return Math.round(6000 + Math.random() * 7000)
 }
 
 /** lock-screen previews: the first buzz is quick, then human */

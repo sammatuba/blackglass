@@ -1,7 +1,7 @@
 /* Dev helper: drive glassOS Case 01 — unlock, snoop, decide, call, debrief. */
 
 import { axeCheck } from './lib/axe.mjs'
-import { gotoHub, gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
+import { clickAudit, gotoHub, gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const BASE = process.env.SHOT_BASE ?? 'http://localhost:4173'
 const browser = await launchAuditBrowser({ channel: process.env.SMOKE_CHANNEL || 'chrome' })
@@ -41,7 +41,7 @@ if (!onRadar) {
   await gotoHub(page, BASE)
   const card = page.getByRole('link', { name: /Scam Radar|Start scam training/i }).first()
   await card.waitFor({ state: 'visible', timeout: 15000 })
-  await card.click()
+  await clickAudit(page, card)
   await page
     .getByRole('button', { name: /It’s Me, Again/i })
     .first()

@@ -126,6 +126,13 @@ const MAYA: CaseOS = {
     { threadId: 'bea', msg: { from: 'them', text: 'no rush. good morning ☀️', at: '6:12 AM' } },
     { threadId: 'jigs', msg: { from: 'them', text: 'Morning! Small note: client wants thumbnail v2 “louder.” Their word.', at: '6:31 AM' } },
   ],
+  ambient: [
+    { threadId: 'jigs', msg: { from: 'them', text: 'Their word twice now. “Louder but not loud.” I’ll translate that into a brief later, probably.' } },
+    { threadId: 'gc', msg: { from: 'them', text: 'Anak kumain ka na ba? 😊 Don’t skip breakfast ha', at: '6:26 AM' } },
+    { threadId: 'bea', msg: { from: 'them', text: 'ok update: the council approves of my outfit. we’re still on for 7? i’ll bring the tinapa story, it’s long' } },
+    { threadId: 'gc', msg: { from: 'them', text: 'Ate pasabuy ng Tide ha! Yung malaki. Bawi na lang ako sa Monday 🧺', at: '6:33 AM' } },
+    { threadId: 'bea', msg: { from: 'them', text: 'also don’t look at the group chat rn, tita mode activated 😭' } },
+  ],
   photos: [],
   pages: [kkPage()],
   notes: [
@@ -262,6 +269,12 @@ const TITA: CaseOS = {
   opening: [
     { threadId: 'joy', msg: { from: 'them', text: 'Tita, basahin mo po to. May pinsan ako sa Cebu, nag-share. Mga doctor daw nag-tatago.', at: '5:41 AM' } },
     { threadId: 'joy', msg: { from: 'them', kind: 'link', pageId: 'kangkong', at: '5:41 AM' } },
+  ],
+  ambient: [
+    { threadId: 'gc', msg: { from: 'them', text: 'Good morning sa lahat 🌄 Blessed Saturday po! 🙏', at: '5:47 AM' } },
+    { threadId: 'joy', msg: { from: 'them', text: 'Ang ganda ng message no? Share ko din sa choir GC mamaya after ng practice 💕' } },
+    { threadId: 'gc', msg: { from: 'them', text: 'Ate Peachy: pasabuy ng zigzag scissors sa SM pls! Bili ako dito e pangit ang handle 😄', at: '5:52 AM' } },
+    { threadId: 'gc', msg: { from: 'them', text: 'Ate Peachy: bilhin ko na rin yung fabric sa may palengke for Mama’s apron. Yung may bulaklak na blue 💙', at: '5:58 AM' } },
   ],
   photos: [],
   pages: [kkPage()],
@@ -423,6 +436,12 @@ const BEA: CaseOS = {
     { threadId: 'girlswork', msg: { from: 'them', text: 'guys is this true?? yung ampalaya?? 😭', at: '7:09 AM' } },
     { threadId: 'girlswork', msg: { from: 'them', kind: 'link', pageId: 'ampalaya', at: '7:09 AM' } },
     { threadId: 'foryou', msg: { from: 'sys', text: '💛 @factcheckph liked your comment · 7:07 AM' } },
+  ],
+  ambient: [
+    { threadId: 'foryou', msg: { from: 'sys', text: '📹 “one habit that changed my mornings” · 2.1M views · recommended for you' } },
+    { threadId: 'girlswork', msg: { from: 'them', text: 'Priya: NADS THE CLIENT APPROVED THE REBRAND 🎉🎉 drinks on friday, non-negotiable' } },
+    { threadId: 'council', msg: { from: 'them', text: 'Japs: someone please make Ivo stop linking 40-page PDFs at 7am. i am begging' } },
+    { threadId: 'maya4ever', msg: { from: 'them', text: 'ok the tinapa story continues. my lola just called to add a plot twist 💀' } },
   ],
   photos: [
     {
@@ -734,6 +753,9 @@ export const KANGKONG: AnthologyAnchor = {
   blurb:
     'A Saturday. A link about a vegetable. Three people who love their families, doing the reasonable thing — from inside three different phones.',
   question: 'Who is the villain in their own phone?',
+  when: 'Saturday · 5:41–7:28 AM',
+  arrival:
+    'Saturday, 6:47 AM. A link has been sitting in the family GC for half an hour. Maya’s phone is about to light up — and you’ll be the one holding it.',
   entry: 'maya',
   order: ['maya', 'tita', 'bea'],
   phones: { maya: MAYA, tita: TITA, bea: BEA },

@@ -1650,10 +1650,11 @@ export function SettingsApp({
       <div className="mt-2 rounded-2xl border border-[var(--os-hairline)] bg-[var(--os-chip)] p-4">
         <p className="text-[12.5px] font-semibold text-[var(--os-ink)]">Chat pace</p>
         <p className="mt-1 text-[11.5px] leading-snug text-[var(--os-dim)]">
-          How fast the other side types back. Normal follows human speed.
+          How fast the other side types back. Normal follows human speed; Slow gives the morning room.
         </p>
-        <div role="radiogroup" aria-label="Chat pace" className="mt-3 grid grid-cols-3 gap-2">
+        <div role="radiogroup" aria-label="Chat pace" className="mt-3 grid grid-cols-4 gap-2">
           {[
+            { label: 'Slow', speed: 0.5 },
             { label: 'Relaxed', speed: 0.75 },
             { label: 'Normal', speed: 1 },
             { label: 'Brisk', speed: 1.5 },

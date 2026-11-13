@@ -21,7 +21,7 @@ export default function RouteBoot() {
         </p>
         <div className="boot-scan" aria-hidden="true" />
         <p className="max-w-xs text-[11px] leading-relaxed text-ink-500">
-          The first visit warms the cache — later visits open instantly.
+          Acquiring signal.
         </p>
       </div>
     </div>

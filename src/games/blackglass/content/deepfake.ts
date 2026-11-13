@@ -83,6 +83,10 @@ const TITA_DF: CaseOS = {
     { threadId: 'linda', msg: { from: 'them', text: 'Merly sis, WATCH THIS!!! Si Tito Mike Velasco oh 🙏 Bagong programa daw for seniors and OFWs, government-partnered. Share ko kasi alam kong may pinaplano kayo for Papa’s fund 💕', at: '2:14 PM' } },
     { threadId: 'linda', msg: { from: 'them', kind: 'link', pageId: 'mike-video', at: '2:14 PM' } },
   ],
+  ambient: [
+    { threadId: 'gc', msg: { from: 'them', text: 'Tita Peachy: Ate, grabe pala yung interview ni Tito Mike kagabi sa Ch 2. Ang galing pa rin 🙌', at: '2:18 PM' } },
+    { threadId: 'linda', msg: { from: 'them', text: 'Sis share ko din sa prayer group ha, para aware din yung iba 💕' } },
+  ],
   photos: [],
   pages: [mikeVideo(), angatPage()],
   notes: [
@@ -130,12 +134,44 @@ const TITA_DF: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Tuesday's burn, recalled as the face walks past every new habit */
+      id: 'dt-echo-vc',
+      when: { allFlags: ['df_read', 'done_voiceclone'], notFlag: 'dft_vc_echo' },
+      set: { dft_vc_echo: true },
+      push: [
+        {
+          threadId: 'linda',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Tuesday night is still in your hands — the GCash receipt, the call you couldn’t make, the way Renz laughed it off at Wednesday’s dinner so nobody would have to say the word. You have been twice-careful since. You check every number now. You call back on the saved number, always. No one told you to start checking faces.',
+          },
+        },
+      ],
+    },
+    {
       id: 'dt-fwd',
       when: { replySent: 'df-fwd' },
       set: { df_1: true },
       push: [
         { threadId: 'gc', msg: { from: 'you', text: 'Mga pamangkin, tignan niyo ito. Para kay Papa. Si Tito Mike pa ang nag-endorso — government-partnered, SEC-approved. 30% in 30 days, ₱5,000 lang. Baka pwede natin i-pool for his medical fund? 🙏', at: '2:30 PM' } },
         { threadId: 'linda', msg: { from: 'sys', kind: 'narr', text: 'You send it before you can second-guess. This is what family does — when you see something that can help, you share it. That is love. That is malasakit.' } },
+      ],
+    },
+    {
+      /* the season's echo: Saturday's protective forward, remembered from inside Sunday's */
+      id: 'dt-echo-kk',
+      when: { allFlags: ['df_1', 'done_kangkong'], notFlag: 'dft_kk_echo' },
+      set: { dft_kk_echo: true },
+      push: [
+        {
+          threadId: 'gc',
+          msg: {
+            from: 'sys',
+            kind: 'narr',
+            text: 'You type the same frame you typed on Saturday — mga pamangkin, tignan niyo. Different blessing, same hands.',
+          },
+        },
       ],
     },
     {
@@ -267,6 +303,22 @@ const MAYA_DF: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Tuesday's voice lesson, recalled as the family's trust moves to faces */
+      id: 'dm-echo-vc',
+      when: { allFlags: ['dfr_read', 'done_voiceclone'], notFlag: 'dfm_vc_echo' },
+      set: { dfm_vc_echo: true },
+      push: [
+        {
+          threadId: 'gc',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Tuesday taught the family that voices lie. Nobody’s Tuesday taught them faces do. You watch the GC believe it, and you understand in one cold second exactly which sense this one is built to take.',
+          },
+        },
+      ],
+    },
+    {
       id: 'dm-called',
       when: { replySent: 'dm-call' },
       set: { df_2: true },
@@ -378,6 +430,22 @@ const BEA_DF: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Tuesday's slide, recalled as the receipts bounce off Sunday */
+      id: 'db-echo-vc',
+      when: { allFlags: ['bdf_read', 'done_voiceclone'], notFlag: 'bdf_vc_echo' },
+      set: { bdf_vc_echo: true },
+      push: [
+        {
+          threadId: 'maya4ever',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Tuesday you finished the slide — what to do if you receive a cloned call. The deck now has an answer for every scam that announces itself. It has nothing for being right and not believed.',
+          },
+        },
+      ],
+    },
+    {
       id: 'db-thread',
       when: { flag: 'bdf_read' },
       set: { bdf_posted: true },
@@ -450,6 +518,9 @@ export const DEEPFAKE: AnthologyAnchor = {
   blurb:
     'A Sunday. A video of the most trusted face on television, promising a way out — for Papa, for the family. Three phones, and the afternoon a fake taught a family to doubt the real.',
   question: 'What is a face worth, now?',
+  when: 'Sunday · 2:14–4:38 PM',
+  arrival:
+    'Sunday, 2:14 PM. Papa is napping, the TV murmurs out of thirty years of habit — and Auntie Linda is about to share a video. The most trusted face on television is in it.',
   entry: 'tita',
   order: ['tita', 'maya', 'bea'],
   phones: { tita: TITA_DF, maya: MAYA_DF, bea: BEA_DF },

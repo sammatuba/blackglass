@@ -35,6 +35,10 @@ export interface AnthologyAnchor {
   subtitle: string
   blurb: string
   question: string
+  /** when this day happens in the family's season — the convergence's chronology */
+  when: string
+  /** the entry-ritual line: the boot card's pull into the person whose phone this is */
+  arrival: string
   /** the phone you must live first — order is the lesson */
   entry: string
   /** unlock order; the rest wake once the entry phone is lived */

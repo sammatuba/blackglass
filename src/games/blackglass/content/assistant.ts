@@ -730,6 +730,9 @@ const BEA_AV: CaseOS = {
 }
 
 export const ASSISTANT: AnthologyAnchor = {
+  when: 'A Tuesday night, later',
+  arrival:
+    'A Tuesday night, later. Papa’s pills run out at nine, the clinic is closed, the reseta is in the other wallet. The machine is awake. It has never once said it doesn’t know.',
   id: 'assistant',
   title: 'CERTAIN',
   subtitle: 'One Night',

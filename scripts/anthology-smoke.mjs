@@ -9,7 +9,7 @@
 import { writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
+import { clickAudit, gotoWithRetry, launchAuditBrowser } from './lib/nav.mjs'
 
 const TRANSCRIPT = !!process.env.TRANSCRIPT
 const transcript = []
@@ -43,7 +43,7 @@ page.on('console', (m) => m.type() === 'error' && auditing && errors.push(m.text
 page.on('pageerror', (e) => errors.push(String(e)))
 
 const tap = async (name, timeout = 8000) => {
-  await page.getByRole('button', { name }).first().click({ timeout })
+  await clickAudit(page, page.getByRole('button', { name }).first(), { timeout })
   await page.waitForTimeout(400)
 }
 const settle = (ms) => page.waitForTimeout(ms)
@@ -55,7 +55,7 @@ const tryTap = async (name, timeout = 2000) => {
   try {
     const loc = page.getByRole('button', { name }).first()
     await loc.waitFor({ state: 'visible', timeout })
-    await loc.click({ timeout })
+    await clickAudit(page, loc, { timeout })
     await settle(300)
     return true
   } catch {
@@ -70,11 +70,12 @@ const tryTap = async (name, timeout = 2000) => {
 // ("Season signal" exists only in the game), falling back to the hub card.
 const gotoGame = async () => {
   auditing = false
-  const inGame = async () => (await page.getByText(/Season signal/i).count()) > 0
+  // the anchor select's h1 — unique to the game (the hub's h1 is "See clearly…")
+  const inGame = async () => (await page.getByText(/The phone anthology/i).count()) > 0
   // prove the mount with a bounded wait — a fixed settle() can fire before
   // React mounts on a slow live load, so every correct deep link would "miss"
   const mounted = () =>
-    page.getByText(/Season signal/i).first().waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false)
+    page.getByText(/The phone anthology/i).first().waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false)
   // GitHub Pages has no SPA fallback for deep links (no 404.html), so the
   // anthology URL 404s there and the only way in is the hub card. Record the
   // first SPA-served path that renders the HUB — by construction it renders
@@ -100,7 +101,7 @@ const gotoGame = async () => {
     // the M6.7 console's anthology entry is the rack station link itself
     const card = page.locator('[data-od-id="station-rack"]').first()
     await card.waitFor({ state: 'visible', timeout: 15000 })
-    await card.click()
+    await clickAudit(page, card)
     await settle(800)
   }
   auditing = true

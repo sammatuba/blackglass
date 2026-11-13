@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bannerMs, continueMs, openingMs, paceSpeed, proseMs, scaled, setPaceSpeed, typingMs } from './pacing'
+import { ambientMs, bannerMs, continueMs, openingMs, paceSpeed, proseMs, scaled, setPaceSpeed, typingMs } from './pacing'
 
 describe('human cadence', () => {
   afterEach(() => vi.unstubAllGlobals())
@@ -22,8 +22,11 @@ describe('human cadence', () => {
   it('gives prose reading air and openings a quick first buzz', () => {
     expect(openingMs('', true)).toBe(650)
     for (let i = 0; i < 40; i++) {
-      expect(proseMs('x'.repeat(80))).toBeGreaterThanOrEqual(1000)
-      expect(proseMs('x'.repeat(400))).toBeLessThanOrEqual(3100)
+      // M9 slow burn: prose gets actual reading air (~22ms/char, 1.7–6.5s band,
+      // ±15% jitter on top of the clamp)
+      expect(proseMs('x'.repeat(80))).toBeGreaterThanOrEqual(1600)
+      expect(proseMs('x'.repeat(400))).toBeLessThanOrEqual(7500)
+      expect(proseMs('x'.repeat(400))).toBeGreaterThan(proseMs('x'.repeat(80)))
       expect(openingMs('a'.repeat(200), false)).toBeGreaterThanOrEqual(1500)
       expect(openingMs('a'.repeat(200), false)).toBeLessThanOrEqual(2500)
     }
@@ -32,6 +35,13 @@ describe('human cadence', () => {
   it('keeps banners up long enough to read, bounded', () => {
     expect(bannerMs('')).toBeGreaterThanOrEqual(2800)
     expect(bannerMs('x'.repeat(500))).toBeLessThanOrEqual(6500)
+  })
+
+  it('gives ambient life a slow drip, bounded', () => {
+    for (let i = 0; i < 40; i++) {
+      expect(ambientMs()).toBeGreaterThanOrEqual(5500)
+      expect(ambientMs()).toBeLessThanOrEqual(13500)
+    }
   })
 
   it('scales by pace and never sleeps below a frame', () => {

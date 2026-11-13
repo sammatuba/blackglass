@@ -163,6 +163,22 @@ const TITA_VC: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Saturday's forward, recalled from inside Tuesday's wait */
+      id: 'vt-echo-kk',
+      when: { allFlags: ['vc_gc', 'done_kangkong'], notFlag: 'vc_kk_echo' },
+      set: { vc_kk_echo: true },
+      push: [
+        {
+          threadId: 'gc',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Saturday is still in this thread, underneath everything — the vegetable link, Maya’s video after, your forward: “share niyo na rin para aware lahat.” You were protecting them then, too. The link came vouched by someone you love; the voice came vouched by itself. That was the whole difference, and there was no way to see it coming.',
+          },
+        },
+      ],
+    },
+    {
       id: 'vt-gc2',
       when: { flag: 'vc_gc' },
       set: { vc_done: true },
@@ -260,6 +276,22 @@ const MAYA_VC: CaseOS = {
         { threadId: 'gc', msg: { from: 'sys', kind: 'aside', text: 'Kuya Renz does not get into accidents. Kuya Renz is the one who types CHECK. THE. BALANCE. in all caps when Tita forwards something. Kuya Renz would never call Tita first. He’d call Mama. Or you.' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'And yet — the voice note is right there, 0:34, already played, the waveform cached like evidence. Tita Merly heard his voice. You know her verification standard: a voice she loves.' } },
         { threadId: 'gc', msg: { from: 'sys', kind: 'narr', text: 'You thumb to your DMs. The text you sent Renz at 8:07 — kuya okay ka lang??? — sits with no delivery receipt. Sent. Not delivered. The gap between what you know and what you can prove is nine minutes wide and getting wider.' } },
+      ],
+    },
+    {
+      /* the season's echo: Saturday's link-eye, recalled as the voice walks past it */
+      id: 'mv-echo-kk',
+      when: { allFlags: ['mvc_read', 'done_kangkong'], notFlag: 'mvc_kk_echo' },
+      set: { mvc_kk_echo: true },
+      push: [
+        {
+          threadId: 'gc',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Saturday you caught the vegetable link in one glance — .click, EXPOSED, the whole template. You have been waiting for the next one to look like that. It doesn’t. The next one sounds like Kuya Renz.',
+          },
+        },
       ],
     },
     {
@@ -420,6 +452,22 @@ const BEA_VC: CaseOS = {
       ],
     },
     {
+      /* the season's echo: Saturday's debunk armor, recalled as the voice bypasses it */
+      id: 'bv-echo-kk',
+      when: { allFlags: ['bvc_read', 'done_kangkong'], notFlag: 'bvc_kk_echo' },
+      set: { bvc_kk_echo: true },
+      push: [
+        {
+          threadId: 'maya4ever',
+          msg: {
+            from: 'sys',
+            kind: 'aside',
+            text: 'Saturday you handed this family its one piece of armor — the vegetable-link debunk, passed hand to hand until it reached the GC. It taught them what a fake looks like. Tonight’s doesn’t look like anything. It rings.',
+          },
+        },
+      ],
+    },
+    {
       id: 'bv-advise',
       when: { flag: 'bvc_read' },
       set: { bvc_advised: true },
@@ -481,6 +529,9 @@ export const VOICECLONE: AnthologyAnchor = {
   blurb:
     'A Tuesday night. A voice you’ve known for thirty years says it’s in trouble and needs money now. Three phones. The same twenty-two minutes.',
   question: 'How do you verify a voice?',
+  when: 'Tuesday · 8:02–8:25 PM',
+  arrival:
+    'Tuesday, 8:02 PM. The dishes are done, the late news murmurs — and a voice note is about to arrive in Tita Merly’s Viber. Thirty-four seconds, in a voice she has known for thirty years.',
   entry: 'tita',
   order: ['tita', 'maya', 'bea'],
   phones: { tita: TITA_VC, maya: MAYA_VC, bea: BEA_VC },

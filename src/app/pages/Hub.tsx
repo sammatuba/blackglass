@@ -80,7 +80,7 @@ export default function Hub() {
           <span className="text-sm font-bold tracking-[0.22em]">BLACKGLASS</span>
         </div>
         <p className="hidden text-xs tracking-[0.18em] text-ink-400 uppercase sm:block">
-          AI safety · scam readiness · cyber-security
+          The operator’s console · every record stays on this device
         </p>
       </header>
 
@@ -92,7 +92,7 @@ export default function Hub() {
           <div className="relative">
             <FadeIn>
               <p className="text-xs font-semibold tracking-[0.3em] text-ink-400 uppercase">
-                An explorable suite for the age of synthetic media
+                The desk is live · signal acquired
               </p>
             </FadeIn>
             <FadeIn delay={0.08}>
@@ -105,8 +105,8 @@ export default function Hub() {
             </FadeIn>
             <FadeIn delay={0.16}>
               <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-ink-400 sm:text-base">
-                Live the story. Train the reflex. Take the mechanism apart — no account, and
-                your season stays on this device.
+                Live the story. Train the reflex. Take the mechanism apart. Every record stays
+                on this device.
               </p>
             </FadeIn>
           </div>
@@ -133,7 +133,7 @@ export default function Hub() {
                 to="/blackglass"
                 kicker="Play · the phone rack"
                 name="BLACKGLASS"
-                line="Thirteen phones, one family's Saturday. Pick up; the desk scores every flag you catch."
+                line="Thirteen phones, one family's season. Pick up; the desk records every flag you catch."
                 icon="phone"
                 accent="play"
                 stamp={anthologyStamp()}
@@ -202,11 +202,10 @@ export default function Hub() {
       <footer className="relative z-10 border-t border-ink-800">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-8 text-center text-xs text-ink-400 sm:flex-row sm:justify-between sm:px-8 sm:text-left">
           <p>
-            Depicts deception; never enables it — every scenario obeys{' '}
-            <span className="text-ink-300">world/guardrails.md</span>: fictional brands, numbers, and people.
+            Depicts deception; never enables it — fictional brands, numbers, and people, throughout.
           </p>
           <p>
-            <span className="text-ink-300">BLACKGLASS</span> · research → world → craft → play
+            <span className="text-ink-300">BLACKGLASS</span> · the operator’s desk
           </p>
         </div>
       </footer>
@@ -468,8 +467,8 @@ function ArchiveDrawer({
           ))}
         </ul>
         <p className="mt-3 border-t border-ink-700 pt-3 text-xs leading-relaxed text-ink-400">
-          Shipped as they were built — vanilla, playable, honest about their age. The concepts now
-          live inside the desk above.
+          The reference shelf, kept exactly as it was built. The concepts now live inside the
+          desk above.
         </p>
       </details>
     </FadeIn>
