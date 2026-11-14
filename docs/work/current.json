@@ -3,8 +3,8 @@
   "milestone": "R4 \u2014 trainer mechanics debt (from design-assessment-2026-11-13 \u00a77)",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": false,
-  "committed": false,
+  "deployed": true,
+  "committed": true,
   "intent": "The assessment's facet-6 list, executed as a unit-testable block while the host's WSL graphics stack remains broken (browser e2e unavailable): make the trainer's scoring honest to its own pedagogy and remove the false affordances.",
   "scope_delivered": [
     "round.ts \u2014 verify-on-legit now earns half credit ('Right instinct \u2014 half read'): answering 'verify first' on a genuinely legit message was a full miss while verify-first is the taught habit (pairs are [answer, correct verdict]; 'legit'\u2192'scam' stays a full miss)",
@@ -34,5 +34,6 @@
     "src/games/tell-exam/index.tsx",
     "src/games/scam-radar/index.tsx"
   ],
-  "next_action": "Commit + push (Workers auto-deploy) + verify live markers; then on a recovered host: full smoke suite + M9.5 real-1x playtest watch; next build blocks: cadence profiles with M8.3, R5 canon reconciliation (user-canon decisions pending)."
+  "next_action": "Commit + push (Workers auto-deploy) + verify live markers; then on a recovered host: full smoke suite + M9.5 real-1x playtest watch; next build blocks: cadence profiles with M8.3, R5 canon reconciliation (user-canon decisions pending).",
+  "deploy_note": "commit b8936d9 pushed; Workers auto-build verified serving R4 (tell-exam purity line, radar warm-up/adjacency markers in the new lazy chunks; M9 engine markers intact)."
 }
