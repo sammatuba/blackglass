@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { EXAM_ITEMS, type ExamItem } from './exam-data'
+import { examSignal } from './score'
 import { artifactUrl } from '../blackglass/artifacts'
 import { GradeStamp, gradeFor, useCountUp } from '../shared/desk'
 import { FadeIn } from '../../ui/FadeIn'
@@ -349,21 +350,24 @@ export default function TellExam() {
     setResults(rs)
     const found = rs.reduce((n, x) => n + x.found, 0)
     const total = EXAM_ITEMS.reduce((n, it) => n + it.tells.length, 0)
-    // the exam signal is recall × precision: find the tells AND don't flag
-    // phantoms — spamming markers costs (2026-11-13; false alarms were free)
     const alarms = rs.reduce((n, x) => n + x.falseAlarms, 0)
-    const precision = found > 0 ? found / (found + alarms) : 0
-    const pct = total ? Math.round(((found / total) * 100) * precision) : 0
-    if (pct > best) {
-      setBest(pct)
-      try {
-        localStorage.setItem(BEST_KEY, String(pct))
-      } catch {
-        /* private mode: fine */
+    const pct = examSignal(found, total, alarms)
+    // the personal best is only written when the FULL exam completes —
+    // an interim score after one artifact is never a best (review 2026-11-14:
+    // an inflated interim 20% was persisting over a final 8%)
+    if (round + 1 >= deck.length) {
+      if (pct > best) {
+        setBest(pct)
+        try {
+          localStorage.setItem(BEST_KEY, String(pct))
+        } catch {
+          /* private mode: fine */
+        }
       }
+      setDone(true)
+    } else {
+      setRound(round + 1)
     }
-    if (round + 1 >= deck.length) setDone(true)
-    else setRound(round + 1)
   }
 
   const start = () => {
@@ -373,9 +377,8 @@ export default function TellExam() {
     setDone(false)
   }
 
-  // same purity math as onRoundDone — recall × precision
-  const precision = totals.found > 0 ? totals.found / (totals.found + totals.alarms) : 0
-  const pct = totals.total ? Math.round(((totals.found / totals.total) * 100) * precision) : 0
+  // same purity math as onRoundDone — recall × precision (score.ts, unit-tested)
+  const pct = examSignal(totals.found, totals.total, totals.alarms)
 
   return (
     <div className="desk-scene min-h-dvh">

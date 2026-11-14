@@ -1,17 +1,18 @@
 {
   "work_id": "blackglass-r4-trainer-debt",
-  "milestone": "R4 \u2014 trainer mechanics debt (from design-assessment-2026-11-13 \u00a77)",
+  "milestone": "R4 \u2014 trainer mechanics debt + review rework (M9 era)",
   "phase": "wrapup",
   "status": "complete",
-  "deployed": true,
-  "committed": true,
+  "deployed": false,
+  "committed": false,
   "intent": "The assessment's facet-6 list, executed as a unit-testable block while the host's WSL graphics stack remains broken (browser e2e unavailable): make the trainer's scoring honest to its own pedagogy and remove the false affordances.",
   "scope_delivered": [
     "round.ts \u2014 verify-on-legit now earns half credit ('Right instinct \u2014 half read'): answering 'verify first' on a genuinely legit message was a full miss while verify-first is the taught habit (pairs are [answer, correct verdict]; 'legit'\u2192'scam' stays a full miss)",
     "round.ts \u2014 the level ramp the item tags always promised: rounds now open easy (level groups shuffled within, levels ascend) and a warm-up invariant (no verify as read #1) \u2014 the invariant the old comment claimed and the plain Fisher-Yates never delivered; comment now matches behavior",
     "scam-radar menu \u2014 the false lock glyph removed from un-worked case devices (every case is open from the first visit; the \ud83d\udd12 implied locked content)",
     "tell-exam \u2014 false alarms now cost: the exam signal is recall \u00d7 precision (spamming 5 markers is no longer free); the results hero names the cost honestly ('N flagged, nothing there \u2014 false alarms cost signal')",
-    "round.test.ts extended: warm-up invariant (40\u00d7), level ramp (40\u00d7), verify-on-legit half-credit, pairs-table honesty \u2014 4 new assertions groups; suite 86\u219290"
+    "round.test.ts extended: warm-up invariant (40\u00d7), level ramp (40\u00d7), verify-on-legit half-credit, pairs-table honesty \u2014 4 new assertions groups; suite 86\u219290",
+    "review rework: examSignal + nextAmbientBeat extractions (pure, unit-tested), best-only-when-complete, ambient resume delivery, first-shift warm-up \u2014 suite 90 \u2192 104"
   ],
   "constraints_held": [
     "Scoring philosophy preserved: the grade measures the reads you made, never what the scammers did; the /100 signal stays earned-over-honest-max",
@@ -19,8 +20,9 @@
     "Trainer sys-voice leak cleanup and suite-wide immersion ride a later block per the ratified anthology-first scope"
   ],
   "acceptance_results": [
-    "tsc clean; 90/90 unit tests (13 files); build green; assets:budget green (no dist duplication)",
-    "Browser e2e remains unavailable this session (HANDOFF 7b #4 \u2014 host compositor dead); the R4 surfaces are pure logic and covered by the unit layer; re-run radar/exam smokes when the host recovers"
+    "tsc clean; 104/104 unit tests across 15 files (score.test.ts 5, ambient.test.ts 7, round warmup 2 added); build green (45 precache); assets:budget green",
+    "independent review 2026-11-14: VERDICT rework with 4 important findings \u2014 all four fixed and re-verified on the final tree (see review_rework)",
+    "browser e2e remains blocked by the host graphics fault (HANDOFF 7b #4); R4 surfaces and the rework extractions are pure logic covered by the unit layer"
   ],
   "blockers": [],
   "decisions": [
@@ -34,6 +36,16 @@
     "src/games/tell-exam/index.tsx",
     "src/games/scam-radar/index.tsx"
   ],
-  "next_action": "Commit + push (Workers auto-deploy) + verify live markers; then on a recovered host: full smoke suite + M9.5 real-1x playtest watch; next build blocks: cadence profiles with M8.3, R5 canon reconciliation (user-canon decisions pending).",
-  "deploy_note": "commit b8936d9 pushed; Workers auto-build verified serving R4 (tell-exam purity line, radar warm-up/adjacency markers in the new lazy chunks; M9 engine markers intact)."
+  "next_action": "Commit + push (Workers auto-deploy) + verify live markers for the rework chunks; on a recovered host run the full smoke suite; M9.5 real-1x playtest watch; cadence profiles with M8.3; R5 canon reconciliation (user-canon decision pending).",
+  "deploy_note": null,
+  "review_rework": {
+    "verdict": "rework \u2192 fixed",
+    "review": ".meos/reviews/20261114T142631Z.md (independent reviewer, base 49e4cbf)",
+    "findings": [
+      "IMPORTANT tell-exam: personal best persisted an inflated interim score (interim 20% over a final 8%) \u2014 best is now written only when the full exam completes; scoring extracted to pure examSignal (score.ts) with a regression test",
+      "IMPORTANT Device.tsx: resumed runs permanently disabled the ambient channel (the loop exited on `returning` before consulting the persisted ambientIndex) \u2014 the loop now delivers from the persisted cursor on resume; the delivery contract extracted to pure nextAmbientBeat (engine/os/ambient.ts) with tests for pending/resumed/legacy/exhausted/gated states",
+      "IMPORTANT record: unit-coverage claims exceeded the evidence \u2014 corrected here; Tell Exam purity and ambient delivery now have behavioral tests (score.test.ts, ambient.test.ts)",
+      "IMPORTANT round.ts: the assessment specified a first-shift warm-up (3 gentle reads) and the ordering-only implementation was too thin \u2014 buildRound now takes {warmup} (2 level-1 scams + 1 legit, no verify) and FeedGame passes it on the first shift only"
+    ]
+  }
 }

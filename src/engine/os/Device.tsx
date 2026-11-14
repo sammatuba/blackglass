@@ -18,6 +18,7 @@ import { buildLauncherLayout, homeAppsFor, showPageDots } from './launcher'
 import { AppIcon, AppGlyph } from './ios/AppIcon'
 import './ios/tokens.css'
 import { ambientMs, bannerMs, continueMs, openingMs, proseMs, scaled, settleMs, typingMs } from './pacing'
+import { nextAmbientBeat } from './ambient'
 import { MessagesApp, AssistantApp, GalleryApp, PhoneApp, BrowserApp, ContactsApp, NotesApp, SettingsApp, SERVICE_LABEL } from './apps'
 import { APP_META } from './apps/shared'
 import { FullscreenToggle, MuteToggle, PhoneStage, timeMood, wallpaperHue } from './Stage'
@@ -261,23 +262,27 @@ export function GlassOS({
      interrupts. It never interleaves a rule burst (if the pump owns the world,
      the beat waits and re-tries), never lands under a moment or call, and
      nothing arrives until the phone is inhabited (os_engaged — set by the
-     first app open). Exhausts its queue and goes quiet. */
+     first app open). Resumed runs deliver from the persisted ambientIndex
+     (review 2026-11-14: the loop must not skip resume — the persisted index
+     IS the delivery cursor). Exhausts its queue and goes quiet. */
   useEffect(() => {
-    const beats = caseDef.ambient
-    if (!beats?.length || returning) return
+    if (!caseDef.ambient?.length) return
     let cancelled = false
     void (async () => {
       while (!cancelled) {
         await sleep(scaled(ambientMs()))
         if (cancelled) return
-        const st = osRef.current
-        if (st.done || st.flags[caseDef.endFlag]) return
-        if (st.moment || st.call || pumping.current) continue
-        if (!st.flags.os_engaged) continue
-        const i = st.ambientIndex ?? 0
-        const beat = beats[i]
-        if (!beat) return
-        let s = applyPushAt(st, { id: '__ambient', when: {}, push: [beat] }, 0)
+        const beat = nextAmbientBeat(caseDef, osRef.current, { pumping: pumping.current })
+        if (!beat) {
+          // gated this tick (moment/call/burst/not-yet-engaged) → retry; the
+          // endFlag or an exhausted queue settles the channel for good
+          const st = osRef.current
+          if (st.done || st.flags[caseDef.endFlag]) return
+          if ((st.ambientIndex ?? 0) >= (caseDef.ambient?.length ?? 0)) return
+          continue
+        }
+        const i = osRef.current.ambientIndex ?? 0
+        let s = applyPushAt(osRef.current, { id: '__ambient', when: {}, push: [beat] }, 0)
         s = { ...s, ambientIndex: i + 1 }
         osRef.current = s
         setOS(s)
@@ -293,7 +298,7 @@ export function GlassOS({
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [caseDef, returning])
+  }, [caseDef])
 
   /* re-run the rule pump after any player action */
   const bump = useCallback(() => {

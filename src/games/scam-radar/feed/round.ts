@@ -28,14 +28,25 @@ function familyMastery(family: Record<FamilyId, FamilyRecord>, item: FeedItem): 
  * A round = 10 reads: 5 scams, 3 legit, 2 verify (clamped to what's
  * available), weighted toward the families you've mastered least, ordered
  * so the shift opens easy (levels ascend within shuffled groups) and the
- * subtlest verdict (verify) never opens the round — the warm-up the old
- * comment promised and the shuffle never delivered (fixed 2026-11-13).
+ * subtlest verdict (verify) never opens the round.
+ *
+ * opts.warmup — the player's FIRST shift is a short, gentle teach: 3 reads
+ * (2 classic scams + 1 legit), no verify verdict, scams from level 1 only.
+ * The ease-in the design assessment asked for; verified by the review
+ * rework (2026-11-14), which caught the ordering-only version as too thin.
  */
-export function buildRound(family: Record<FamilyId, FamilyRecord>, n = 10): FeedItem[] {
-  const quota: Record<string, number> = { scam: 5, legit: 3, verify: 2 }
+export function buildRound(
+  family: Record<FamilyId, FamilyRecord>,
+  n = 10,
+  opts: { warmup?: boolean } = {},
+): FeedItem[] {
+  const quota: Record<string, number> = opts.warmup
+    ? { scam: 2, legit: 1, verify: 0 }
+    : { scam: 5, legit: 3, verify: 2 }
+  const maxLevel = opts.warmup ? 1 : 3
   const picked: FeedItem[] = []
   for (const verdict of ['scam', 'legit', 'verify'] as const) {
-    const pool = shuffle(FEED_ITEMS.filter((i) => i.verdict === verdict))
+    const pool = shuffle(FEED_ITEMS.filter((i) => i.verdict === verdict && i.level <= maxLevel))
     pool.sort((a, b) => familyMastery(family, a) - familyMastery(family, b))
     picked.push(...pool.slice(0, quota[verdict]))
   }

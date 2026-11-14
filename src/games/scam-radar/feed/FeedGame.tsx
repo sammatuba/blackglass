@@ -30,7 +30,9 @@ export function FeedGame({ onExit }: { onExit: () => void }) {
   const rounds = useRadar((s) => s.rounds)
   const bestSignal = useRadar((s) => s.bestRoundSignal)
   const addResult = useRadar((s) => s.addResult)
-  const [round, setRound] = useState<FeedItem[]>(() => buildRound(useRadar.getState().family))
+  const [round, setRound] = useState<FeedItem[]>(() =>
+    buildRound(useRadar.getState().family, 10, { warmup: useRadar.getState().rounds === 0 }),
+  )
   const [idx, setIdx] = useState(0)
   const [streak, setStreak] = useState(0)
   const [roundScore, setRoundScore] = useState(0)
@@ -129,7 +131,7 @@ export function FeedGame({ onExit }: { onExit: () => void }) {
         shift={rounds}
         onAgain={() => {
           settled.current = false
-          setRound(buildRound(useRadar.getState().family))
+          setRound(buildRound(useRadar.getState().family, 10, { warmup: useRadar.getState().rounds === 0 }))
           setIdx(0)
           setStreak(0)
           setRoundScore(0)

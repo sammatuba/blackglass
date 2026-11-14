@@ -71,6 +71,22 @@ describe('buildRound', () => {
       if (firstL1 !== -1 && firstL3 !== -1) expect(firstL1).toBeLessThan(firstL3)
     }
   })
+
+  it('the first-shift warm-up: 3 gentle reads, no verify, scams from level 1', () => {
+    for (let i = 0; i < 20; i++) {
+      const round = buildRound(ZERO_MASTERY, 10, { warmup: true })
+      expect(round).toHaveLength(3)
+      expect(round.some((x) => x.verdict === 'verify')).toBe(false)
+      expect(round.filter((x) => x.verdict === 'scam').every((x) => x.level === 1)).toBe(true)
+      expect(round.filter((x) => x.verdict === 'legit').length).toBe(1)
+    }
+  })
+
+  it('subsequent shifts keep the full 10-read quota (warmup only once)', () => {
+    const round = buildRound(ZERO_MASTERY, 10, {})
+    expect(round).toHaveLength(10)
+    expect(round.filter((x) => x.verdict === 'verify').length).toBe(2)
+  })
 })
 
 describe('judge — the taught habit must not be punished (2026-11-13)', () => {
