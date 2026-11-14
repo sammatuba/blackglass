@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import type { FamilyId } from '../families'
 import { FEED_ITEMS } from './items'
-import { buildRound, judge, readMax, signalFor } from './round'
+import { buildRound, judge, readMax, signalFor, VERDICT_PAIRS } from './round'
+import type { FamilyRecord } from '../state'
+
+const ZERO_MASTERY = {} as Record<FamilyId, FamilyRecord>
 
 describe('readMax / signalFor', () => {
   it('the honest maximum includes the streak bonus on both sides', () => {
@@ -51,5 +55,39 @@ describe('buildRound', () => {
     expect(count('scam')).toBe(5)
     expect(count('legit')).toBe(3)
     expect(count('verify')).toBe(2)
+  })
+
+  it('never opens the round with a verify — the warm-up invariant the old comment claimed', () => {
+    for (let i = 0; i < 40; i++) {
+      expect(buildRound(ZERO_MASTERY)[0].verdict).not.toBe('verify')
+    }
+  })
+
+  it('ramps: no level-3 read appears before a level-1 read', () => {
+    for (let i = 0; i < 40; i++) {
+      const round = buildRound(ZERO_MASTERY)
+      const firstL1 = round.findIndex((x) => x.level === 1)
+      const firstL3 = round.findIndex((x) => x.level === 3)
+      if (firstL1 !== -1 && firstL3 !== -1) expect(firstL1).toBeLessThan(firstL3)
+    }
+  })
+})
+
+describe('judge — the taught habit must not be punished (2026-11-13)', () => {
+  const legit = FEED_ITEMS.find((i) => i.verdict === 'legit')!
+
+  it('verify-first on a genuinely legit message is over-caution, not a miss', () => {
+    const r = judge(legit, 'verify', 0)
+    expect(r.quality).toBe('partial')
+    expect(r.points).toBe(5)
+    expect(r.banner).toBe('Right instinct — half read')
+  })
+
+  it('calling a scam legit stays a full miss (and the pairs table stays honest)', () => {
+    const scam = FEED_ITEMS.find((i) => i.verdict === 'scam')!
+    expect(judge(scam, 'legit', 0).quality).toBe('miss')
+    // pairs are [answer, correct verdict]: verify answered on legit = over-caution
+    expect(VERDICT_PAIRS).toContainEqual(['verify', 'legit'])
+    expect(VERDICT_PAIRS).not.toContainEqual(['legit', 'scam'])
   })
 })

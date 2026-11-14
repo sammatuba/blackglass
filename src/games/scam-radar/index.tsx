@@ -20,8 +20,10 @@ function MiniDevice({ wallpaper, done }: { wallpaper: string; done?: boolean }) 
     >
       <span className={`relative block h-full w-full overflow-hidden rounded-[0.7rem] brightness-175 ${'wall-' + wallpaper}`}>
         <span className="absolute left-1/2 top-1 h-1.5 w-5 -translate-x-1/2 rounded-full bg-black/60" />
-        <span className={`absolute inset-0 grid place-items-center ${done ? 'text-lg text-emerald-300' : 'text-sm opacity-90'}`}>
-          {done ? '✓' : '🔒'}
+        {/* no lock glyph: every case is open from the first visit — the old
+            🔒 was a false affordance on clickable content */}
+        <span className={`absolute inset-0 grid place-items-center ${done ? 'text-lg text-emerald-300' : ''}`}>
+          {done ? '✓' : ''}
         </span>
       </span>
     </span>

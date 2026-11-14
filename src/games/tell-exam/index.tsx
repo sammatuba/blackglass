@@ -275,8 +275,21 @@ function clamp(v: number): number {
 }
 
 /* the results hero — the suite's shared grade stamp: the exam grade
-   measures the tells you spotted, never the images themselves */
-function ExamVerdict({ pct, found, total, best }: { pct: number; found: number; total: number; best: number }) {
+   measures the tells you spotted, never the images themselves — and
+   flags with nothing behind them cost signal (purity = recall × precision) */
+function ExamVerdict({
+  pct,
+  found,
+  total,
+  best,
+  alarms,
+}: {
+  pct: number
+  found: number
+  total: number
+  best: number
+  alarms: number
+}) {
   const grade = gradeFor(pct)
   const { count, stamped } = useCountUp(pct, grade)
   return (
@@ -291,6 +304,11 @@ function ExamVerdict({ pct, found, total, best }: { pct: number; found: number; 
           </p>
         </div>
       </div>
+      {alarms > 0 && (
+        <p className="mt-3 text-[12.5px] text-ink-400">
+          {alarms} flagged, nothing there — false alarms cost signal. The eye is precision, not volume.
+        </p>
+      )}
       <div className="mt-5 grid grid-cols-2 gap-3">
         <div className="rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3">
           <p className="text-[11px] font-bold tracking-[0.2em] text-ink-400 uppercase">Tells spotted</p>
@@ -331,7 +349,11 @@ export default function TellExam() {
     setResults(rs)
     const found = rs.reduce((n, x) => n + x.found, 0)
     const total = EXAM_ITEMS.reduce((n, it) => n + it.tells.length, 0)
-    const pct = total ? Math.round((found / total) * 100) : 0
+    // the exam signal is recall × precision: find the tells AND don't flag
+    // phantoms — spamming markers costs (2026-11-13; false alarms were free)
+    const alarms = rs.reduce((n, x) => n + x.falseAlarms, 0)
+    const precision = found > 0 ? found / (found + alarms) : 0
+    const pct = total ? Math.round(((found / total) * 100) * precision) : 0
     if (pct > best) {
       setBest(pct)
       try {
@@ -351,7 +373,9 @@ export default function TellExam() {
     setDone(false)
   }
 
-  const pct = totals.total ? Math.round((totals.found / totals.total) * 100) : 0
+  // same purity math as onRoundDone — recall × precision
+  const precision = totals.found > 0 ? totals.found / (totals.found + totals.alarms) : 0
+  const pct = totals.total ? Math.round(((totals.found / totals.total) * 100) * precision) : 0
 
   return (
     <div className="desk-scene min-h-dvh">
@@ -373,7 +397,7 @@ export default function TellExam() {
 
             {done ? (
               <div className="mt-6">
-                <ExamVerdict pct={pct} found={totals.found} total={totals.total} best={best} />
+                <ExamVerdict pct={pct} found={totals.found} total={totals.total} best={best} alarms={totals.alarms} />
                 <p className="mt-4 rounded-xl border border-ink-700 bg-ink-800/70 p-4 text-sm leading-relaxed text-ink-300">
                   {pct >= 80
                     ? 'You see clearly. Most people never look twice — you looked twice at everything.'

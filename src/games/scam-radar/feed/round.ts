@@ -26,7 +26,10 @@ function familyMastery(family: Record<FamilyId, FamilyRecord>, item: FeedItem): 
 
 /**
  * A round = 10 reads: 5 scams, 3 legit, 2 verify (clamped to what's
- * available), weighted toward the families you've mastered least.
+ * available), weighted toward the families you've mastered least, ordered
+ * so the shift opens easy (levels ascend within shuffled groups) and the
+ * subtlest verdict (verify) never opens the round — the warm-up the old
+ * comment promised and the shuffle never delivered (fixed 2026-11-13).
  */
 export function buildRound(family: Record<FamilyId, FamilyRecord>, n = 10): FeedItem[] {
   const quota: Record<string, number> = { scam: 5, legit: 3, verify: 2 }
@@ -36,8 +39,16 @@ export function buildRound(family: Record<FamilyId, FamilyRecord>, n = 10): Feed
     pool.sort((a, b) => familyMastery(family, a) - familyMastery(family, b))
     picked.push(...pool.slice(0, quota[verdict]))
   }
-  // shuffle while keeping at least one read before the first verify
-  return shuffle(picked).slice(0, n)
+  // open easy: shuffle within each level, then levels ascend
+  const levels = [1, 2, 3]
+  const ordered = levels.flatMap((lv) => shuffle(picked.filter((i) => i.level === lv)))
+  // warm-up invariant: at least one read before the first verify
+  const firstVerify = ordered.findIndex((i) => i.verdict === 'verify')
+  if (firstVerify === 0) {
+    const swap = ordered.findIndex((i) => i.verdict !== 'verify')
+    if (swap > 0) [ordered[0], ordered[swap]] = [ordered[swap], ordered[0]]
+  }
+  return ordered.slice(0, n)
 }
 
 export interface AnswerResult {
@@ -51,6 +62,11 @@ export interface AnswerResult {
 export const VERDICT_PAIRS: [string, string][] = [
   ['scam', 'verify'],
   ['verify', 'scam'],
+  /* verify-first on a genuinely legit message is over-caution, not a miss:
+     the pause is the habit the game teaches — it earns half credit
+     (fixed 2026-11-13; the old table punished the taught reflex). Pairs are
+     [answer, correct verdict]. */
+  ['verify', 'legit'],
 ]
 
 export function judge(item: FeedItem, answer: FeedItem['verdict'], streak: number): AnswerResult {
