@@ -215,6 +215,25 @@ re-diagnosed from scratch:
 
 ## 8. Session log (recent, newest first)
 
+- **2026-11-13 (b)** — M9 THE SLOW BURN (strategy → deploy, commit `98f8d06`): the ratified
+  program from `docs/design-assessment-2026-11-13.md`. M9.1 season spine (anchor `when`/`arrival`,
+  the select rebuilt as "The season" with a soft frontier gate, scoreframe off in-fiction surfaces,
+  boot card as entry ritual, `done_*` echo beats wired into voiceclone/deepfake/fiveweeks — 3 of 5
+  anchors were sealed units); M9.2 slow burn (engine ambient channel with `os_engaged` gate,
+  prose retuned to reading speed, settle ~2×, 0.5× pace, ambient life authored for kangkong/
+  deepfake/fiveweeks); M9.3 handover (hub console voice, RouteBoot cache lecture gone, all four
+  `world/guardrails.md` path leaks replaced). Deployed to both hosts; live-verified by content
+  markers (season select, boot copy, echo flags, `ambientIndex`/`os_engaged` engine markers).
+  Verify status: tsc clean, 86/86 tests, build green, budget green; full e2e smokes NOT
+  completable this session — the WSL2 graphics stack died mid-session (§7b #4); re-run the suite
+  on a recovered host. Next: M9.5 real-1× playtest watch; cadence profiles with M8.3; R5 canon
+  reconciliation; R4 trainer debt.
+- **2026-11-13 (a)** — strategy session: full-facets design assessment
+  (`docs/design-assessment-2026-11-13.md`) — the writing passed its prior judgments; the gaps
+  are architectural (menu-not-season, echo system unused in 3/5 anchors, no handover ritual)
+  and staging-level (no act structure shipped, brisk constants, completionist pressure).
+  User ratified the M9 program (soft gate · console hub · M9-before-M8.3 · anthology-first).
+
 - **2026-11-12 (a)** — M8.2 THE IPHONE PASS · lock screen + home launcher (wrapup reached,
   NOT committed): the interrupted session's implementation was recovered and finished.
   New pure `engine/os/launcher.ts` (`homeAppsFor` app list + `buildLauncherLayout`
